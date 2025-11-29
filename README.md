@@ -50,71 +50,10 @@ superCars/
 
 ### Prerequisites
 
-- **.NET SDK** (8.0 or later)
-- **Node.js** (18.0 or later)
-- **npm** or **yarn**
-- **SQL Server** (or SQL Server Express)
-
-### Backend Setup
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend/SuperCars.API
-   ```
-
-2. Restore NuGet packages:
-   ```bash
-   dotnet restore
-   ```
-
-3. Update the connection string in `appsettings.json`:
-   ```json
-   {
-     "ConnectionStrings": {
-       "DefaultConnection": "Your SQL Server connection string"
-     }
-   }
-   ```
-
-4. Run database migrations:
-   ```bash
-   dotnet ef database update
-   ```
-
-5. Start the API server:
-   ```bash
-   dotnet run
-   ```
-
-   The API will be available at `https://localhost:5001` or `http://localhost:5000`
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-3. Create a `.env.local` file with your API endpoint:
-   ```env
-   NEXT_PUBLIC_API_URL=http://localhost:5000/api
-   ```
-
-4. Start the development server:
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
-
-   The application will be available at `http://localhost:3000`
+- **.NET SDK** 
+- **Node.js** 
+- **npm** / **yarn**
+- **SQL Server** 
 
 ## 📝 API Endpoints
 
@@ -134,27 +73,6 @@ superCars/
 - `GET /api/users/{id}` - Get user profile
 - `PUT /api/users/{id}` - Update user profile (authenticated)
 
-## 🧪 Testing
-
-### Backend Tests
-```bash
-cd backend/SuperCars.Tests
-dotnet test
-```
-
-### Frontend Tests
-```bash
-cd frontend
-npm test
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## 📄 License
 

@@ -1,0 +1,83 @@
+# Build results
+bin/
+obj/
+[Bb]uild/
+[Rr]elease/
+[Dd]ebug/
+[Oo]ut/
+
+# VS intermediate and cache files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# Logs
+*.log
+logs/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+**/packages/*
+!**/packages/build/
+!**/packages/repositories.config
+
+# Publish profiles
+Properties/PublishProfiles/
+*.pubxml
+*.pubxml.user
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# .NET tools
+*.dotCover
+*.dotMemory
+*.dotTrace
+*.nvuser
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Azure
+PublishScripts/
+
+# Coverage
+coverage/
+coverage*.json
+coverage*.xml
+coverage*.info
+TestResults/
+*.coverage
+*.coveragexml
+
+# SQL Server
+*.mdf
+*.ldf
+
+# OS files
+[Tt]humbs.db
+ehthumbs.db
+Desktop.ini
+*.DS_Store
+
+# Environment & secrets (only if you keep them in Backend)
+*.env
+*.env.*
+appsettings.*.local.json
+
+# Other
+.vscode/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+

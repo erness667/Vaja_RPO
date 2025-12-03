@@ -63,19 +63,41 @@ Vzpostavljena je bila povezava s strežnikom SQL Server na localhost,1433 z upor
 Ustvarjena je bila baza podatkov in tabela dbo.Cars.
 
 🛠️ Navodila za Zagon
+
+## Database Setup
+
+**Prerequisites**: Docker Desktop must be installed and running.
+
+1. **Start the SQL Server database**:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Run database migrations**:
+   ```bash
+   cd Backend
+   dotnet ef database update
+   ```
+
+For detailed database setup instructions, see [DATABASE_SETUP.md](./DATABASE_SETUP.md).
+
+## Backend Setup
+
 Prepričajte se, da imate nameščen Docker za zagon kontejnerjev.
 
-Uporabite Dockerfile  za zgradbo in zagon backend storitve:
+Uporabite Dockerfile za zgradbo in zagon backend storitve:
 
-Bash
-
+```bash
 # Primer ukaza za zgradbo (odvisno od vaše konfiguracije)
 docker build -t supercarsapi -f Backend/Dockerfile .
 
 # Primer ukaza za zagon (odvisno od vaše konfiguracije)
 docker run -d -p 8080:8080 supercarsapi
+```
+
+## Frontend Setup
+
 Za prijavo in registracijo obiščite:
 
-Registracija: http://localhost:3000/register 
-
-Prijava: http://localhost:3000/login
+- **Registracija**: http://localhost:3000/register 
+- **Prijava**: http://localhost:3000/login

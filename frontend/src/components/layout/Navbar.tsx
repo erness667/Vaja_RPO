@@ -2,83 +2,126 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useTheme } from "next-themes";
-import { HiSun, HiMoon } from "react-icons/hi2";
-import { HiUser, HiUserAdd, HiPlus } from "react-icons/hi";
+import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon } from "react-icons/hi";
+import { useColorMode } from "@/components/ui/color-mode";
 
 export function Navbar() {
-  const { theme, systemTheme, resolvedTheme, setTheme } = useTheme();
-
-  const currentTheme = resolvedTheme ?? (theme === "system" ? systemTheme : theme);
-  const isDark = currentTheme === "dark";
-  const nextTheme = isDark ? "light" : "dark";
-
-  const toggleDarkMode = () => {
-    setTheme(nextTheme ?? "light");
-  };
+  const { colorMode, toggleColorMode } = useColorMode();
+  const isDark = colorMode === "dark";
 
   return (
-    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          {/* Logo */}
+    <nav style={{
+      backgroundColor: isDark ? "#111827" : "white",
+      borderBottom: `1px solid ${isDark ? "#374151" : "#e5e7eb"}`,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+    }}>
+      <div style={{
+        maxWidth: "1280px",
+        margin: "0 auto",
+        padding: "0 1rem",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        height: "80px",
+      }}>
+        {/* Logo */}
+        <Link href="/" style={{ display: "flex", alignItems: "center" }}>
+          <Image
+            src="/logo.png"
+            alt="SUPERCARS Logo"
+            width={200}
+            height={70}
+            style={{ height: "4rem", width: "auto", objectFit: "contain" }}
+            priority
+          />
+        </Link>
+
+        {/* Navigation Links */}
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
           <Link
-            href="/"
-            className="flex items-center hover:opacity-80 transition-opacity"
+            href="/create"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 16px",
+              backgroundColor: "#2563eb",
+              color: "white",
+              borderRadius: "6px",
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: "600",
+            }}
           >
-            
-            <Image
-              src="/logo.png"
-              alt="SUPERCARS Logo"
-              width={200}
-              height={70}
-              className="h-16 w-auto object-contain"
-              priority
-            />
+            <HiPlus style={{ width: "20px", height: "20px" }} />
+            Objavi oglas
           </Link>
 
-          {/* Navigation Links */}
-          <div className="flex items-center gap-3">
-            {/* Objavi oglas Button */}
-            <Link
-              href="/create"
-              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-md transition-colors shadow-sm"
-            >
-              <HiPlus className="w-5 h-5" />
-              Objavi oglas
-            </Link>
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={toggleColorMode}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "8px",
+              backgroundColor: "transparent",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              color: isDark ? "#f3f4f6" : "#374151",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = isDark ? "#374151" : "#f3f4f6";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
+            aria-label="Toggle dark mode"
+          >
+            {isDark ? (
+              <HiSun style={{ width: "20px", height: "20px" }} />
+            ) : (
+              <HiMoon style={{ width: "20px", height: "20px" }} />
+            )}
+          </button>
 
-            {/* Dark Mode Toggle */}
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Toggle dark mode"
-            >
-              {isDark ? (
-                <HiSun className="w-6 h-6" />
-              ) : (
-                <HiMoon className="w-6 h-6" />
-              )}
-            </button>
+          <Link
+            href="/login"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 16px",
+              color: isDark ? "#f3f4f6" : "#374151",
+              borderRadius: "6px",
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: "500",
+            }}
+          >
+            <HiUser style={{ width: "20px", height: "20px" }} />
+            Login
+          </Link>
 
-            {/* Login Button */}
-            <Link
-              href="/login"
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-md hover:bg-gray-50 dark:hover:bg-gray-800"
-            >
-              <HiUser className="w-5 h-5" />
-              Login
-            </Link>
-
-            {/* Register Button */}
-            <Link
-              href="/register"
-              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-md transition-colors shadow-sm"
-            >
-              <HiUserAdd className="w-5 h-5" />
-              Register
-            </Link>
-          </div>
+          <Link
+            href="/register"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 16px",
+              backgroundColor: "#2563eb",
+              color: "white",
+              borderRadius: "6px",
+              textDecoration: "none",
+              fontSize: "14px",
+              fontWeight: "600",
+            }}
+          >
+            <HiUserAdd style={{ width: "20px", height: "20px" }} />
+            Register
+          </Link>
         </div>
       </div>
     </nav>

@@ -1,22 +1,55 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { Box, VStack } from "@chakra-ui/react";
+import { useColorModeValue } from "@/components/ui/color-mode";
 
 type PageShellProps = {
   children: ReactNode;
   maxWidthClass?: string;
 };
 
+const maxWidthMap: Record<string, string> = {
+  "max-w-md": "28rem",
+  "max-w-lg": "32rem",
+  "max-w-xl": "36rem",
+  "max-w-2xl": "42rem",
+  "max-w-4xl": "56rem",
+  "max-w-6xl": "72rem",
+};
+
 export function PageShell({
   children,
   maxWidthClass = "max-w-md",
 }: PageShellProps) {
+  const bgGradient = useColorModeValue(
+    "linear(to-br, gray.50, gray.100, gray.50)",
+    "linear(to-br, gray.900, gray.950, gray.900)"
+  );
+  const cardBg = useColorModeValue("white", "gray.800");
+  const borderColor = useColorModeValue("gray.200", "gray.700");
+  const maxW = maxWidthMap[maxWidthClass] || "28rem";
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 px-4 py-8">
-      <div
-        className={`w-full ${maxWidthClass} rounded-2xl bg-slate-900/80 border border-slate-700/60 shadow-2xl shadow-slate-900/60 backdrop-blur-xl p-8 max-h-[90vh] overflow-y-auto`}
+    <Box
+      py={8}
+      px={4}
+      bgGradient={bgGradient}
+      minH="calc(100vh - 5rem)"
+    >
+      <Box
+        maxW={maxW}
+        mx="auto"
+        rounded="2xl"
+        bg={cardBg}
+        borderWidth="1px"
+        borderColor={borderColor}
+        boxShadow="2xl"
+        p={8}
       >
         {children}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

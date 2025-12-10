@@ -1,103 +1,170 @@
-📅 Povzetek Cikla
-V tem ciklu smo se osredotočili na vzpostavitev temeljev projekta, vključno z inicializacijo projekta, nastavitvijo Jire, pripravo Docker kontejnerjev, in vzpostavitvijo backend, frontend ter podatkovne baze.
+# superCars - Used Car Marketplace
 
+A modern web application for buying and selling used cars, similar to avto.net and mobile.de. This platform provides a forum-style marketplace where users can browse, search, and list their vehicles for sale.
 
+## 🚗 Features
 
-🛠️ Opravljeno delo
-1. Delo za nazaj – Cikel 1 
+- **User Authentication & Profiles**: Secure user registration and login system
+- **Car Listings**: Create, edit, and manage car listings with detailed information
+- **Advanced Search & Filtering**: Search cars by make, model, price range, year, mileage, and more
+- **Image Gallery**: Upload and manage multiple photos for each listing
+- **Messaging System**: Direct communication between buyers and sellers
+- **Favorites/Watchlist**: Save favorite listings for later viewing
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 
-Opravljene so bile naslednje naloge:
+## 🛠️ Tech Stack
 
+### Backend
+- **C#** - Primary programming language
+- **ASP.NET Web API** - RESTful API framework
+- **Entity Framework Core** - ORM for database operations
+- **SQL Server** - Database management system
 
-KAN-19: prvi cikel (Dokončano) 
+### Frontend
+- **Next.js** - React framework for server-side rendering and static site generation
+- **TypeScript** - Type-safe JavaScript
+- **React** - UI library
+- **Tailwind CSS** (recommended) - Utility-first CSS framework
 
+## 📁 Project Structure
 
-KAN-17: jira setup (Dokončano) 
+```
+superCars/
+├── backend/
+│   ├── SuperCars.API/          # ASP.NET Web API project
+│   ├── SuperCars.Core/         # Domain models and business logic
+│   ├── SuperCars.Infrastructure/ # Data access layer
+│   └── SuperCars.Tests/        # Unit tests
+├── frontend/
+│   ├── src/
+│   │   ├── app/                # Next.js app directory
+│   │   ├── components/          # React components
+│   │   ├── lib/                 # Utilities and helpers
+│   │   └── types/               # TypeScript type definitions
+│   ├── public/                  # Static assets
+│   └── package.json
+└── README.md
+```
 
+## 🚀 Getting Started
 
-KAN-16: project initialization (Dokončano) 
+### Prerequisites
 
+- **.NET SDK** (8.0 or later)
+- **Node.js** (18.0 or later)
+- **npm** or **yarn**
+- **SQL Server** (or SQL Server Express)
 
-KAN-10: docker kontejnerji (Dokončano) 
+### Backend Setup
 
-
-KAN-18: načrtovanje (Dokončano) 
-
-2. Delo tega tedna – Cikel 2 
-
-Opravljene so bile naslednje naloge:
-
-
-KAN-23: drugi cikel (Dokončano) 
-
-
-KAN-21: backend setup (Dokončano) 
-
-
-KAN-15: DB connection, shema (Dokončano) 
-
-
-KAN-14: login / register (Dokončano) 
-
-
-KAN-9: sestanek (Dokončano) 
-
-💻 Tehnični dosežki
-Backend (ASP.NET Core Docker)
-Vzpostavljen je bil backend projekt v ASP.NET Core Docker okolju.
-
-Vzpostavljena je bila povezava z bazo podatkov z uporabo Microsoft.EntityFrameworkCore in Microsoft.EntityFrameworkCore.SqlServer.
-
-Definiran je bil model Car z atributi Id, Name, Brand, Year, Horsepower, in Price.
-
-Implementirana je bila konfiguracija Dockerfile za gradnjo in objavo projekta.
-
-Frontend
-Razvita je bila stran za registracijo uporabnikov (/register) z vnosnimi polji za uporabniško ime in geslo.
-
-Razvita je bila stran za prijavo uporabnikov (/login) z vnosnimi polji za uporabniško ime in geslo.
-
-Podatkovna baza (DB)
-Vzpostavljena je bila povezava s strežnikom SQL Server na localhost,1433 z uporabo SQL Server avtentikacije.
-
-Ustvarjena je bila baza podatkov in tabela dbo.Cars.
-
-🛠️ Navodila za Zagon
-
-## Database Setup
-
-**Prerequisites**: Docker Desktop must be installed and running.
-
-1. **Start the SQL Server database**:
+1. Navigate to the backend directory:
    ```bash
-   docker-compose up -d
+   cd backend/SuperCars.API
    ```
 
-2. **Run database migrations**:
+2. Restore NuGet packages:
    ```bash
-   cd Backend
+   dotnet restore
+   ```
+
+3. Update the connection string in `appsettings.json`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "Your SQL Server connection string"
+     }
+   }
+   ```
+
+4. Run database migrations:
+   ```bash
    dotnet ef database update
    ```
 
-For detailed database setup instructions, see [DATABASE_SETUP.md](./DATABASE_SETUP.md).
+5. Start the API server:
+   ```bash
+   dotnet run
+   ```
 
-## Backend Setup
+   The API will be available at `https://localhost:5001` or `http://localhost:5000`
 
-Prepričajte se, da imate nameščen Docker za zagon kontejnerjev.
+### Frontend Setup
 
-Uporabite Dockerfile za zgradbo in zagon backend storitve:
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
 
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Create a `.env.local` file with your API endpoint:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:5000/api
+   ```
+
+4. Start the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+   The application will be available at `http://localhost:3000`
+
+## 📝 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+
+### Cars
+- `GET /api/cars` - Get all car listings (with pagination and filters)
+- `GET /api/cars/{id}` - Get car details by ID
+- `POST /api/cars` - Create a new car listing (authenticated)
+- `PUT /api/cars/{id}` - Update car listing (authenticated, owner only)
+- `DELETE /api/cars/{id}` - Delete car listing (authenticated, owner only)
+
+### Users
+- `GET /api/users/{id}` - Get user profile
+- `PUT /api/users/{id}` - Update user profile (authenticated)
+
+## 🧪 Testing
+
+### Backend Tests
 ```bash
-# Primer ukaza za zgradbo (odvisno od vaše konfiguracije)
-docker build -t supercarsapi -f Backend/Dockerfile .
-
-# Primer ukaza za zagon (odvisno od vaše konfiguracije)
-docker run -d -p 8080:8080 supercarsapi
+cd backend/SuperCars.Tests
+dotnet test
 ```
 
-## Frontend Setup
+### Frontend Tests
+```bash
+cd frontend
+npm test
+```
 
-Za prijavo in registracijo obiščite:
+## 🤝 Contributing
 
-- **Registracija**: http://localhost:3000/register 
-- **Prijava**: http://localhost:3000/login
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👥 Authors
+
+- Your Name - *Initial work*
+
+## 🙏 Acknowledgments
+
+- Inspired by avto.net and mobile.de
+- Built with modern web technologies for optimal performance and user experience

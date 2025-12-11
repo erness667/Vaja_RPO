@@ -1,0 +1,194 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "Backend",
+      "version": "1.0"
+    },
+    "paths": {
+      "/api/auth/register": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        }
+      },
+      "/api/auth/login": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        }
+      },
+      "/api/auth/logout": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        }
+      },
+      "/api/auth/refresh": {
+        "post": {
+          "tags": [
+            "Auth"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "LoginRequest": {
+          "required": [
+            "password",
+            "username"
+          ],
+          "type": "object",
+          "properties": {
+            "username": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "password": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "RefreshRequest": {
+          "required": [
+            "refreshToken"
+          ],
+          "type": "object",
+          "properties": {
+            "refreshToken": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "RegisterRequest": {
+          "required": [
+            "email",
+            "name",
+            "password",
+            "phoneNumber",
+            "surname",
+            "username"
+          ],
+          "type": "object",
+          "properties": {
+            "name": {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            "surname": {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            "email": {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string",
+              "format": "email"
+            },
+            "phoneNumber": {
+              "maxLength": 20,
+              "minLength": 1,
+              "type": "string"
+            },
+            "username": {
+              "maxLength": 50,
+              "minLength": 3,
+              "type": "string"
+            },
+            "password": {
+              "maxLength": 128,
+              "minLength": 6,
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  }

@@ -25,12 +25,14 @@ export interface UseColorModeReturn {
 
 export function useColorMode(): UseColorModeReturn {
   const { resolvedTheme, setTheme, forcedTheme } = useTheme()
-  const colorMode = forcedTheme || resolvedTheme
-  const toggleColorMode = () => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark")
-  }
+  // Default to "light" if theme is not resolved yet (prevents hydration mismatches)
+  const colorMode = (forcedTheme || resolvedTheme || "light") as ColorMode
+  const toggleColorMode = React.useCallback(() => {
+    const currentMode = forcedTheme || resolvedTheme || "light"
+    setTheme(currentMode === "dark" ? "light" : "dark")
+  }, [resolvedTheme, forcedTheme, setTheme])
   return {
-    colorMode: colorMode as ColorMode,
+    colorMode,
     setColorMode: setTheme,
     toggleColorMode,
   }

@@ -1,13 +1,18 @@
 'use client';
 
 import { useState } from "react";
+import {
+  Box,
+  Heading,
+  Field,
+  Button,
+  SimpleGrid,
+  HStack,
+} from "@chakra-ui/react";
 import { PageShell } from "@/components/layout/PageShell";
-import { useColorMode } from "@/components/ui/color-mode";
+import { LuSettings2, LuSearch } from "react-icons/lu";
 
 export function CarSearch() {
-  const { colorMode } = useColorMode();
-  const isDark = colorMode === "dark";
-  
   const [filters, setFilters] = useState({
     brand: "",
     model: "",
@@ -63,79 +68,55 @@ export function CarSearch() {
     "200.000",
   ];
 
-  const formBg = isDark ? "rgba(15, 23, 42, 0.6)" : "rgba(255, 255, 255, 0.9)";
-  const formBorder = isDark ? "rgba(51, 65, 85, 0.6)" : "rgba(229, 231, 235, 0.8)";
-  const textColor = isDark ? "#f1f5f9" : "#1f2937";
-  const labelColor = isDark ? "#cbd5e1" : "#4b5563";
-  const inputBg = isDark ? "#0f172a" : "#ffffff";
-  const inputBorder = isDark ? "#475569" : "#d1d5db";
-  const inputText = isDark ? "#f1f5f9" : "#111827";
-  const buttonBg = "#2563eb";
-  const buttonHover = "#1d4ed8";
-
   return (
     <PageShell maxWidthClass="max-w-6xl">
-      <h2 style={{
-        fontSize: "24px",
-        fontWeight: "600",
-        color: textColor,
-        marginBottom: "24px",
-      }}>
+      <Heading
+        size="lg"
+        mb={6}
+        color={{ base: "gray.800", _dark: "gray.100" }}
+      >
         Hitro iskanje osebnih vozil
-      </h2>
+      </Heading>
 
-      <form
+      <Box
+        as="form"
         onSubmit={handleSearch}
-        style={{
-          backgroundColor: formBg,
-          borderRadius: "12px",
-          padding: "24px",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-          border: `1px solid ${formBorder}`,
-        }}
+        suppressHydrationWarning
+        bg={{ base: "rgba(255, 255, 255, 0.9)", _dark: "rgba(15, 23, 42, 0.6)" }}
+        borderRadius="xl"
+        p={6}
+        boxShadow="sm"
+        borderWidth="1px"
+        borderColor={{ base: "rgba(229, 231, 235, 0.8)", _dark: "rgba(51, 65, 85, 0.6)" }}
       >
         {/* First Row */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "16px",
-          marginBottom: "16px",
-        }}>
-          {/* Brand */}
-          <div>
-            <label
-              htmlFor="brand"
-              style={{
-                display: "block",
-                fontSize: "14px",
-                fontWeight: "500",
-                color: labelColor,
-                marginBottom: "4px",
-              }}
+        <SimpleGrid
+          columns={{ base: 1, md: 2, lg: 4 }}
+          gap={4}
+          mb={4}
+        >
+          <Field.Root>
+            <Field.Label
+              fontSize="sm"
+              fontWeight="medium"
+              color={{ base: "gray.700", _dark: "gray.300" }}
             >
               Vse znamke
-            </label>
-            <select
-              id="brand"
+            </Field.Label>
+            <Box
+              as="select"
               value={filters.brand}
-              onChange={(e) => handleChange("brand", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: `1px solid ${inputBorder}`,
-                borderRadius: "6px",
-                backgroundColor: inputBg,
-                color: inputText,
-                outline: "none",
-                cursor: "pointer",
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "#2563eb";
-                e.currentTarget.style.boxShadow = "0 0 0 2px rgba(37, 99, 235, 0.2)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = inputBorder;
-                e.currentTarget.style.boxShadow = "none";
+              onChange={(e) => handleChange("brand", (e.target as HTMLSelectElement).value)}
+              width="100%"
+              padding="8px 12px"
+              borderWidth="1px"
+              borderColor={{ base: "gray.300", _dark: "gray.600" }}
+              borderRadius="md"
+              bg={{ base: "white", _dark: "gray.800" }}
+              color={{ base: "gray.900", _dark: "gray.100" }}
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
               }}
             >
               {brands.map((brand) => (
@@ -143,44 +124,31 @@ export function CarSearch() {
                   {brand}
                 </option>
               ))}
-            </select>
-          </div>
+            </Box>
+          </Field.Root>
 
-          {/* Price From */}
-          <div>
-            <label
-              htmlFor="priceFrom"
-              style={{
-                display: "block",
-                fontSize: "14px",
-                fontWeight: "500",
-                color: labelColor,
-                marginBottom: "4px",
-              }}
+          <Field.Root>
+            <Field.Label
+              fontSize="sm"
+              fontWeight="medium"
+              color={{ base: "gray.700", _dark: "gray.300" }}
             >
               Cena od
-            </label>
-            <select
-              id="priceFrom"
+            </Field.Label>
+            <Box
+              as="select"
               value={filters.priceFrom}
-              onChange={(e) => handleChange("priceFrom", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: `1px solid ${inputBorder}`,
-                borderRadius: "6px",
-                backgroundColor: inputBg,
-                color: inputText,
-                outline: "none",
-                cursor: "pointer",
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "#2563eb";
-                e.currentTarget.style.boxShadow = "0 0 0 2px rgba(37, 99, 235, 0.2)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = inputBorder;
-                e.currentTarget.style.boxShadow = "none";
+              onChange={(e) => handleChange("priceFrom", (e.target as HTMLSelectElement).value)}
+              width="100%"
+              padding="8px 12px"
+              borderWidth="1px"
+              borderColor={{ base: "gray.300", _dark: "gray.600" }}
+              borderRadius="md"
+              bg={{ base: "white", _dark: "gray.800" }}
+              color={{ base: "gray.900", _dark: "gray.100" }}
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
               }}
             >
               {priceOptions.map((price) => (
@@ -188,44 +156,31 @@ export function CarSearch() {
                   {price === "Vse" ? price : `€ ${price}`}
                 </option>
               ))}
-            </select>
-          </div>
+            </Box>
+          </Field.Root>
 
-          {/* Price To */}
-          <div>
-            <label
-              htmlFor="priceTo"
-              style={{
-                display: "block",
-                fontSize: "14px",
-                fontWeight: "500",
-                color: labelColor,
-                marginBottom: "4px",
-              }}
+          <Field.Root>
+            <Field.Label
+              fontSize="sm"
+              fontWeight="medium"
+              color={{ base: "gray.700", _dark: "gray.300" }}
             >
               Cena do
-            </label>
-            <select
-              id="priceTo"
+            </Field.Label>
+            <Box
+              as="select"
               value={filters.priceTo}
-              onChange={(e) => handleChange("priceTo", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: `1px solid ${inputBorder}`,
-                borderRadius: "6px",
-                backgroundColor: inputBg,
-                color: inputText,
-                outline: "none",
-                cursor: "pointer",
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "#2563eb";
-                e.currentTarget.style.boxShadow = "0 0 0 2px rgba(37, 99, 235, 0.2)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = inputBorder;
-                e.currentTarget.style.boxShadow = "none";
+              onChange={(e) => handleChange("priceTo", (e.target as HTMLSelectElement).value)}
+              width="100%"
+              padding="8px 12px"
+              borderWidth="1px"
+              borderColor={{ base: "gray.300", _dark: "gray.600" }}
+              borderRadius="md"
+              bg={{ base: "white", _dark: "gray.800" }}
+              color={{ base: "gray.900", _dark: "gray.100" }}
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
               }}
             >
               {priceOptions.map((price) => (
@@ -233,44 +188,31 @@ export function CarSearch() {
                   {price === "Vse" ? price : `€ ${price}`}
                 </option>
               ))}
-            </select>
-          </div>
+            </Box>
+          </Field.Root>
 
-          {/* Kilometers */}
-          <div>
-            <label
-              htmlFor="kilometers"
-              style={{
-                display: "block",
-                fontSize: "14px",
-                fontWeight: "500",
-                color: labelColor,
-                marginBottom: "4px",
-              }}
+          <Field.Root>
+            <Field.Label
+              fontSize="sm"
+              fontWeight="medium"
+              color={{ base: "gray.700", _dark: "gray.300" }}
             >
               Prevoženih km do
-            </label>
-            <select
-              id="kilometers"
+            </Field.Label>
+            <Box
+              as="select"
               value={filters.kilometers}
-              onChange={(e) => handleChange("kilometers", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: `1px solid ${inputBorder}`,
-                borderRadius: "6px",
-                backgroundColor: inputBg,
-                color: inputText,
-                outline: "none",
-                cursor: "pointer",
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "#2563eb";
-                e.currentTarget.style.boxShadow = "0 0 0 2px rgba(37, 99, 235, 0.2)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = inputBorder;
-                e.currentTarget.style.boxShadow = "none";
+              onChange={(e) => handleChange("kilometers", (e.target as HTMLSelectElement).value)}
+              width="100%"
+              padding="8px 12px"
+              borderWidth="1px"
+              borderColor={{ base: "gray.300", _dark: "gray.600" }}
+              borderRadius="md"
+              bg={{ base: "white", _dark: "gray.800" }}
+              color={{ base: "gray.900", _dark: "gray.100" }}
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
               }}
             >
               {kilometerOptions.map((km) => (
@@ -278,52 +220,38 @@ export function CarSearch() {
                   {km === "Vse" ? km : `${km} km`}
                 </option>
               ))}
-            </select>
-          </div>
-        </div>
+            </Box>
+          </Field.Root>
+        </SimpleGrid>
 
         {/* Second Row */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "16px",
-          marginBottom: "24px",
-        }}>
-          {/* Model */}
-          <div>
-            <label
-              htmlFor="model"
-              style={{
-                display: "block",
-                fontSize: "14px",
-                fontWeight: "500",
-                color: labelColor,
-                marginBottom: "4px",
-              }}
+        <SimpleGrid
+          columns={{ base: 1, md: 2, lg: 4 }}
+          gap={4}
+          mb={6}
+        >
+          <Field.Root>
+            <Field.Label
+              fontSize="sm"
+              fontWeight="medium"
+              color={{ base: "gray.700", _dark: "gray.300" }}
             >
               Vsi modeli
-            </label>
-            <select
-              id="model"
+            </Field.Label>
+            <Box
+              as="select"
               value={filters.model}
-              onChange={(e) => handleChange("model", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: `1px solid ${inputBorder}`,
-                borderRadius: "6px",
-                backgroundColor: inputBg,
-                color: inputText,
-                outline: "none",
-                cursor: "pointer",
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "#2563eb";
-                e.currentTarget.style.boxShadow = "0 0 0 2px rgba(37, 99, 235, 0.2)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = inputBorder;
-                e.currentTarget.style.boxShadow = "none";
+              onChange={(e) => handleChange("model", (e.target as HTMLSelectElement).value)}
+              width="100%"
+              padding="8px 12px"
+              borderWidth="1px"
+              borderColor={{ base: "gray.300", _dark: "gray.600" }}
+              borderRadius="md"
+              bg={{ base: "white", _dark: "gray.800" }}
+              color={{ base: "gray.900", _dark: "gray.100" }}
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
               }}
             >
               {models.map((model) => (
@@ -331,44 +259,31 @@ export function CarSearch() {
                   {model}
                 </option>
               ))}
-            </select>
-          </div>
+            </Box>
+          </Field.Root>
 
-          {/* Year From */}
-          <div>
-            <label
-              htmlFor="yearFrom"
-              style={{
-                display: "block",
-                fontSize: "14px",
-                fontWeight: "500",
-                color: labelColor,
-                marginBottom: "4px",
-              }}
+          <Field.Root>
+            <Field.Label
+              fontSize="sm"
+              fontWeight="medium"
+              color={{ base: "gray.700", _dark: "gray.300" }}
             >
               Letnik od
-            </label>
-            <select
-              id="yearFrom"
+            </Field.Label>
+            <Box
+              as="select"
               value={filters.yearFrom}
-              onChange={(e) => handleChange("yearFrom", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: `1px solid ${inputBorder}`,
-                borderRadius: "6px",
-                backgroundColor: inputBg,
-                color: inputText,
-                outline: "none",
-                cursor: "pointer",
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "#2563eb";
-                e.currentTarget.style.boxShadow = "0 0 0 2px rgba(37, 99, 235, 0.2)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = inputBorder;
-                e.currentTarget.style.boxShadow = "none";
+              onChange={(e) => handleChange("yearFrom", (e.target as HTMLSelectElement).value)}
+              width="100%"
+              padding="8px 12px"
+              borderWidth="1px"
+              borderColor={{ base: "gray.300", _dark: "gray.600" }}
+              borderRadius="md"
+              bg={{ base: "white", _dark: "gray.800" }}
+              color={{ base: "gray.900", _dark: "gray.100" }}
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
               }}
             >
               <option value="">Vse</option>
@@ -377,44 +292,31 @@ export function CarSearch() {
                   {year}
                 </option>
               ))}
-            </select>
-          </div>
+            </Box>
+          </Field.Root>
 
-          {/* Year To */}
-          <div>
-            <label
-              htmlFor="yearTo"
-              style={{
-                display: "block",
-                fontSize: "14px",
-                fontWeight: "500",
-                color: labelColor,
-                marginBottom: "4px",
-              }}
+          <Field.Root>
+            <Field.Label
+              fontSize="sm"
+              fontWeight="medium"
+              color={{ base: "gray.700", _dark: "gray.300" }}
             >
               Letnik do
-            </label>
-            <select
-              id="yearTo"
+            </Field.Label>
+            <Box
+              as="select"
               value={filters.yearTo}
-              onChange={(e) => handleChange("yearTo", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: `1px solid ${inputBorder}`,
-                borderRadius: "6px",
-                backgroundColor: inputBg,
-                color: inputText,
-                outline: "none",
-                cursor: "pointer",
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "#2563eb";
-                e.currentTarget.style.boxShadow = "0 0 0 2px rgba(37, 99, 235, 0.2)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = inputBorder;
-                e.currentTarget.style.boxShadow = "none";
+              onChange={(e) => handleChange("yearTo", (e.target as HTMLSelectElement).value)}
+              width="100%"
+              padding="8px 12px"
+              borderWidth="1px"
+              borderColor={{ base: "gray.300", _dark: "gray.600" }}
+              borderRadius="md"
+              bg={{ base: "white", _dark: "gray.800" }}
+              color={{ base: "gray.900", _dark: "gray.100" }}
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
               }}
             >
               <option value="">Vse</option>
@@ -423,44 +325,31 @@ export function CarSearch() {
                   {year}
                 </option>
               ))}
-            </select>
-          </div>
+            </Box>
+          </Field.Root>
 
-          {/* Fuel */}
-          <div>
-            <label
-              htmlFor="fuel"
-              style={{
-                display: "block",
-                fontSize: "14px",
-                fontWeight: "500",
-                color: labelColor,
-                marginBottom: "4px",
-              }}
+          <Field.Root>
+            <Field.Label
+              fontSize="sm"
+              fontWeight="medium"
+              color={{ base: "gray.700", _dark: "gray.300" }}
             >
               Gorivo
-            </label>
-            <select
-              id="fuel"
+            </Field.Label>
+            <Box
+              as="select"
               value={filters.fuel}
-              onChange={(e) => handleChange("fuel", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                border: `1px solid ${inputBorder}`,
-                borderRadius: "6px",
-                backgroundColor: inputBg,
-                color: inputText,
-                outline: "none",
-                cursor: "pointer",
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "#2563eb";
-                e.currentTarget.style.boxShadow = "0 0 0 2px rgba(37, 99, 235, 0.2)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = inputBorder;
-                e.currentTarget.style.boxShadow = "none";
+              onChange={(e) => handleChange("fuel", (e.target as HTMLSelectElement).value)}
+              width="100%"
+              padding="8px 12px"
+              borderWidth="1px"
+              borderColor={{ base: "gray.300", _dark: "gray.600" }}
+              borderRadius="md"
+              bg={{ base: "white", _dark: "gray.800" }}
+              color={{ base: "gray.900", _dark: "gray.100" }}
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
               }}
             >
               {fuelTypes.map((fuel) => (
@@ -468,105 +357,39 @@ export function CarSearch() {
                   {fuel}
                 </option>
               ))}
-            </select>
-          </div>
-        </div>
+            </Box>
+          </Field.Root>
+        </SimpleGrid>
 
         {/* Action Buttons */}
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "16px",
-        }}>
-          <div style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "16px",
-            flexWrap: "wrap",
-          }}>
-            <button
-              type="button"
-              onClick={handleAdvancedSearch}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                color: isDark ? "#e2e8f0" : "#4b5563",
-                backgroundColor: "transparent",
-                border: "none",
-                fontSize: "14px",
-                fontWeight: "500",
-                cursor: "pointer",
-                padding: "8px",
-                borderRadius: "6px",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "#60a5fa";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = isDark ? "#e2e8f0" : "#4b5563";
-              }}
-            >
-              <svg
-                style={{ width: "20px", height: "20px" }}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                />
-              </svg>
-              Napredno iskanje z dodatnimi filtri
-            </button>
+        <HStack
+          justify="space-between"
+          align="center"
+          gap={4}
+          flexWrap="wrap"
+        >
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleAdvancedSearch}
+            leftIcon={<LuSettings2 />}
+            color={{ base: "gray.600", _dark: "gray.300" }}
+            _hover={{
+              color: "blue.400",
+            }}
+          >
+            Napredno iskanje z dodatnimi filtri
+          </Button>
 
-            <button
-              type="submit"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                backgroundColor: buttonBg,
-                color: "white",
-                fontWeight: "600",
-                padding: "10px 24px",
-                borderRadius: "6px",
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = buttonHover;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = buttonBg;
-              }}
-            >
-              <svg
-                style={{ width: "20px", height: "20px" }}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              Iskanje vozil
-            </button>
-          </div>
-        </div>
-      </form>
+          <Button
+            type="submit"
+            colorPalette="blue"
+            leftIcon={<LuSearch />}
+          >
+            Iskanje vozil
+          </Button>
+        </HStack>
+      </Box>
     </PageShell>
   );
 }
-
-

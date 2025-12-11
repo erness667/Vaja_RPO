@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "openapi-ts": "openapi-ts",
+    "openapi-ts": "openapi-ts --input ../Backend/swagger.json --output src/client",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

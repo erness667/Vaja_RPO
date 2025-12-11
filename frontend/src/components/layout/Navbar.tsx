@@ -3,6 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon } from "react-icons/hi";
+import { 
+  Box, 
+  HStack, 
+  Button, 
+  IconButton,
+  ClientOnly,
+  Skeleton,
+} from "@chakra-ui/react";
 import { useColorMode } from "@/components/ui/color-mode";
 
 export function Navbar() {
@@ -10,20 +18,23 @@ export function Navbar() {
   const isDark = colorMode === "dark";
 
   return (
-    <nav style={{
-      backgroundColor: isDark ? "#111827" : "white",
-      borderBottom: `1px solid ${isDark ? "#374151" : "#e5e7eb"}`,
-      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-    }}>
-      <div style={{
-        maxWidth: "1280px",
-        margin: "0 auto",
-        padding: "0 1rem",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        height: "80px",
-      }}>
+    <Box
+      as="nav"
+      suppressHydrationWarning
+      bg={{ base: "white", _dark: "#111827" }}
+      borderBottomWidth="1px"
+      borderBottomColor={{ base: "#e5e7eb", _dark: "#374151" }}
+      boxShadow="0 1px 3px rgba(0,0,0,0.1)"
+    >
+      <Box
+        maxW="1280px"
+        mx="auto"
+        px={4}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        height="80px"
+      >
         {/* Logo */}
         <Link href="/" style={{ display: "flex", alignItems: "center" }}>
           <Image
@@ -37,93 +48,60 @@ export function Navbar() {
         </Link>
 
         {/* Navigation Links */}
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <Link
+        <HStack gap={3} alignItems="center">
+          <Button
+            as={Link}
             href="/create"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "8px 16px",
-              backgroundColor: "#2563eb",
-              color: "white",
-              borderRadius: "6px",
-              textDecoration: "none",
-              fontSize: "14px",
-              fontWeight: "600",
-            }}
+            colorPalette="blue"
+            size="sm"
+            leftIcon={<HiPlus style={{ width: "20px", height: "20px" }} />}
           >
-            <HiPlus style={{ width: "20px", height: "20px" }} />
             Objavi oglas
-          </Link>
+          </Button>
 
           {/* Dark Mode Toggle */}
-          <button
-            onClick={toggleColorMode}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "8px",
-              backgroundColor: "transparent",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-              color: isDark ? "#f3f4f6" : "#374151",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = isDark ? "#374151" : "#f3f4f6";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-            }}
-            aria-label="Toggle dark mode"
-          >
-            {isDark ? (
-              <HiSun style={{ width: "20px", height: "20px" }} />
-            ) : (
-              <HiMoon style={{ width: "20px", height: "20px" }} />
-            )}
-          </button>
+          <ClientOnly fallback={<Skeleton boxSize="9" />}>
+            <IconButton
+              onClick={toggleColorMode}
+              variant="ghost"
+              aria-label="Toggle dark mode"
+              size="sm"
+              color={{ base: "#374151", _dark: "#f3f4f6" }}
+              _hover={{
+                bg: { base: "#f3f4f6", _dark: "#374151" },
+              }}
+            >
+              {isDark ? (
+                <HiSun style={{ width: "20px", height: "20px" }} />
+              ) : (
+                <HiMoon style={{ width: "20px", height: "20px" }} />
+              )}
+            </IconButton>
+          </ClientOnly>
 
-          <Link
+          <Button
+            as={Link}
             href="/login"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "8px 16px",
-              color: isDark ? "#f3f4f6" : "#374151",
-              borderRadius: "6px",
-              textDecoration: "none",
-              fontSize: "14px",
-              fontWeight: "500",
-            }}
+            variant="ghost"
+            size="sm"
+            suppressHydrationWarning
+            color={{ base: "#374151", _dark: "#f3f4f6" }}
+            leftIcon={<HiUser style={{ width: "20px", height: "20px" }} />}
           >
-            <HiUser style={{ width: "20px", height: "20px" }} />
             Login
-          </Link>
+          </Button>
 
-          <Link
+          <Button
+            as={Link}
             href="/register"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "8px 16px",
-              backgroundColor: "#2563eb",
-              color: "white",
-              borderRadius: "6px",
-              textDecoration: "none",
-              fontSize: "14px",
-              fontWeight: "600",
-            }}
+            colorPalette="blue"
+            size="sm"
+            leftIcon={<HiUserAdd style={{ width: "20px", height: "20px" }} />}
           >
-            <HiUserAdd style={{ width: "20px", height: "20px" }} />
             Register
-          </Link>
-        </div>
-      </div>
-    </nav>
+          </Button>
+        </HStack>
+      </Box>
+    </Box>
   );
 }

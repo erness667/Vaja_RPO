@@ -38,7 +38,7 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" style={{ display: "flex", alignItems: "center" }}>
           <Image
-            src="/logo.png"
+            src={isDark ? "/logo_dark.png" : "/logo.png"}
             alt="SUPERCARS Logo"
             width={200}
             height={70}

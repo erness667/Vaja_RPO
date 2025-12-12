@@ -19,7 +19,7 @@ import {
   MenuItem,
 } from "@chakra-ui/react";
 import { useColorMode } from "@/components/ui/color-mode";
-import { isAuthenticated, getStoredUser } from "@/lib/utils/auth-storage";
+import { isAuthenticated, getStoredUser, type StoredUser } from "@/lib/utils/auth-storage";
 import { useLogout } from "@/lib/hooks/useLogout";
 
 export function Navbar() {
@@ -27,7 +27,7 @@ export function Navbar() {
   const { colorMode, toggleColorMode } = useColorMode();
   const isDark = colorMode === "dark";
   const [authenticated, setAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ name?: string; surname?: string; username?: string; email?: string } | null>(null);
+  const [user, setUser] = useState<StoredUser | null>(null);
   const { logout, isLoading: isLoggingOut } = useLogout();
 
   useEffect(() => {
@@ -43,9 +43,30 @@ export function Navbar() {
     };
 
     checkAuth();
+    
+    // Listen for storage changes (when user data is updated)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'user' || e.key === 'accessToken') {
+        checkAuth();
+      }
+    };
+    
+    // Listen for custom event when user data is updated programmatically
+    const handleUserUpdate = () => {
+      checkAuth();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userDataUpdated', handleUserUpdate);
+    
     // Check periodically (e.g., every 5 seconds) to catch token expiration
     const interval = setInterval(checkAuth, 5000);
-    return () => clearInterval(interval);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userDataUpdated', handleUserUpdate);
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -66,6 +87,55 @@ export function Navbar() {
       return user.email.substring(0, 2).toUpperCase();
     }
     return "U";
+  };
+  
+  // Render avatar - image if available, otherwise initials
+  const renderAvatar = () => {
+    if (user?.avatarImageUrl) {
+      return (
+        <Box
+          as="span"
+          display="inline-block"
+          width="32px"
+          height="32px"
+          borderRadius="full"
+          overflow="hidden"
+          borderWidth="2px"
+          borderColor={{ base: "white", _dark: "#374151" }}
+        >
+          <Image
+            src={user.avatarImageUrl}
+            alt={getUserInitials()}
+            width={32}
+            height={32}
+            unoptimized
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        </Box>
+      );
+    }
+    
+    return (
+      <Box
+        as="span"
+        display="inline-flex"
+        alignItems="center"
+        justifyContent="center"
+        width="32px"
+        height="32px"
+        borderRadius="full"
+        bg={{ base: "blue.500", _dark: "blue.400" }}
+        color="white"
+        fontSize="sm"
+        fontWeight="medium"
+      >
+        {getUserInitials()}
+      </Box>
+    );
   };
 
   return (
@@ -145,21 +215,7 @@ export function Navbar() {
                       bg: { base: "#f3f4f6", _dark: "#374151" },
                     }}
                   >
-                    <Box
-                      as="span"
-                      display="inline-flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      width="32px"
-                      height="32px"
-                      borderRadius="full"
-                      bg={{ base: "blue.500", _dark: "blue.400" }}
-                      color="white"
-                      fontSize="sm"
-                      fontWeight="medium"
-                    >
-                      {getUserInitials()}
-                    </Box>
+                    {renderAvatar()}
                   </IconButton>
                 </MenuTrigger>
                 <MenuPositioner>

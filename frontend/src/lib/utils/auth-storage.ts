@@ -73,6 +73,8 @@ export function getStoredUser(): StoredUser | null {
 export function storeUserData(user: StoredUser): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem(USER_KEY, JSON.stringify(user));
+  // Dispatch custom event to notify components of user data update
+  window.dispatchEvent(new Event('userDataUpdated'));
 }
 
 /**

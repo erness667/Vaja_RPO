@@ -188,16 +188,21 @@ export function ProfilePage() {
                 overflow="hidden"
                 borderWidth="2px"
                 borderColor={{ base: "gray.200", _dark: "gray.600" }}
+                position="relative"
               >
                 <Image
                   src={user.avatarImageUrl}
                   alt={getUserInitials()}
                   width={64}
                   height={64}
+                  unoptimized
                   style={{
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
+                  }}
+                  onError={() => {
+                    // Image will fallback to initials if it fails
                   }}
                 />
               </Box>

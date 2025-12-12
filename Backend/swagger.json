@@ -191,19 +191,20 @@
         ],
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateAvatarRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateAvatarRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateAvatarRequest"
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
               }
             }
           }
@@ -308,20 +309,6 @@
             "maxLength": 128,
             "minLength": 6,
             "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
-      "UpdateAvatarRequest": {
-        "required": [
-          "avatarImageUrl"
-        ],
-        "type": "object",
-        "properties": {
-          "avatarImageUrl": {
-            "minLength": 1,
-            "type": "string",
-            "format": "uri"
           }
         },
         "additionalProperties": false

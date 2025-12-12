@@ -38,7 +38,8 @@ export function ProfilePage() {
     confirmPassword: "",
   });
 
-  const [avatarUrl, setAvatarUrl] = useState(user?.avatarImageUrl || "");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
 
@@ -50,10 +51,18 @@ export function ProfilePage() {
         surname: user.surname || "",
         phoneNumber: user.phoneNumber || "",
       });
-      setAvatarUrl(user.avatarImageUrl || "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
+
+  // Clean up preview URL when component unmounts
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const handleProfileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -67,9 +76,15 @@ export function ProfilePage() {
     if (passwordError) setPasswordError(null);
   }, [passwordError, setPasswordError]);
 
-  const handleAvatarUrlChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setAvatarUrl(e.target.value);
-    if (avatarError) setAvatarError(null);
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      if (avatarError) setAvatarError(null);
+    }
   }, [avatarError, setAvatarError]);
 
   const handleProfileSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
@@ -125,11 +140,26 @@ export function ProfilePage() {
 
   const handleAvatarSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const result = await updateAvatar({ avatarImageUrl: avatarUrl });
+    if (!selectedFile) {
+      setAvatarError("Please select a file.");
+      return;
+    }
+    const result = await updateAvatar({ file: selectedFile });
     if (result.success) {
+      // Clean up preview URL
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
+      setSelectedFile(null);
+      // Reset file input
+      const fileInput = document.getElementById('avatarFile') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
       await refetch();
     }
-  }, [avatarUrl, updateAvatar, refetch]);
+  }, [selectedFile, previewUrl, updateAvatar, refetch, setAvatarError]);
 
   const getUserInitials = () => {
     if (user?.name && user?.surname) {
@@ -178,7 +208,32 @@ export function ProfilePage() {
             Avatar
           </Heading>
           <HStack gap={4} mb={4}>
-            {user?.avatarImageUrl ? (
+            {previewUrl ? (
+              <Box
+                as="span"
+                display="inline-block"
+                width="64px"
+                height="64px"
+                borderRadius="full"
+                overflow="hidden"
+                borderWidth="2px"
+                borderColor={{ base: "gray.200", _dark: "gray.600" }}
+                position="relative"
+              >
+                <Image
+                  src={previewUrl}
+                  alt="Preview"
+                  width={64}
+                  height={64}
+                  unoptimized
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </Box>
+            ) : user?.avatarImageUrl ? (
               <Box
                 as="span"
                 display="inline-block"
@@ -228,17 +283,19 @@ export function ProfilePage() {
                 <Stack gap={4}>
                   <Field.Root>
                     <Field.Label fontSize="sm" fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
-                      Avatar Image URL
+                      Avatar Image
                     </Field.Label>
                     <Input
-                      id="avatarUrl"
-                      name="avatarUrl"
-                      type="url"
-                      value={avatarUrl}
-                      onChange={handleAvatarUrlChange}
-                      placeholder="https://example.com/avatar.jpg"
+                      id="avatarFile"
+                      name="avatarFile"
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                      onChange={handleFileChange}
                       disabled={isUpdatingAvatar}
                     />
+                    <Field.HelperText color={{ base: "gray.500", _dark: "gray.400" }}>
+                      Select an image file (JPG, PNG, GIF, WEBP). Max size: 5MB
+                    </Field.HelperText>
                   </Field.Root>
                   {avatarError && (
                     <Box
@@ -259,7 +316,7 @@ export function ProfilePage() {
                     size="sm"
                     loading={isUpdatingAvatar}
                     loadingText="Updating..."
-                    disabled={isUpdatingAvatar}
+                    disabled={isUpdatingAvatar || !selectedFile}
                   >
                     Update Avatar
                   </Button>

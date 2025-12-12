@@ -44,20 +44,26 @@ export function Navbar() {
 
     checkAuth();
     
-    // Listen for storage changes (when user data is updated)
+    // Listen for storage changes (when user data is updated from other tabs)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'user' || e.key === 'accessToken') {
         checkAuth();
       }
     };
     
-    // Listen for custom event when user data is updated programmatically
+    // Listen for custom events when user data is updated programmatically
     const handleUserUpdate = () => {
+      checkAuth();
+    };
+    
+    // Listen for authentication state changes (login/logout)
+    const handleAuthStateChange = () => {
       checkAuth();
     };
     
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('userDataUpdated', handleUserUpdate);
+    window.addEventListener('authStateChanged', handleAuthStateChange);
     
     // Check periodically (e.g., every 5 seconds) to catch token expiration
     const interval = setInterval(checkAuth, 5000);
@@ -66,6 +72,7 @@ export function Navbar() {
       clearInterval(interval);
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('userDataUpdated', handleUserUpdate);
+      window.removeEventListener('authStateChanged', handleAuthStateChange);
     };
   }, []);
 
@@ -158,14 +165,25 @@ export function Navbar() {
       >
         {/* Logo */}
         <Link href="/" style={{ display: "flex", alignItems: "center" }}>
-          <Image
-            src={isDark ? "/logo_dark.png" : "/logo.png"}
-            alt="SUPERCARS Logo"
-            width={200}
-            height={70}
-            style={{ height: "4rem", width: "auto", objectFit: "contain" }}
-            priority
-          />
+          <ClientOnly fallback={
+            <Box
+              as="img"
+              src="/logo.png"
+              alt="SUPERCARS Logo"
+              width={200}
+              height={70}
+              style={{ height: "4rem", width: "auto", objectFit: "contain" }}
+            />
+          }>
+            <Image
+              src={isDark ? "/logo_dark.png" : "/logo.png"}
+              alt="SUPERCARS Logo"
+              width={200}
+              height={70}
+              style={{ height: "4rem", width: "auto", objectFit: "contain" }}
+              priority
+            />
+          </ClientOnly>
         </Link>
 
         {/* Navigation Links */}

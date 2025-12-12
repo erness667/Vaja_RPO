@@ -35,6 +35,9 @@ export function storeAuthTokens(tokens: AuthTokens): void {
   localStorage.setItem('tokenExpiresAt', tokens.expiresAt);
   localStorage.setItem('refreshTokenExpiresAt', tokens.refreshTokenExpiresAt);
   localStorage.setItem(USER_KEY, JSON.stringify(tokens.user));
+  // Dispatch custom event to notify components of authentication state change
+  window.dispatchEvent(new Event('authStateChanged'));
+  window.dispatchEvent(new Event('userDataUpdated'));
 }
 
 /**
@@ -102,5 +105,8 @@ export function clearAuthTokens(): void {
   localStorage.removeItem('tokenExpiresAt');
   localStorage.removeItem('refreshTokenExpiresAt');
   localStorage.removeItem(USER_KEY);
+  // Dispatch custom event to notify components of authentication state change
+  window.dispatchEvent(new Event('authStateChanged'));
+  window.dispatchEvent(new Event('userDataUpdated'));
 }
 

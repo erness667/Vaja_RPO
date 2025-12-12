@@ -53,6 +53,7 @@ export function useLogin() {
             name?: string;
             surname?: string;
             phoneNumber?: string;
+            avatarImageUrl?: string;
           };
         };
 
@@ -70,6 +71,7 @@ export function useLogin() {
               name: authData.user.name,
               surname: authData.user.surname,
               phoneNumber: authData.user.phoneNumber,
+              avatarImageUrl: authData.user.avatarImageUrl,
             },
           });
 

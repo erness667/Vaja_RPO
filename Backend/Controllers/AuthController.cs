@@ -80,7 +80,8 @@ namespace Backend.Controllers
                     Name = user.Name,
                     Surname = user.Surname,
                     Username = user.Username,
-                    PhoneNumber = user.PhoneNumber
+                    PhoneNumber = user.PhoneNumber,
+                    AvatarImageUrl = user.AvatarImageUrl
                 }
             };
 
@@ -132,7 +133,8 @@ namespace Backend.Controllers
                     Name = user.Name,
                     Surname = user.Surname,
                     Username = user.Username,
-                    PhoneNumber = user.PhoneNumber
+                    PhoneNumber = user.PhoneNumber,
+                    AvatarImageUrl = user.AvatarImageUrl
                 }
             };
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon } from "react-icons/hi";
@@ -10,12 +11,60 @@ import {
   IconButton,
   ClientOnly,
   Skeleton,
+  MenuRoot,
+  MenuTrigger,
+  MenuPositioner,
+  MenuContent,
+  MenuItem,
 } from "@chakra-ui/react";
 import { useColorMode } from "@/components/ui/color-mode";
+import { isAuthenticated, getStoredUser } from "@/lib/utils/auth-storage";
+import { useLogout } from "@/lib/hooks/useLogout";
 
 export function Navbar() {
   const { colorMode, toggleColorMode } = useColorMode();
   const isDark = colorMode === "dark";
+  const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState<{ name?: string; surname?: string; username?: string; email?: string } | null>(null);
+  const { logout, isLoading: isLoggingOut } = useLogout();
+
+  useEffect(() => {
+    // Check authentication status on mount and when it might change
+    const checkAuth = () => {
+      const isAuth = isAuthenticated();
+      setAuthenticated(isAuth);
+      if (isAuth) {
+        setUser(getStoredUser());
+      } else {
+        setUser(null);
+      }
+    };
+
+    checkAuth();
+    // Check periodically (e.g., every 5 seconds) to catch token expiration
+    const interval = setInterval(checkAuth, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleLogout = async () => {
+    await logout();
+    setAuthenticated(false);
+    setUser(null);
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (user?.name && user?.surname) {
+      return `${user.name[0]}${user.surname[0]}`.toUpperCase();
+    }
+    if (user?.username) {
+      return user.username.substring(0, 2).toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.substring(0, 2).toUpperCase();
+    }
+    return "U";
+  };
 
   return (
     <Box
@@ -49,15 +98,15 @@ export function Navbar() {
 
         {/* Navigation Links */}
         <HStack gap={3} alignItems="center">
-          <Button
-            as={Link}
-            href="/create"
-            colorPalette="blue"
-            size="sm"
-            leftIcon={<HiPlus style={{ width: "20px", height: "20px" }} />}
-          >
-            Objavi oglas
-          </Button>
+          <Link href="/create">
+            <Button
+              colorPalette="blue"
+              size="sm"
+            >
+              <HiPlus style={{ width: "20px", height: "20px", marginRight: "8px" }} />
+              Objavi oglas
+            </Button>
+          </Link>
 
           {/* Dark Mode Toggle */}
           <ClientOnly fallback={<Skeleton boxSize="9" />}>
@@ -79,27 +128,83 @@ export function Navbar() {
             </IconButton>
           </ClientOnly>
 
-          <Button
-            as={Link}
-            href="/login"
-            variant="ghost"
-            size="sm"
-            suppressHydrationWarning
-            color={{ base: "#374151", _dark: "#f3f4f6" }}
-            leftIcon={<HiUser style={{ width: "20px", height: "20px" }} />}
-          >
-            Login
-          </Button>
+          {/* User Menu or Login/Register Buttons */}
+          <ClientOnly fallback={<Skeleton boxSize="9" />}>
+            {authenticated ? (
+              <MenuRoot positioning={{ placement: "bottom", offset: { mainAxis: 4 } }}>
+                <MenuTrigger asChild>
+                  <IconButton
+                    variant="ghost"
+                    aria-label="User menu"
+                    size="sm"
+                    borderRadius="full"
+                    p={0}
+                    _hover={{
+                      bg: { base: "#f3f4f6", _dark: "#374151" },
+                    }}
+                  >
+                    <Box
+                      as="span"
+                      display="inline-flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      width="32px"
+                      height="32px"
+                      borderRadius="full"
+                      bg={{ base: "blue.500", _dark: "blue.400" }}
+                      color="white"
+                      fontSize="sm"
+                      fontWeight="medium"
+                    >
+                      {getUserInitials()}
+                    </Box>
+                  </IconButton>
+                </MenuTrigger>
+                <MenuPositioner>
+                  <MenuContent
+                    bg={{ base: "white", _dark: "#1f2937" }}
+                    borderColor={{ base: "#e5e7eb", _dark: "#374151" }}
+                  >
+                  <MenuItem
+                    value="logout"
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
+                    color={{ base: "#374151", _dark: "#f3f4f6" }}
+                    _hover={{
+                      bg: { base: "#f3f4f6", _dark: "#374151" },
+                    }}
+                  >
+                    {isLoggingOut ? "Logging out..." : "Log out"}
+                  </MenuItem>
+                  </MenuContent>
+                </MenuPositioner>
+              </MenuRoot>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    suppressHydrationWarning
+                    color={{ base: "#374151", _dark: "#f3f4f6" }}
+                  >
+                    <HiUser style={{ width: "20px", height: "20px", marginRight: "8px" }} />
+                    Login
+                  </Button>
+                </Link>
 
-          <Button
-            as={Link}
-            href="/register"
-            colorPalette="blue"
-            size="sm"
-            leftIcon={<HiUserAdd style={{ width: "20px", height: "20px" }} />}
-          >
-            Register
-          </Button>
+                <Link href="/register">
+                  <Button
+                    colorPalette="blue"
+                    size="sm"
+                  >
+                    <HiUserAdd style={{ width: "20px", height: "20px", marginRight: "8px" }} />
+                    Register
+                  </Button>
+                </Link>
+              </>
+            )}
+          </ClientOnly>
         </HStack>
       </Box>
     </Box>

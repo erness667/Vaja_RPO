@@ -24,6 +24,8 @@ namespace SuperCarsApi.Models
         [Required]
         public string PasswordHash { get; set; } = string.Empty;
 
+        public string? AvatarImageUrl { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

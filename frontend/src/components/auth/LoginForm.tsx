@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import {
   Box,
   VStack,
@@ -11,8 +12,32 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { PageShell } from "@/components/layout/PageShell";
+import { useLogin } from "@/lib/hooks/useLogin";
+import type { LoginFormData } from "@/lib/types/auth";
+import "@/lib/api-client";
 
 export function LoginForm() {
+  const { login, isLoading, error, setError } = useLogin();
+  
+  const [formData, setFormData] = useState<LoginFormData>({
+    username: "",
+    password: "",
+  });
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (error) setError(null);
+  }, [error, setError]);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await login(formData);
+  }, [formData, login]);
+
   return (
     <PageShell>
       <VStack gap={8} align="stretch">
@@ -32,7 +57,21 @@ export function LoginForm() {
           </Text>
         </Box>
 
-        <form>
+        {error && (
+          <Box
+            p={4}
+            borderRadius="md"
+            bg={{ base: "red.50", _dark: "red.900" }}
+            borderWidth="1px"
+            borderColor={{ base: "red.200", _dark: "red.700" }}
+            color={{ base: "red.800", _dark: "red.200" }}
+            fontSize="sm"
+          >
+            {error}
+          </Box>
+        )}
+
+        <form onSubmit={handleSubmit}>
           <Stack gap={6}>
             <Field.Root required>
               <Field.Label
@@ -40,14 +79,17 @@ export function LoginForm() {
                 fontWeight="medium"
                 color={{ base: "gray.700", _dark: "gray.300" }}
               >
-                Username
+                Username or Email
               </Field.Label>
               <Input
                 id="username"
                 name="username"
                 type="text"
                 autoComplete="username"
-                placeholder="Enter your username"
+                placeholder="Enter your username or email"
+                value={formData.username}
+                onChange={handleChange}
+                disabled={isLoading}
               />
             </Field.Root>
 
@@ -65,6 +107,9 @@ export function LoginForm() {
                 type="password"
                 autoComplete="current-password"
                 placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={isLoading}
               />
             </Field.Root>
 
@@ -73,8 +118,10 @@ export function LoginForm() {
               colorPalette="blue"
               size="md"
               width="full"
+              loading={isLoading}
+              disabled={isLoading}
             >
-              Login
+              {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </Stack>
         </form>

@@ -4,6 +4,11 @@ export type ClientOptions = {
     baseUrl: `${string}://${string}` | (string & {});
 };
 
+export type ChangePasswordRequest = {
+    currentPassword: string;
+    newPassword: string;
+};
+
 export type LoginRequest = {
     username: string;
     password: string;
@@ -20,6 +25,16 @@ export type RegisterRequest = {
     phoneNumber: string;
     username: string;
     password: string;
+};
+
+export type UpdateAvatarRequest = {
+    avatarImageUrl: string;
+};
+
+export type UpdateProfileRequest = {
+    name?: string | null;
+    surname?: string | null;
+    phoneNumber?: string | null;
 };
 
 export type PostApiAuthRegisterData = {
@@ -72,6 +87,62 @@ export type PostApiAuthRefreshData = {
 };
 
 export type PostApiAuthRefreshResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiUserMeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/user/me';
+};
+
+export type GetApiUserMeResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiUserPasswordData = {
+    body?: ChangePasswordRequest;
+    path?: never;
+    query?: never;
+    url: '/api/user/password';
+};
+
+export type PutApiUserPasswordResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiUserProfileData = {
+    body?: UpdateProfileRequest;
+    path?: never;
+    query?: never;
+    url: '/api/user/profile';
+};
+
+export type PutApiUserProfileResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiUserAvatarData = {
+    body?: UpdateAvatarRequest;
+    path?: never;
+    query?: never;
+    url: '/api/user/avatar';
+};
+
+export type PutApiUserAvatarResponses = {
     /**
      * Success
      */

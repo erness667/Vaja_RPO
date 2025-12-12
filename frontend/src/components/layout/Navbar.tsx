@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon } from "react-icons/hi";
 import { 
   Box, 
@@ -22,6 +23,7 @@ import { isAuthenticated, getStoredUser } from "@/lib/utils/auth-storage";
 import { useLogout } from "@/lib/hooks/useLogout";
 
 export function Navbar() {
+  const router = useRouter();
   const { colorMode, toggleColorMode } = useColorMode();
   const isDark = colorMode === "dark";
   const [authenticated, setAuthenticated] = useState(false);
@@ -165,17 +167,27 @@ export function Navbar() {
                     bg={{ base: "white", _dark: "#1f2937" }}
                     borderColor={{ base: "#e5e7eb", _dark: "#374151" }}
                   >
-                  <MenuItem
-                    value="logout"
-                    onClick={handleLogout}
-                    disabled={isLoggingOut}
-                    color={{ base: "#374151", _dark: "#f3f4f6" }}
-                    _hover={{
-                      bg: { base: "#f3f4f6", _dark: "#374151" },
-                    }}
-                  >
-                    {isLoggingOut ? "Logging out..." : "Log out"}
-                  </MenuItem>
+                    <MenuItem
+                      value="profile"
+                      onClick={() => router.push("/profile")}
+                      color={{ base: "#374151", _dark: "#f3f4f6" }}
+                      _hover={{
+                        bg: { base: "#f3f4f6", _dark: "#374151" },
+                      }}
+                    >
+                      Profile
+                    </MenuItem>
+                    <MenuItem
+                      value="logout"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                      color={{ base: "#374151", _dark: "#f3f4f6" }}
+                      _hover={{
+                        bg: { base: "#f3f4f6", _dark: "#374151" },
+                      }}
+                    >
+                      {isLoggingOut ? "Logging out..." : "Log out"}
+                    </MenuItem>
                   </MenuContent>
                 </MenuPositioner>
               </MenuRoot>

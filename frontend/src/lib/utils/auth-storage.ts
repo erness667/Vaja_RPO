@@ -13,6 +13,7 @@ export interface StoredUser {
   name?: string;
   surname?: string;
   phoneNumber?: string;
+  avatarImageUrl?: string;
 }
 
 export interface AuthTokens {
@@ -64,6 +65,14 @@ export function getStoredUser(): StoredUser | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Store user data
+ */
+export function storeUserData(user: StoredUser): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
 /**

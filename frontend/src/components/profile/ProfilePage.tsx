@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
+import { HiCamera, HiX } from "react-icons/hi";
 import {
   Box,
   VStack,
@@ -12,6 +13,7 @@ import {
   Field,
   Stack,
   HStack,
+  IconButton,
 } from "@chakra-ui/react";
 import { PageShell } from "@/components/layout/PageShell";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
@@ -42,6 +44,7 @@ export function ProfilePage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Update form data when user data loads
   useEffect(() => {
@@ -86,6 +89,22 @@ export function ProfilePage() {
       if (avatarError) setAvatarError(null);
     }
   }, [avatarError, setAvatarError]);
+
+  const handleFileButtonClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleClearFile = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [previewUrl]);
 
   const handleProfileSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -153,9 +172,8 @@ export function ProfilePage() {
       }
       setSelectedFile(null);
       // Reset file input
-      const fileInput = document.getElementById('avatarFile') as HTMLInputElement;
-      if (fileInput) {
-        fileInput.value = '';
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
       }
       await refetch();
     }
@@ -285,16 +303,92 @@ export function ProfilePage() {
                     <Field.Label fontSize="sm" fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
                       Avatar Image
                     </Field.Label>
-                    <Input
-                      id="avatarFile"
-                      name="avatarFile"
-                      type="file"
-                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                      onChange={handleFileChange}
-                      disabled={isUpdatingAvatar}
-                    />
+                    <Box position="relative">
+                      <Input
+                        ref={fileInputRef}
+                        id="avatarFile"
+                        name="avatarFile"
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                        onChange={handleFileChange}
+                        disabled={isUpdatingAvatar}
+                        display="none"
+                      />
+                      <Box
+                        as="button"
+                        type="button"
+                        onClick={handleFileButtonClick}
+                        disabled={isUpdatingAvatar}
+                        width="full"
+                        p={4}
+                        borderWidth="2px"
+                        borderStyle="dashed"
+                        borderColor={{ base: "gray.300", _dark: "gray.600" }}
+                        borderRadius="lg"
+                        bg={{ base: "gray.50", _dark: "gray.800" }}
+                        _hover={{
+                          borderColor: { base: "blue.400", _dark: "blue.500" },
+                          bg: { base: "blue.50", _dark: "gray.700" },
+                        }}
+                        _disabled={{
+                          opacity: 0.6,
+                          cursor: "not-allowed",
+                        }}
+                        transition="all 0.2s"
+                        cursor={isUpdatingAvatar ? "not-allowed" : "pointer"}
+                      >
+                        <VStack gap={2}>
+                          <Box
+                            as="span"
+                            display="inline-flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            width="48px"
+                            height="48px"
+                            borderRadius="full"
+                            bg={{ base: "blue.100", _dark: "blue.900" }}
+                            color={{ base: "blue.600", _dark: "blue.300" }}
+                          >
+                            <HiCamera style={{ width: "24px", height: "24px" }} />
+                          </Box>
+                          <VStack gap={1}>
+                            <Text
+                              fontSize="sm"
+                              fontWeight="medium"
+                              color={{ base: "gray.700", _dark: "gray.300" }}
+                            >
+                              {selectedFile ? selectedFile.name : "Click to upload image"}
+                            </Text>
+                            <Text
+                              fontSize="xs"
+                              color={{ base: "gray.500", _dark: "gray.400" }}
+                            >
+                              {selectedFile 
+                                ? `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB`
+                                : "JPG, PNG, GIF, WEBP (max 5MB)"}
+                            </Text>
+                          </VStack>
+                        </VStack>
+                      </Box>
+                      {selectedFile && (
+                        <IconButton
+                          type="button"
+                          onClick={handleClearFile}
+                          aria-label="Clear selected file"
+                          size="sm"
+                          position="absolute"
+                          top={2}
+                          right={2}
+                          borderRadius="full"
+                          colorPalette="red"
+                          variant="solid"
+                        >
+                          <HiX style={{ width: "16px", height: "16px" }} />
+                        </IconButton>
+                      )}
+                    </Box>
                     <Field.HelperText color={{ base: "gray.500", _dark: "gray.400" }}>
-                      Select an image file (JPG, PNG, GIF, WEBP). Max size: 5MB
+                      Select an image file to update your avatar
                     </Field.HelperText>
                   </Field.Root>
                   {avatarError && (
@@ -313,7 +407,8 @@ export function ProfilePage() {
                   <Button
                     type="submit"
                     colorPalette="blue"
-                    size="sm"
+                    size="md"
+                    width="full"
                     loading={isUpdatingAvatar}
                     loadingText="Updating..."
                     disabled={isUpdatingAvatar || !selectedFile}

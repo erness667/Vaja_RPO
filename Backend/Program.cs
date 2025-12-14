@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Backend.Options;
+using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -32,6 +33,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // JWT configuration
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>() ?? throw new InvalidOperationException("JWT configuration missing.");
+
+// Car data service configuration (loads from cars.json)
+builder.Services.AddSingleton<CarDataService>();
+builder.Services.AddScoped<AutoDevApiService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

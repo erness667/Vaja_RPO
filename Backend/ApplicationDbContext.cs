@@ -10,6 +10,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<Comment> Comments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,6 +34,31 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Car>(entity =>
+        {
+            entity.HasOne(c => c.Seller)
+                .WithMany()
+                .HasForeignKey(c => c.SellerId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of user if they have cars listed
+
+            // Configure Price with proper precision for currency
+            entity.Property(c => c.Price)
+                .HasPrecision(18, 2); // 18 total digits, 2 decimal places
+        });
+
+        modelBuilder.Entity<Comment>(entity =>
+        {
+            entity.HasOne(c => c.Car)
+                .WithMany(car => car.Comments)
+                .HasForeignKey(c => c.CarId)
+                .OnDelete(DeleteBehavior.Cascade); // Delete comments when car is deleted
+
+            entity.HasOne(c => c.User)
+                .WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of user if they have comments
         });
     }
 }

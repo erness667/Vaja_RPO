@@ -27,10 +27,6 @@ export type RegisterRequest = {
     password: string;
 };
 
-export type UpdateAvatarRequest = {
-    avatarImageUrl: string;
-};
-
 export type UpdateProfileRequest = {
     name?: string | null;
     surname?: string | null;
@@ -93,6 +89,87 @@ export type PostApiAuthRefreshResponses = {
     200: unknown;
 };
 
+export type GetApiCarApiMakesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/car-api/makes';
+};
+
+export type GetApiCarApiMakesResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiCarApiMakesSearchData = {
+    body?: never;
+    path?: never;
+    query?: {
+        query?: string;
+    };
+    url: '/api/car-api/makes/search';
+};
+
+export type GetApiCarApiMakesSearchResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiCarApiMakesByMakeIdModelsData = {
+    body?: never;
+    path: {
+        makeId: string;
+    };
+    query?: never;
+    url: '/api/car-api/makes/{makeId}/models';
+};
+
+export type GetApiCarApiMakesByMakeIdModelsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiCarApiMakesByMakeIdModelsByModelIdYearsData = {
+    body?: never;
+    path: {
+        makeId: string;
+        modelId: string;
+    };
+    query?: never;
+    url: '/api/car-api/makes/{makeId}/models/{modelId}/years';
+};
+
+export type GetApiCarApiMakesByMakeIdModelsByModelIdYearsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiCarApiSpecificationsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        make?: string;
+        model?: string;
+        year?: number;
+    };
+    url: '/api/car-api/specifications';
+};
+
+export type GetApiCarApiSpecificationsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
 export type GetApiUserMeData = {
     body?: never;
     path?: never;
@@ -136,7 +213,9 @@ export type PutApiUserProfileResponses = {
 };
 
 export type PutApiUserAvatarData = {
-    body?: UpdateAvatarRequest;
+    body?: {
+        file?: Blob | File;
+    };
     path?: never;
     query?: never;
     url: '/api/user/avatar';

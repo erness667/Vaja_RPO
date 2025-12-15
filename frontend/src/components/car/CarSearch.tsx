@@ -11,11 +11,13 @@ import {
 } from "@chakra-ui/react";
 import { PageShell } from "@/components/layout/PageShell";
 import { LuSettings2, LuSearch } from "react-icons/lu";
+import { MakeDropdown } from "./MakeDropdown";
+import { ModelDropdown } from "./ModelDropdown";
 
 export function CarSearch() {
   const [filters, setFilters] = useState({
-    brand: "",
-    model: "",
+    makeId: "",
+    modelId: "",
     priceFrom: "",
     priceTo: "",
     yearFrom: "",
@@ -25,7 +27,14 @@ export function CarSearch() {
   });
 
   const handleChange = (field: keyof typeof filters, value: string) => {
-    setFilters((prev) => ({ ...prev, [field]: value }));
+    setFilters((prev) => {
+      const newFilters = { ...prev, [field]: value };
+      // Reset dependent fields when parent changes
+      if (field === "makeId" && value !== prev.makeId) {
+        newFilters.modelId = "";
+      }
+      return newFilters;
+    });
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -37,8 +46,6 @@ export function CarSearch() {
     console.log("Advanced search clicked");
   };
 
-  const brands = ["Vse znamke", "BMW", "Mercedes", "Audi", "Volkswagen"];
-  const models = ["Vsi modeli", "Model 1", "Model 2", "Model 3"];
   const fuelTypes = ["Gorivo", "Benzin", "Diesel", "Električno", "Hibridno"];
 
   const priceOptions = [
@@ -95,37 +102,10 @@ export function CarSearch() {
           gap={4}
           mb={4}
         >
-          <Field.Root>
-            <Field.Label
-              fontSize="sm"
-              fontWeight="medium"
-              color={{ base: "gray.700", _dark: "gray.300" }}
-            >
-              Vse znamke
-            </Field.Label>
-            <Box
-              as="select"
-              value={filters.brand}
-              onChange={(e) => handleChange("brand", (e.target as HTMLSelectElement).value)}
-              width="100%"
-              padding="8px 12px"
-              borderWidth="1px"
-              borderColor={{ base: "gray.300", _dark: "gray.600" }}
-              borderRadius="md"
-              bg={{ base: "white", _dark: "gray.800" }}
-              color={{ base: "gray.900", _dark: "gray.100" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
-              }}
-            >
-              {brands.map((brand) => (
-                <option key={brand} value={brand === "Vse znamke" ? "" : brand}>
-                  {brand}
-                </option>
-              ))}
-            </Box>
-          </Field.Root>
+          <MakeDropdown
+            value={filters.makeId}
+            onChange={(value) => handleChange("makeId", value)}
+          />
 
           <Field.Root>
             <Field.Label
@@ -135,20 +115,19 @@ export function CarSearch() {
             >
               Cena od
             </Field.Label>
-            <Box
-              as="select"
+            <select
               value={filters.priceFrom}
-              onChange={(e) => handleChange("priceFrom", (e.target as HTMLSelectElement).value)}
-              width="100%"
-              padding="8px 12px"
-              borderWidth="1px"
-              borderColor={{ base: "gray.300", _dark: "gray.600" }}
-              borderRadius="md"
-              bg={{ base: "white", _dark: "gray.800" }}
-              color={{ base: "gray.900", _dark: "gray.100" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+              onChange={(e) => handleChange("priceFrom", e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: "var(--chakra-colors-gray-300)",
+                borderRadius: "0.375rem",
+                backgroundColor: "var(--chakra-colors-white)",
+                color: "var(--chakra-colors-gray-900)",
+                fontSize: "1rem",
               }}
             >
               {priceOptions.map((price) => (
@@ -156,7 +135,7 @@ export function CarSearch() {
                   {price === "Vse" ? price : `€ ${price}`}
                 </option>
               ))}
-            </Box>
+            </select>
           </Field.Root>
 
           <Field.Root>
@@ -167,20 +146,19 @@ export function CarSearch() {
             >
               Cena do
             </Field.Label>
-            <Box
-              as="select"
+            <select
               value={filters.priceTo}
-              onChange={(e) => handleChange("priceTo", (e.target as HTMLSelectElement).value)}
-              width="100%"
-              padding="8px 12px"
-              borderWidth="1px"
-              borderColor={{ base: "gray.300", _dark: "gray.600" }}
-              borderRadius="md"
-              bg={{ base: "white", _dark: "gray.800" }}
-              color={{ base: "gray.900", _dark: "gray.100" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+              onChange={(e) => handleChange("priceTo", e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: "var(--chakra-colors-gray-300)",
+                borderRadius: "0.375rem",
+                backgroundColor: "var(--chakra-colors-white)",
+                color: "var(--chakra-colors-gray-900)",
+                fontSize: "1rem",
               }}
             >
               {priceOptions.map((price) => (
@@ -188,7 +166,7 @@ export function CarSearch() {
                   {price === "Vse" ? price : `€ ${price}`}
                 </option>
               ))}
-            </Box>
+            </select>
           </Field.Root>
 
           <Field.Root>
@@ -199,20 +177,19 @@ export function CarSearch() {
             >
               Prevoženih km do
             </Field.Label>
-            <Box
-              as="select"
+            <select
               value={filters.kilometers}
-              onChange={(e) => handleChange("kilometers", (e.target as HTMLSelectElement).value)}
-              width="100%"
-              padding="8px 12px"
-              borderWidth="1px"
-              borderColor={{ base: "gray.300", _dark: "gray.600" }}
-              borderRadius="md"
-              bg={{ base: "white", _dark: "gray.800" }}
-              color={{ base: "gray.900", _dark: "gray.100" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+              onChange={(e) => handleChange("kilometers", e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: "var(--chakra-colors-gray-300)",
+                borderRadius: "0.375rem",
+                backgroundColor: "var(--chakra-colors-white)",
+                color: "var(--chakra-colors-gray-900)",
+                fontSize: "1rem",
               }}
             >
               {kilometerOptions.map((km) => (
@@ -220,7 +197,7 @@ export function CarSearch() {
                   {km === "Vse" ? km : `${km} km`}
                 </option>
               ))}
-            </Box>
+            </select>
           </Field.Root>
         </SimpleGrid>
 
@@ -230,37 +207,11 @@ export function CarSearch() {
           gap={4}
           mb={6}
         >
-          <Field.Root>
-            <Field.Label
-              fontSize="sm"
-              fontWeight="medium"
-              color={{ base: "gray.700", _dark: "gray.300" }}
-            >
-              Vsi modeli
-            </Field.Label>
-            <Box
-              as="select"
-              value={filters.model}
-              onChange={(e) => handleChange("model", (e.target as HTMLSelectElement).value)}
-              width="100%"
-              padding="8px 12px"
-              borderWidth="1px"
-              borderColor={{ base: "gray.300", _dark: "gray.600" }}
-              borderRadius="md"
-              bg={{ base: "white", _dark: "gray.800" }}
-              color={{ base: "gray.900", _dark: "gray.100" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
-              }}
-            >
-              {models.map((model) => (
-                <option key={model} value={model === "Vsi modeli" ? "" : model}>
-                  {model}
-                </option>
-              ))}
-            </Box>
-          </Field.Root>
+          <ModelDropdown
+            makeId={filters.makeId || null}
+            value={filters.modelId}
+            onChange={(value) => handleChange("modelId", value)}
+          />
 
           <Field.Root>
             <Field.Label
@@ -270,20 +221,19 @@ export function CarSearch() {
             >
               Letnik od
             </Field.Label>
-            <Box
-              as="select"
+            <select
               value={filters.yearFrom}
-              onChange={(e) => handleChange("yearFrom", (e.target as HTMLSelectElement).value)}
-              width="100%"
-              padding="8px 12px"
-              borderWidth="1px"
-              borderColor={{ base: "gray.300", _dark: "gray.600" }}
-              borderRadius="md"
-              bg={{ base: "white", _dark: "gray.800" }}
-              color={{ base: "gray.900", _dark: "gray.100" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+              onChange={(e) => handleChange("yearFrom", e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: "var(--chakra-colors-gray-300)",
+                borderRadius: "0.375rem",
+                backgroundColor: "var(--chakra-colors-white)",
+                color: "var(--chakra-colors-gray-900)",
+                fontSize: "1rem",
               }}
             >
               <option value="">Vse</option>
@@ -292,7 +242,7 @@ export function CarSearch() {
                   {year}
                 </option>
               ))}
-            </Box>
+            </select>
           </Field.Root>
 
           <Field.Root>
@@ -303,20 +253,19 @@ export function CarSearch() {
             >
               Letnik do
             </Field.Label>
-            <Box
-              as="select"
+            <select
               value={filters.yearTo}
-              onChange={(e) => handleChange("yearTo", (e.target as HTMLSelectElement).value)}
-              width="100%"
-              padding="8px 12px"
-              borderWidth="1px"
-              borderColor={{ base: "gray.300", _dark: "gray.600" }}
-              borderRadius="md"
-              bg={{ base: "white", _dark: "gray.800" }}
-              color={{ base: "gray.900", _dark: "gray.100" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+              onChange={(e) => handleChange("yearTo", e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: "var(--chakra-colors-gray-300)",
+                borderRadius: "0.375rem",
+                backgroundColor: "var(--chakra-colors-white)",
+                color: "var(--chakra-colors-gray-900)",
+                fontSize: "1rem",
               }}
             >
               <option value="">Vse</option>
@@ -325,7 +274,7 @@ export function CarSearch() {
                   {year}
                 </option>
               ))}
-            </Box>
+            </select>
           </Field.Root>
 
           <Field.Root>
@@ -336,20 +285,19 @@ export function CarSearch() {
             >
               Gorivo
             </Field.Label>
-            <Box
-              as="select"
+            <select
               value={filters.fuel}
-              onChange={(e) => handleChange("fuel", (e.target as HTMLSelectElement).value)}
-              width="100%"
-              padding="8px 12px"
-              borderWidth="1px"
-              borderColor={{ base: "gray.300", _dark: "gray.600" }}
-              borderRadius="md"
-              bg={{ base: "white", _dark: "gray.800" }}
-              color={{ base: "gray.900", _dark: "gray.100" }}
-              _focus={{
-                borderColor: "blue.500",
-                boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
+              onChange={(e) => handleChange("fuel", e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: "var(--chakra-colors-gray-300)",
+                borderRadius: "0.375rem",
+                backgroundColor: "var(--chakra-colors-white)",
+                color: "var(--chakra-colors-gray-900)",
+                fontSize: "1rem",
               }}
             >
               {fuelTypes.map((fuel) => (
@@ -357,7 +305,7 @@ export function CarSearch() {
                   {fuel}
                 </option>
               ))}
-            </Box>
+            </select>
           </Field.Root>
         </SimpleGrid>
 
@@ -372,20 +320,20 @@ export function CarSearch() {
             type="button"
             variant="ghost"
             onClick={handleAdvancedSearch}
-            leftIcon={<LuSettings2 />}
             color={{ base: "gray.600", _dark: "gray.300" }}
             _hover={{
               color: "blue.400",
             }}
           >
+            <LuSettings2 style={{ marginRight: "8px" }} />
             Napredno iskanje z dodatnimi filtri
           </Button>
 
           <Button
             type="submit"
             colorPalette="blue"
-            leftIcon={<LuSearch />}
           >
+            <LuSearch style={{ marginRight: "8px" }} />
             Iskanje vozil
           </Button>
         </HStack>

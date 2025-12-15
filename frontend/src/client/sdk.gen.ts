@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetApiCarApiMakesByMakeIdModelsByModelIdYearsData, GetApiCarApiMakesByMakeIdModelsByModelIdYearsResponses, GetApiCarApiMakesByMakeIdModelsData, GetApiCarApiMakesByMakeIdModelsResponses, GetApiCarApiMakesData, GetApiCarApiMakesResponses, GetApiCarApiMakesSearchData, GetApiCarApiMakesSearchResponses, GetApiCarApiSpecificationsData, GetApiCarApiSpecificationsResponses, GetApiUserMeData, GetApiUserMeResponses, PostApiAuthLoginData, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRefreshData, PostApiAuthRefreshResponses, PostApiAuthRegisterData, PostApiAuthRegisterResponses, PutApiUserAvatarData, PutApiUserAvatarResponses, PutApiUserPasswordData, PutApiUserPasswordResponses, PutApiUserProfileData, PutApiUserProfileResponses } from './types.gen';
+import type { GetApiCarApiMakesByMakeIdModelsData, GetApiCarApiMakesByMakeIdModelsResponses, GetApiCarApiMakesData, GetApiCarApiMakesResponses, GetApiCarApiMakesSearchData, GetApiCarApiMakesSearchResponses, GetApiCarsByIdData, GetApiCarsByIdResponses, GetApiCarsData, GetApiCarsResponses, GetApiUserMeData, GetApiUserMeResponses, PostApiAuthLoginData, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRefreshData, PostApiAuthRefreshResponses, PostApiAuthRegisterData, PostApiAuthRegisterResponses, PostApiCarsData, PostApiCarsResponses, PutApiUserAvatarData, PutApiUserAvatarResponses, PutApiUserPasswordData, PutApiUserPasswordResponses, PutApiUserProfileData, PutApiUserProfileResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -47,15 +47,24 @@ export const postApiAuthRefresh = <ThrowOnError extends boolean = false>(options
     }
 });
 
+export const getApiCars = <ThrowOnError extends boolean = false>(options?: Options<GetApiCarsData, ThrowOnError>) => (options?.client ?? client).get<GetApiCarsResponses, unknown, ThrowOnError>({ url: '/api/cars', ...options });
+
+export const postApiCars = <ThrowOnError extends boolean = false>(options?: Options<PostApiCarsData, ThrowOnError>) => (options?.client ?? client).post<PostApiCarsResponses, unknown, ThrowOnError>({
+    url: '/api/cars',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+export const getApiCarsById = <ThrowOnError extends boolean = false>(options: Options<GetApiCarsByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiCarsByIdResponses, unknown, ThrowOnError>({ url: '/api/cars/{id}', ...options });
+
 export const getApiCarApiMakes = <ThrowOnError extends boolean = false>(options?: Options<GetApiCarApiMakesData, ThrowOnError>) => (options?.client ?? client).get<GetApiCarApiMakesResponses, unknown, ThrowOnError>({ url: '/api/car-api/makes', ...options });
 
 export const getApiCarApiMakesSearch = <ThrowOnError extends boolean = false>(options?: Options<GetApiCarApiMakesSearchData, ThrowOnError>) => (options?.client ?? client).get<GetApiCarApiMakesSearchResponses, unknown, ThrowOnError>({ url: '/api/car-api/makes/search', ...options });
 
 export const getApiCarApiMakesByMakeIdModels = <ThrowOnError extends boolean = false>(options: Options<GetApiCarApiMakesByMakeIdModelsData, ThrowOnError>) => (options.client ?? client).get<GetApiCarApiMakesByMakeIdModelsResponses, unknown, ThrowOnError>({ url: '/api/car-api/makes/{makeId}/models', ...options });
-
-export const getApiCarApiMakesByMakeIdModelsByModelIdYears = <ThrowOnError extends boolean = false>(options: Options<GetApiCarApiMakesByMakeIdModelsByModelIdYearsData, ThrowOnError>) => (options.client ?? client).get<GetApiCarApiMakesByMakeIdModelsByModelIdYearsResponses, unknown, ThrowOnError>({ url: '/api/car-api/makes/{makeId}/models/{modelId}/years', ...options });
-
-export const getApiCarApiSpecifications = <ThrowOnError extends boolean = false>(options?: Options<GetApiCarApiSpecificationsData, ThrowOnError>) => (options?.client ?? client).get<GetApiCarApiSpecificationsResponses, unknown, ThrowOnError>({ url: '/api/car-api/specifications', ...options });
 
 export const getApiUserMe = <ThrowOnError extends boolean = false>(options?: Options<GetApiUserMeData, ThrowOnError>) => (options?.client ?? client).get<GetApiUserMeResponses, unknown, ThrowOnError>({ url: '/api/user/me', ...options });
 

@@ -188,15 +188,18 @@ export function Navbar() {
 
         {/* Navigation Links */}
         <HStack gap={3} alignItems="center">
-          <Link href="/create">
-            <Button
-              colorPalette="blue"
-              size="sm"
-            >
-              <HiPlus style={{ width: "20px", height: "20px", marginRight: "8px" }} />
-              Objavi oglas
-            </Button>
-          </Link>
+          {/* Show "Objavi oglas" button only if user is authenticated */}
+          {authenticated && (
+            <Link href="/create">
+              <Button
+                colorPalette="blue"
+                size="sm"
+              >
+                <HiPlus style={{ width: "20px", height: "20px", marginRight: "8px" }} />
+                Objavi oglas
+              </Button>
+            </Link>
+          )}
 
           {/* Dark Mode Toggle */}
           <ClientOnly fallback={<Skeleton boxSize="9" />}>

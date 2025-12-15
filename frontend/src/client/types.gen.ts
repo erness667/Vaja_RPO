@@ -9,6 +9,21 @@ export type ChangePasswordRequest = {
     newPassword: string;
 };
 
+export type CreateCarRequest = {
+    makeId: string;
+    modelId: string;
+    year: number;
+    firstRegistrationDate: string;
+    mileage: number;
+    previousOwners: number;
+    fuelType: string;
+    enginePower: number;
+    transmission: string;
+    color: string;
+    equipmentAndDetails?: string | null;
+    price: number;
+};
+
 export type LoginRequest = {
     username: string;
     password: string;
@@ -89,6 +104,61 @@ export type PostApiAuthRefreshResponses = {
     200: unknown;
 };
 
+export type GetApiCarsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        pageSize?: number;
+        makeId?: string;
+        modelId?: string;
+        yearFrom?: number;
+        yearTo?: number;
+        priceFrom?: number;
+        priceTo?: number;
+        mileageTo?: number;
+        fuelType?: string;
+    };
+    url: '/api/cars';
+};
+
+export type GetApiCarsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiCarsData = {
+    body?: CreateCarRequest;
+    path?: never;
+    query?: never;
+    url: '/api/cars';
+};
+
+export type PostApiCarsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiCarsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/cars/{id}';
+};
+
+export type GetApiCarsByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
 export type GetApiCarApiMakesData = {
     body?: never;
     path?: never;
@@ -129,41 +199,6 @@ export type GetApiCarApiMakesByMakeIdModelsData = {
 };
 
 export type GetApiCarApiMakesByMakeIdModelsResponses = {
-    /**
-     * Success
-     */
-    200: unknown;
-};
-
-export type GetApiCarApiMakesByMakeIdModelsByModelIdYearsData = {
-    body?: never;
-    path: {
-        makeId: string;
-        modelId: string;
-    };
-    query?: never;
-    url: '/api/car-api/makes/{makeId}/models/{modelId}/years';
-};
-
-export type GetApiCarApiMakesByMakeIdModelsByModelIdYearsResponses = {
-    /**
-     * Success
-     */
-    200: unknown;
-};
-
-export type GetApiCarApiSpecificationsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        make?: string;
-        model?: string;
-        year?: number;
-    };
-    url: '/api/car-api/specifications';
-};
-
-export type GetApiCarApiSpecificationsResponses = {
     /**
      * Success
      */

@@ -10,6 +10,8 @@ import {
   SimpleGrid,
   Textarea,
   Input,
+  Select,
+  useListCollection,
 } from "@chakra-ui/react";
 import { useCreateCar } from "@/lib/hooks/useCreateCar";
 import { MakeDropdown } from "./MakeDropdown";
@@ -61,6 +63,28 @@ export function CarCreateForm() {
     (1950 + i).toString()
   ).reverse();
 
+  const yearItems = yearOptions.map((y) => ({ value: y, label: y }));
+  const yearList = useListCollection({
+    initialItems: yearItems,
+    itemToString: (item) => item.label,
+  });
+
+  const fuelList = useListCollection({
+    initialItems: fuelTypes,
+    itemToString: (item) => item.label,
+  });
+
+  const transmissionList = useListCollection({
+    initialItems: transmissionTypes,
+    itemToString: (item) => item.label,
+  });
+
+  const colorItems = colors.map((c) => ({ value: c, label: c }));
+  const colorList = useListCollection({
+    initialItems: colorItems,
+    itemToString: (item) => item.label,
+  });
+
   const handleChange = useCallback((field: keyof CreateCarRequest, value: string | number) => {
     setFormData((prev) => {
       const newData = { ...prev, [field]: value };
@@ -73,22 +97,27 @@ export function CarCreateForm() {
     if (error) setError(null);
   }, [error, setError]);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await createCar(formData);
-  }, [formData, createCar]);
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      await createCar(formData);
+    },
+    [formData, createCar]
+  );
 
   return (
-    <Box
-      as="form"
-      onSubmit={handleSubmit}
-      bg={{ base: "rgba(255, 255, 255, 0.9)", _dark: "rgba(15, 23, 42, 0.6)" }}
-      borderRadius="xl"
-      p={6}
-      boxShadow="sm"
-      borderWidth="1px"
-      borderColor={{ base: "rgba(229, 231, 235, 0.8)", _dark: "rgba(51, 65, 85, 0.6)" }}
-    >
+    <form onSubmit={handleSubmit}>
+      <Box
+        bg={{ base: "rgba(255, 255, 255, 0.9)", _dark: "rgba(15, 23, 42, 0.6)" }}
+        borderRadius="xl"
+        p={6}
+        boxShadow="sm"
+        borderWidth="1px"
+        borderColor={{
+          base: "rgba(229, 231, 235, 0.8)",
+          _dark: "rgba(51, 65, 85, 0.6)",
+        }}
+      >
       {error && (
         <Box
           p={4}
@@ -136,27 +165,35 @@ export function CarCreateForm() {
             >
               Letnik *
             </Field.Label>
-            <select
-              value={formData.year}
-              onChange={(e) => handleChange("year", parseInt(e.target.value))}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "0.375rem",
-                backgroundColor: "var(--chakra-colors-white)",
-                color: "var(--chakra-colors-gray-900)",
-                fontSize: "1rem",
-              }}
+            <Select.Root
+              collection={yearList.collection}
+              value={formData.year ? [String(formData.year)] : []}
+              onValueChange={(details) =>
+                handleChange(
+                  "year",
+                  parseInt(details.value[0] ?? String(currentYear))
+                )
+              }
             >
-              {yearOptions.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText placeholder="Izberite letnik" />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                  <Select.ClearTrigger />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Select.Positioner>
+                <Select.Content>
+                  {yearList.collection.items.map((item) => (
+                    <Select.Item key={item.value} item={item}>
+                      <Select.ItemText>{item.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Select.Root>
           </Field.Root>
 
           <Field.Root>
@@ -218,28 +255,32 @@ export function CarCreateForm() {
             >
               Vrsta goriva *
             </Field.Label>
-            <select
-              value={formData.fuelType}
-              onChange={(e) => handleChange("fuelType", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "0.375rem",
-                backgroundColor: "var(--chakra-colors-white)",
-                color: "var(--chakra-colors-gray-900)",
-                fontSize: "1rem",
-              }}
+            <Select.Root
+              collection={fuelList.collection}
+              value={formData.fuelType ? [formData.fuelType] : []}
+              onValueChange={(details) =>
+                handleChange("fuelType", details.value[0] ?? "")
+              }
             >
-              <option value="">Izberite gorivo</option>
-              {fuelTypes.map((fuel) => (
-                <option key={fuel.value} value={fuel.value}>
-                  {fuel.label}
-                </option>
-              ))}
-            </select>
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText placeholder="Izberite gorivo" />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                  <Select.ClearTrigger />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Select.Positioner>
+                <Select.Content>
+                  {fuelList.collection.items.map((item) => (
+                    <Select.Item key={item.value} item={item}>
+                      <Select.ItemText>{item.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Select.Root>
           </Field.Root>
 
           <Field.Root>
@@ -267,28 +308,32 @@ export function CarCreateForm() {
             >
               Menjalnik *
             </Field.Label>
-            <select
-              value={formData.transmission}
-              onChange={(e) => handleChange("transmission", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "0.375rem",
-                backgroundColor: "var(--chakra-colors-white)",
-                color: "var(--chakra-colors-gray-900)",
-                fontSize: "1rem",
-              }}
+            <Select.Root
+              collection={transmissionList.collection}
+              value={formData.transmission ? [formData.transmission] : []}
+              onValueChange={(details) =>
+                handleChange("transmission", details.value[0] ?? "")
+              }
             >
-              <option value="">Izberite menjalnik</option>
-              {transmissionTypes.map((trans) => (
-                <option key={trans.value} value={trans.value}>
-                  {trans.label}
-                </option>
-              ))}
-            </select>
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText placeholder="Izberite menjalnik" />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                  <Select.ClearTrigger />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Select.Positioner>
+                <Select.Content>
+                  {transmissionList.collection.items.map((item) => (
+                    <Select.Item key={item.value} item={item}>
+                      <Select.ItemText>{item.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Select.Root>
           </Field.Root>
 
           <Field.Root>
@@ -299,28 +344,32 @@ export function CarCreateForm() {
             >
               Barva *
             </Field.Label>
-            <select
-              value={formData.color}
-              onChange={(e) => handleChange("color", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "0.375rem",
-                backgroundColor: "var(--chakra-colors-white)",
-                color: "var(--chakra-colors-gray-900)",
-                fontSize: "1rem",
-              }}
+            <Select.Root
+              collection={colorList.collection}
+              value={formData.color ? [formData.color] : []}
+              onValueChange={(details) =>
+                handleChange("color", details.value[0] ?? "")
+              }
             >
-              <option value="">Izberite barvo</option>
-              {colors.map((color) => (
-                <option key={color} value={color}>
-                  {color}
-                </option>
-              ))}
-            </select>
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText placeholder="Izberite barvo" />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                  <Select.ClearTrigger />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Select.Positioner>
+                <Select.Content>
+                  {colorList.collection.items.map((item) => (
+                    <Select.Item key={item.value} item={item}>
+                      <Select.ItemText>{item.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Select.Root>
           </Field.Root>
 
           <Field.Root>
@@ -362,13 +411,14 @@ export function CarCreateForm() {
           type="submit"
           colorPalette="blue"
           size="lg"
-          isLoading={isLoading}
+          loading={isLoading}
           loadingText="Objavljanje..."
         >
           Objavi oglas
         </Button>
       </VStack>
-    </Box>
+      </Box>
+    </form>
   );
 }
 

@@ -32,12 +32,14 @@ export function PageShell({
 
   return (
     <Box
+      suppressHydrationWarning
       py={8}
       px={4}
       bgGradient={bgGradient}
       minH="calc(100vh - 5rem)"
     >
       <Box
+        suppressHydrationWarning
         maxW={maxW}
         mx="auto"
         rounded="2xl"

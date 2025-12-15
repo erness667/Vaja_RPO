@@ -8,6 +8,8 @@ import {
   Button,
   SimpleGrid,
   HStack,
+  Select,
+  useListCollection,
 } from "@chakra-ui/react";
 import { PageShell } from "@/components/layout/PageShell";
 import { LuSettings2, LuSearch } from "react-icons/lu";
@@ -75,6 +77,47 @@ export function CarSearch() {
     "200.000",
   ];
 
+  // Chakra Select collections
+  const priceFromItems = priceOptions.map((price) =>
+    price === "Vse"
+      ? { value: "", label: "Vse" }
+      : { value: price, label: `€ ${price}` }
+  );
+  const priceToItems = priceFromItems;
+  const kilometerItems = kilometerOptions.map((km) =>
+    km === "Vse" ? { value: "", label: "Vse" } : { value: km, label: `${km} km` }
+  );
+  const yearFromItems = [{ value: "", label: "Vse" }, ...yearOptions.map((y) => ({ value: y, label: y }))];
+  const yearToItems = yearFromItems;
+  const fuelItems = fuelTypes.map((fuel) =>
+    fuel === "Gorivo" ? { value: "", label: "Gorivo" } : { value: fuel, label: fuel }
+  );
+
+  const priceFromList = useListCollection({
+    initialItems: priceFromItems,
+    itemToString: (item) => item.label,
+  });
+  const priceToList = useListCollection({
+    initialItems: priceToItems,
+    itemToString: (item) => item.label,
+  });
+  const kilometerList = useListCollection({
+    initialItems: kilometerItems,
+    itemToString: (item) => item.label,
+  });
+  const yearFromList = useListCollection({
+    initialItems: yearFromItems,
+    itemToString: (item) => item.label,
+  });
+  const yearToList = useListCollection({
+    initialItems: yearToItems,
+    itemToString: (item) => item.label,
+  });
+  const fuelList = useListCollection({
+    initialItems: fuelItems,
+    itemToString: (item) => item.label,
+  });
+
   return (
     <PageShell maxWidthClass="max-w-6xl">
       <Heading
@@ -115,27 +158,32 @@ export function CarSearch() {
             >
               Cena od
             </Field.Label>
-            <select
-              value={filters.priceFrom}
-              onChange={(e) => handleChange("priceFrom", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "0.375rem",
-                backgroundColor: "var(--chakra-colors-white)",
-                color: "var(--chakra-colors-gray-900)",
-                fontSize: "1rem",
-              }}
+            <Select.Root
+              collection={priceFromList.collection}
+              value={filters.priceFrom ? [filters.priceFrom] : [""]}
+              onValueChange={(details) =>
+                handleChange("priceFrom", details.value[0] ?? "")
+              }
             >
-              {priceOptions.map((price) => (
-                <option key={price} value={price === "Vse" ? "" : price}>
-                  {price === "Vse" ? price : `€ ${price}`}
-                </option>
-              ))}
-            </select>
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                  <Select.ClearTrigger />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Select.Positioner>
+                <Select.Content>
+                  {priceFromList.collection.items.map((item) => (
+                    <Select.Item key={item.value} item={item}>
+                      <Select.ItemText>{item.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Select.Root>
           </Field.Root>
 
           <Field.Root>
@@ -146,27 +194,32 @@ export function CarSearch() {
             >
               Cena do
             </Field.Label>
-            <select
-              value={filters.priceTo}
-              onChange={(e) => handleChange("priceTo", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "0.375rem",
-                backgroundColor: "var(--chakra-colors-white)",
-                color: "var(--chakra-colors-gray-900)",
-                fontSize: "1rem",
-              }}
+            <Select.Root
+              collection={priceToList.collection}
+              value={filters.priceTo ? [filters.priceTo] : [""]}
+              onValueChange={(details) =>
+                handleChange("priceTo", details.value[0] ?? "")
+              }
             >
-              {priceOptions.map((price) => (
-                <option key={price} value={price === "Vse" ? "" : price}>
-                  {price === "Vse" ? price : `€ ${price}`}
-                </option>
-              ))}
-            </select>
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                  <Select.ClearTrigger />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Select.Positioner>
+                <Select.Content>
+                  {priceToList.collection.items.map((item) => (
+                    <Select.Item key={item.value} item={item}>
+                      <Select.ItemText>{item.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Select.Root>
           </Field.Root>
 
           <Field.Root>
@@ -177,27 +230,32 @@ export function CarSearch() {
             >
               Prevoženih km do
             </Field.Label>
-            <select
-              value={filters.kilometers}
-              onChange={(e) => handleChange("kilometers", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "0.375rem",
-                backgroundColor: "var(--chakra-colors-white)",
-                color: "var(--chakra-colors-gray-900)",
-                fontSize: "1rem",
-              }}
+            <Select.Root
+              collection={kilometerList.collection}
+              value={filters.kilometers ? [filters.kilometers] : [""]}
+              onValueChange={(details) =>
+                handleChange("kilometers", details.value[0] ?? "")
+              }
             >
-              {kilometerOptions.map((km) => (
-                <option key={km} value={km === "Vse" ? "" : km}>
-                  {km === "Vse" ? km : `${km} km`}
-                </option>
-              ))}
-            </select>
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                  <Select.ClearTrigger />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Select.Positioner>
+                <Select.Content>
+                  {kilometerList.collection.items.map((item) => (
+                    <Select.Item key={item.value} item={item}>
+                      <Select.ItemText>{item.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Select.Root>
           </Field.Root>
         </SimpleGrid>
 
@@ -221,28 +279,32 @@ export function CarSearch() {
             >
               Letnik od
             </Field.Label>
-            <select
-              value={filters.yearFrom}
-              onChange={(e) => handleChange("yearFrom", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "0.375rem",
-                backgroundColor: "var(--chakra-colors-white)",
-                color: "var(--chakra-colors-gray-900)",
-                fontSize: "1rem",
-              }}
+            <Select.Root
+              collection={yearFromList.collection}
+              value={filters.yearFrom ? [filters.yearFrom] : [""]}
+              onValueChange={(details) =>
+                handleChange("yearFrom", details.value[0] ?? "")
+              }
             >
-              <option value="">Vse</option>
-              {yearOptions.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                  <Select.ClearTrigger />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Select.Positioner>
+                <Select.Content>
+                  {yearFromList.collection.items.map((item) => (
+                    <Select.Item key={item.value} item={item}>
+                      <Select.ItemText>{item.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Select.Root>
           </Field.Root>
 
           <Field.Root>
@@ -253,28 +315,32 @@ export function CarSearch() {
             >
               Letnik do
             </Field.Label>
-            <select
-              value={filters.yearTo}
-              onChange={(e) => handleChange("yearTo", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "0.375rem",
-                backgroundColor: "var(--chakra-colors-white)",
-                color: "var(--chakra-colors-gray-900)",
-                fontSize: "1rem",
-              }}
+            <Select.Root
+              collection={yearToList.collection}
+              value={filters.yearTo ? [filters.yearTo] : [""]}
+              onValueChange={(details) =>
+                handleChange("yearTo", details.value[0] ?? "")
+              }
             >
-              <option value="">Vse</option>
-              {yearOptions.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                  <Select.ClearTrigger />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Select.Positioner>
+                <Select.Content>
+                  {yearToList.collection.items.map((item) => (
+                    <Select.Item key={item.value} item={item}>
+                      <Select.ItemText>{item.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Select.Root>
           </Field.Root>
 
           <Field.Root>
@@ -285,27 +351,32 @@ export function CarSearch() {
             >
               Gorivo
             </Field.Label>
-            <select
-              value={filters.fuel}
-              onChange={(e) => handleChange("fuel", e.target.value)}
-              style={{
-                width: "100%",
-                padding: "8px 12px",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "var(--chakra-colors-gray-300)",
-                borderRadius: "0.375rem",
-                backgroundColor: "var(--chakra-colors-white)",
-                color: "var(--chakra-colors-gray-900)",
-                fontSize: "1rem",
-              }}
+            <Select.Root
+              collection={fuelList.collection}
+              value={filters.fuel ? [filters.fuel] : [""]}
+              onValueChange={(details) =>
+                handleChange("fuel", details.value[0] ?? "")
+              }
             >
-              {fuelTypes.map((fuel) => (
-                <option key={fuel} value={fuel === "Gorivo" ? "" : fuel}>
-                  {fuel}
-                </option>
-              ))}
-            </select>
+              <Select.Control>
+                <Select.Trigger>
+                  <Select.ValueText />
+                </Select.Trigger>
+                <Select.IndicatorGroup>
+                  <Select.Indicator />
+                  <Select.ClearTrigger />
+                </Select.IndicatorGroup>
+              </Select.Control>
+              <Select.Positioner>
+                <Select.Content>
+                  {fuelList.collection.items.map((item) => (
+                    <Select.Item key={item.value} item={item}>
+                      <Select.ItemText>{item.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Positioner>
+            </Select.Root>
           </Field.Root>
         </SimpleGrid>
 

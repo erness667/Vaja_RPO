@@ -1,6 +1,7 @@
 'use client';
 
-import { Field } from "@chakra-ui/react";
+import { useEffect, useMemo } from "react";
+import { Field, Select, useListCollection } from "@chakra-ui/react";
 import { useCarMakes } from "@/lib/hooks/useCarMakes";
 
 interface MakeDropdownProps {
@@ -20,6 +21,25 @@ export function MakeDropdown({
 }: MakeDropdownProps) {
   const { makes, isLoading } = useCarMakes();
 
+  const items = useMemo(
+    () =>
+      makes.map((make) => ({
+        value: make.id || "",
+        label: make.name ?? "",
+      })),
+    [makes]
+  );
+
+  const list = useListCollection({
+    initialItems: items,
+    itemToString: (item) => item.label,
+  });
+
+  // Keep collection in sync when items change (after API fetch)
+  useEffect(() => {
+    list.set(items);
+  }, [items, list]);
+
   return (
     <Field.Root>
       <Field.Label
@@ -29,29 +49,31 @@ export function MakeDropdown({
       >
         {label}
       </Field.Label>
-      <select
-        value={value}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChange(e.target.value)}
+      <Select.Root
+        collection={list.collection}
+        value={value ? [value] : []}
+        onValueChange={(details) => onChange(details.value[0] ?? "")}
         disabled={disabled || isLoading}
-        style={{
-          width: "100%",
-          padding: "8px 12px",
-          borderWidth: "1px",
-          borderStyle: "solid",
-          borderColor: "var(--chakra-colors-gray-300)",
-          borderRadius: "0.375rem",
-          backgroundColor: "var(--chakra-colors-white)",
-          color: "var(--chakra-colors-gray-900)",
-          fontSize: "1rem",
-        }}
       >
-        <option value="">{placeholder}</option>
-        {makes.map((make) => (
-          <option key={make.id} value={make.id || ""}>
-            {make.name}
-          </option>
-        ))}
-      </select>
+        <Select.Control>
+          <Select.Trigger>
+            <Select.ValueText placeholder={placeholder} />
+          </Select.Trigger>
+          <Select.IndicatorGroup>
+            <Select.Indicator />
+            <Select.ClearTrigger />
+          </Select.IndicatorGroup>
+        </Select.Control>
+        <Select.Positioner>
+          <Select.Content>
+            {list.collection.items.map((item) => (
+              <Select.Item key={item.value} item={item}>
+                <Select.ItemText>{item.label}</Select.ItemText>
+              </Select.Item>
+            ))}
+          </Select.Content>
+        </Select.Positioner>
+      </Select.Root>
     </Field.Root>
   );
 }

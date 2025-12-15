@@ -18,27 +18,11 @@ import { MakeDropdown } from "./MakeDropdown";
 import { ModelDropdown } from "./ModelDropdown";
 import type { CreateCarRequest } from "@/client/types.gen";
 import "@/lib/api-client";
-
-const fuelTypes = [
-  { value: "Benzin", label: "Benzin" },
-  { value: "Diesel", label: "Diesel" },
-  { value: "Električno", label: "Električno" },
-  { value: "Hibridno", label: "Hibridno" },
-  { value: "LPG", label: "LPG" },
-  { value: "CNG", label: "CNG" },
-];
-
-const transmissionTypes = [
-  { value: "Ročni", label: "Ročni" },
-  { value: "Avtomatski", label: "Avtomatski" },
-  { value: "DSG", label: "DSG" },
-  { value: "CVT", label: "CVT" },
-];
-
-const colors = [
-  "Bela", "Črna", "Siva", "Srebrna", "Modra", "Rdeča", "Zelena", 
-  "Rumena", "Oranžna", "Rjava", "Vijolična", "Roza", "Druga"
-];
+import {
+  FUEL_TYPES,
+  TRANSMISSION_TYPES,
+  COLORS,
+} from "@/lib/constants/car-options";
 
 export function CarCreateForm() {
   const { createCar, isLoading, error, setError } = useCreateCar();
@@ -70,16 +54,16 @@ export function CarCreateForm() {
   });
 
   const fuelList = useListCollection({
-    initialItems: fuelTypes,
+    initialItems: FUEL_TYPES,
     itemToString: (item) => item.label,
   });
 
   const transmissionList = useListCollection({
-    initialItems: transmissionTypes,
+    initialItems: TRANSMISSION_TYPES,
     itemToString: (item) => item.label,
   });
 
-  const colorItems = colors.map((c) => ({ value: c, label: c }));
+  const colorItems = COLORS.map((c) => ({ value: c, label: c }));
   const colorList = useListCollection({
     initialItems: colorItems,
     itemToString: (item) => item.label,
@@ -383,10 +367,9 @@ export function CarCreateForm() {
             <Input
               type="number"
               value={formData.price || ""}
-              onChange={(e) => handleChange("price", parseFloat(e.target.value) || 0)}
+          onChange={(e) => handleChange("price", parseInt(e.target.value) || 0)}
               min={0}
-              step="0.01"
-              placeholder="0.00"
+          placeholder="0"
             />
           </Field.Root>
         </SimpleGrid>

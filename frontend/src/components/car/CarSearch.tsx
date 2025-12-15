@@ -15,6 +15,11 @@ import { PageShell } from "@/components/layout/PageShell";
 import { LuSettings2, LuSearch } from "react-icons/lu";
 import { MakeDropdown } from "./MakeDropdown";
 import { ModelDropdown } from "./ModelDropdown";
+import {
+  FUEL_TYPES,
+  PRICE_OPTIONS,
+  KILOMETER_OPTIONS,
+} from "@/lib/constants/car-options";
 
 export function CarSearch() {
   const [filters, setFilters] = useState({
@@ -48,48 +53,25 @@ export function CarSearch() {
     console.log("Advanced search clicked");
   };
 
-  const fuelTypes = ["Gorivo", "Benzin", "Diesel", "Električno", "Hibridno"];
-
-  const priceOptions = [
-    "Vse",
-    "0",
-    "5.000",
-    "10.000",
-    "15.000",
-    "20.000",
-    "30.000",
-    "50.000",
-    "100.000",
-  ];
-
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: currentYear - 1999 }, (_, i) =>
     (2000 + i).toString()
   );
 
-  const kilometerOptions = [
-    "Vse",
-    "10.000",
-    "20.000",
-    "50.000",
-    "100.000",
-    "150.000",
-    "200.000",
-  ];
-
   // Chakra Select collections
-  const priceFromItems = priceOptions.map((price) =>
+  const priceFromItems = PRICE_OPTIONS.map((price) =>
     price === "Vse"
       ? { value: "", label: "Vse" }
       : { value: price, label: `€ ${price}` }
   );
   const priceToItems = priceFromItems;
-  const kilometerItems = kilometerOptions.map((km) =>
+  const kilometerItems = KILOMETER_OPTIONS.map((km) =>
     km === "Vse" ? { value: "", label: "Vse" } : { value: km, label: `${km} km` }
   );
   const yearFromItems = [{ value: "", label: "Vse" }, ...yearOptions.map((y) => ({ value: y, label: y }))];
   const yearToItems = yearFromItems;
-  const fuelItems = fuelTypes.map((fuel) =>
+  const fuelItems = ["Gorivo", ...FUEL_TYPES.map((f) => f.value)].map(
+    (fuel) =>
     fuel === "Gorivo" ? { value: "", label: "Gorivo" } : { value: fuel, label: fuel }
   );
 

@@ -63,5 +63,8 @@ namespace SuperCarsApi.Models
 
         // Navigation property for comments
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+        // Navigation property for car images
+        public ICollection<CarImage> Images { get; set; } = new List<CarImage>();
     }
 }

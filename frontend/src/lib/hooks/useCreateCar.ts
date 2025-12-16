@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { postApiCars } from "@/client";
+import { postApiCars, postApiCarsByIdImages } from "@/client";
 import { extractValidationErrors } from "@/lib/utils/error-utils";
 import type { CreateCarRequest } from "@/client/types.gen";
 import "@/lib/api-client";
@@ -10,7 +10,7 @@ export function useCreateCar() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createCar = useCallback(async (formData: CreateCarRequest) => {
+  const createCar = useCallback(async (formData: CreateCarRequest, images?: File[]) => {
     setError(null);
     setIsLoading(true);
 
@@ -40,6 +40,23 @@ export function useCreateCar() {
       }
 
       if (response.data) {
+        // If images were selected, upload them to the gallery endpoint
+        if (images && images.length > 0) {
+          try {
+            const createdCar: any = response.data;
+            const carId = createdCar.id as number | undefined;
+
+            if (carId) {
+              await postApiCarsByIdImages({
+                path: { id: carId },
+                body: { files: images },
+              });
+            }
+          } catch {
+            // Ignore image upload errors for now; car itself is created
+          }
+        }
+
         setIsLoading(false);
         // Redirect to homepage or car detail page
         router.push("/");

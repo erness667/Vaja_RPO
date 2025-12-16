@@ -18,6 +18,16 @@ namespace Backend.DTOs.Car
         public decimal Price { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
+        /// <summary>
+        /// URL of the main/primary image for this car (if any).
+        /// </summary>
+        public string? MainImageUrl { get; set; }
+
+        /// <summary>
+        /// All image URLs associated with this car.
+        /// </summary>
+        public List<string> ImageUrls { get; set; } = new();
     }
 }
 

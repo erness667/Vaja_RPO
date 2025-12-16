@@ -143,6 +143,41 @@ export type PostApiCarsResponses = {
     200: unknown;
 };
 
+export type PostApiCarsByIdImagesData = {
+    body?: {
+        files?: Array<Blob | File>;
+    };
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/cars/{id}/images';
+};
+
+export type PostApiCarsByIdImagesResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiCarsByIdImagesByImageIdSetMainData = {
+    body?: never;
+    path: {
+        id: number;
+        imageId: number;
+    };
+    query?: never;
+    url: '/api/cars/{id}/images/{imageId}/set-main';
+};
+
+export type PutApiCarsByIdImagesByImageIdSetMainResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
 export type GetApiCarsByIdData = {
     body?: never;
     path: {
@@ -159,46 +194,46 @@ export type GetApiCarsByIdResponses = {
     200: unknown;
 };
 
-export type GetApiCarApiMakesData = {
+export type GetApiCarCatalogMakesData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/car-api/makes';
+    url: '/api/car-catalog/makes';
 };
 
-export type GetApiCarApiMakesResponses = {
+export type GetApiCarCatalogMakesResponses = {
     /**
      * Success
      */
     200: unknown;
 };
 
-export type GetApiCarApiMakesSearchData = {
+export type GetApiCarCatalogMakesSearchData = {
     body?: never;
     path?: never;
     query?: {
         query?: string;
     };
-    url: '/api/car-api/makes/search';
+    url: '/api/car-catalog/makes/search';
 };
 
-export type GetApiCarApiMakesSearchResponses = {
+export type GetApiCarCatalogMakesSearchResponses = {
     /**
      * Success
      */
     200: unknown;
 };
 
-export type GetApiCarApiMakesByMakeIdModelsData = {
+export type GetApiCarCatalogMakesByMakeIdModelsData = {
     body?: never;
     path: {
         makeId: string;
     };
     query?: never;
-    url: '/api/car-api/makes/{makeId}/models';
+    url: '/api/car-catalog/makes/{makeId}/models';
 };
 
-export type GetApiCarApiMakesByMakeIdModelsResponses = {
+export type GetApiCarCatalogMakesByMakeIdModelsResponses = {
     /**
      * Success
      */

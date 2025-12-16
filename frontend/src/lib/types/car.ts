@@ -15,6 +15,8 @@ export interface Car {
   price: number;
   createdAt: string;
   updatedAt: string;
+  mainImageUrl?: string | null;
+  imageUrls?: string[];
 }
 
 

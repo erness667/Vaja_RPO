@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Backend.DTOs.CarApi;
+using Backend.DTOs.CarCatalog;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Backend.Services

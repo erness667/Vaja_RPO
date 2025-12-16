@@ -1,15 +1,15 @@
-using Backend.DTOs.CarApi;
+using Backend.DTOs.CarCatalog;
 
 namespace Backend.Services
 {
     /// <summary>
     /// Service for accessing car makes and models from local cars.json file
     /// </summary>
-    public class AutoDevApiService
+    public class CarCatalogService
     {
         private readonly CarDataService _carDataService;
 
-        public AutoDevApiService(CarDataService carDataService)
+        public CarCatalogService(CarDataService carDataService)
         {
             _carDataService = carDataService;
         }

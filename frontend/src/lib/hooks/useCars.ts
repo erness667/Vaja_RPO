@@ -29,7 +29,9 @@ export function useCars() {
       }
 
       if (response.data) {
-        const data = (response.data as any) as Car[];
+        // API wraps cars in an object: { cars, totalCount, ... }
+        const raw = response.data as any;
+        const data = (raw.cars ?? []) as Car[];
         setCars(data);
         setIsLoading(false);
         return data;

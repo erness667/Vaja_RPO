@@ -36,7 +36,7 @@ var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>() ?? 
 
 // Car data service configuration (loads from cars.json)
 builder.Services.AddSingleton<CarDataService>();
-builder.Services.AddScoped<AutoDevApiService>();
+builder.Services.AddScoped<CarCatalogService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

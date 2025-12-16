@@ -1,5 +1,6 @@
+
 import { useState, useCallback, useEffect } from "react";
-import { getApiCarApiMakes } from "@/client";
+import { getApiCarCatalogMakes } from "@/client";
 import type { Make } from "@/lib/types/car-api";
 import "@/lib/api-client";
 
@@ -13,7 +14,7 @@ export function useCarMakes() {
     setError(null);
 
     try {
-      const response = await getApiCarApiMakes({});
+      const response = await getApiCarCatalogMakes({});
 
       if (response.error || (response.response && !response.response.ok)) {
         const errorMessage = "Failed to fetch car makes";
@@ -32,7 +33,8 @@ export function useCarMakes() {
       setIsLoading(false);
       return [];
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";
+      const errorMessage =
+        err instanceof Error ? err.message : "An unexpected error occurred.";
       setError(errorMessage);
       setIsLoading(false);
       return [];

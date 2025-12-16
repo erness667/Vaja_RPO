@@ -232,6 +232,84 @@
         }
       }
     },
+    "/api/cars/{id}/images": {
+      "post": {
+        "tags": [
+          "Car"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              },
+              "encoding": {
+                "files": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/cars/{id}/images/{imageId}/set-main": {
+      "put": {
+        "tags": [
+          "Car"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "imageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/cars/{id}": {
       "get": {
         "tags": [
@@ -255,10 +333,10 @@
         }
       }
     },
-    "/api/car-api/makes": {
+    "/api/car-catalog/makes": {
       "get": {
         "tags": [
-          "CarApi"
+          "CarCatalog"
         ],
         "responses": {
           "200": {
@@ -267,10 +345,10 @@
         }
       }
     },
-    "/api/car-api/makes/search": {
+    "/api/car-catalog/makes/search": {
       "get": {
         "tags": [
-          "CarApi"
+          "CarCatalog"
         ],
         "parameters": [
           {
@@ -288,10 +366,10 @@
         }
       }
     },
-    "/api/car-api/makes/{makeId}/models": {
+    "/api/car-catalog/makes/{makeId}/models": {
       "get": {
         "tags": [
-          "CarApi"
+          "CarCatalog"
         ],
         "parameters": [
           {

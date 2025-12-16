@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { getApiCarApiMakesByMakeIdModels } from "@/client";
+import { getApiCarCatalogMakesByMakeIdModels } from "@/client";
 import type { Model } from "@/lib/types/car-api";
 import "@/lib/api-client";
 
@@ -19,7 +19,7 @@ export function useCarModels(makeId: string | null | undefined) {
     setError(null);
 
     try {
-      const response = await getApiCarApiMakesByMakeIdModels({
+      const response = await getApiCarCatalogMakesByMakeIdModels({
         path: { makeId },
       });
 
@@ -40,7 +40,8 @@ export function useCarModels(makeId: string | null | undefined) {
       setIsLoading(false);
       return [];
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";
+      const errorMessage =
+        err instanceof Error ? err.message : "An unexpected error occurred.";
       setError(errorMessage);
       setIsLoading(false);
       return [];

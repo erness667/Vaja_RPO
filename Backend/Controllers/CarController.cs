@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Backend.DTOs.Car;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SuperCarsApi.Models;
@@ -99,7 +100,9 @@ namespace Backend.Controllers
                     EquipmentAndDetails = car.EquipmentAndDetails,
                     Price = car.Price,
                     CreatedAt = car.CreatedAt,
-                    UpdatedAt = car.UpdatedAt
+                    UpdatedAt = car.UpdatedAt,
+                    MainImageUrl = null,
+                    ImageUrls = new List<string>()
                 };
 
                 return CreatedAtAction(nameof(GetCar), new { id = car.Id }, carDto);
@@ -108,6 +111,192 @@ namespace Backend.Controllers
             {
                 return StatusCode(500, new { message = "Failed to create car listing", error = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// Upload images for a car and optionally set the main image.
+        /// </summary>
+        [HttpPost("{id}/images")]
+        [Authorize]
+        public async Task<IActionResult> UploadImages(int id, [FromForm] List<IFormFile> files)
+        {
+            if (files == null || files.Count == 0)
+            {
+                return BadRequest(new { message = "No files uploaded." });
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid user token." });
+            }
+
+            var car = await _dbContext.Cars
+                .Include(c => c.Images)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (car == null)
+            {
+                return NotFound(new { message = "Car not found." });
+            }
+
+            if (car.SellerId != userId)
+            {
+                return Forbid();
+            }
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+            const long maxFileSize = 10 * 1024 * 1024; // 10MB per image
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "cars");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var newImages = new List<CarImage>();
+
+            foreach (var file in files)
+            {
+                if (file == null || file.Length == 0)
+                {
+                    continue;
+                }
+
+                var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+                if (!allowedExtensions.Contains(extension))
+                {
+                    return BadRequest(new { message = "Invalid file type. Allowed types: JPG, JPEG, PNG, GIF, WEBP." });
+                }
+
+                if (file.Length > maxFileSize)
+                {
+                    return BadRequest(new { message = "File size exceeds 10MB limit." });
+                }
+
+                var uniqueFileName = $"{car.Id}_{Guid.NewGuid()}{extension}";
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                var baseUrl = $"{Request.Scheme}://{Request.Host}";
+                var url = $"{baseUrl}/uploads/cars/{uniqueFileName}";
+
+                var image = new CarImage
+                {
+                    CarId = car.Id,
+                    Url = url,
+                    IsMain = false
+                };
+
+                newImages.Add(image);
+                car.Images.Add(image);
+            }
+
+            // If there is no main image yet, set the first new image as main
+            if (!car.Images.Any(i => i.IsMain) && car.Images.Any())
+            {
+                var main = car.Images.First();
+                main.IsMain = true;
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            var mainImage = car.Images.FirstOrDefault(i => i.IsMain)
+                            ?? car.Images.FirstOrDefault();
+
+            var carDto = new CarDto
+            {
+                Id = car.Id,
+                SellerId = car.SellerId,
+                Brand = car.Brand,
+                Model = car.Model,
+                Year = car.Year,
+                FirstRegistrationDate = car.FirstRegistrationDate,
+                Mileage = car.Mileage,
+                PreviousOwners = car.PreviousOwners,
+                FuelType = car.FuelType,
+                EnginePower = car.EnginePower,
+                Transmission = car.Transmission,
+                Color = car.Color,
+                EquipmentAndDetails = car.EquipmentAndDetails,
+                Price = car.Price,
+                CreatedAt = car.CreatedAt,
+                UpdatedAt = car.UpdatedAt,
+                MainImageUrl = mainImage?.Url,
+                ImageUrls = car.Images.Select(i => i.Url).ToList()
+            };
+
+            return Ok(carDto);
+        }
+
+        /// <summary>
+        /// Set a specific car image as the main image.
+        /// </summary>
+        [HttpPut("{id}/images/{imageId}/set-main")]
+        [Authorize]
+        public async Task<IActionResult> SetMainImage(int id, int imageId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid user token." });
+            }
+
+            var car = await _dbContext.Cars
+                .Include(c => c.Images)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (car == null)
+            {
+                return NotFound(new { message = "Car not found." });
+            }
+
+            if (car.SellerId != userId)
+            {
+                return Forbid();
+            }
+
+            var image = car.Images.FirstOrDefault(i => i.Id == imageId);
+            if (image == null)
+            {
+                return NotFound(new { message = "Image not found." });
+            }
+
+            foreach (var img in car.Images)
+            {
+                img.IsMain = false;
+            }
+
+            image.IsMain = true;
+            await _dbContext.SaveChangesAsync();
+
+            var carDto = new CarDto
+            {
+                Id = car.Id,
+                SellerId = car.SellerId,
+                Brand = car.Brand,
+                Model = car.Model,
+                Year = car.Year,
+                FirstRegistrationDate = car.FirstRegistrationDate,
+                Mileage = car.Mileage,
+                PreviousOwners = car.PreviousOwners,
+                FuelType = car.FuelType,
+                EnginePower = car.EnginePower,
+                Transmission = car.Transmission,
+                Color = car.Color,
+                EquipmentAndDetails = car.EquipmentAndDetails,
+                Price = car.Price,
+                CreatedAt = car.CreatedAt,
+                UpdatedAt = car.UpdatedAt,
+                MainImageUrl = image.Url,
+                ImageUrls = car.Images.Select(i => i.Url).ToList()
+            };
+
+            return Ok(carDto);
         }
 
         /// <summary>
@@ -120,12 +309,16 @@ namespace Backend.Controllers
             {
                 var car = await _dbContext.Cars
                     .Include(c => c.Seller)
+                    .Include(c => c.Images)
                     .FirstOrDefaultAsync(c => c.Id == id);
 
                 if (car == null)
                 {
                     return NotFound(new { message = "Car not found." });
                 }
+
+                var mainImage = car.Images.FirstOrDefault(i => i.IsMain)
+                                ?? car.Images.FirstOrDefault();
 
                 var carDto = new CarDto
                 {
@@ -144,7 +337,9 @@ namespace Backend.Controllers
                     EquipmentAndDetails = car.EquipmentAndDetails,
                     Price = car.Price,
                     CreatedAt = car.CreatedAt,
-                    UpdatedAt = car.UpdatedAt
+                    UpdatedAt = car.UpdatedAt,
+                    MainImageUrl = mainImage?.Url,
+                    ImageUrls = car.Images.Select(i => i.Url).ToList()
                 };
 
                 return Ok(carDto);
@@ -249,7 +444,13 @@ namespace Backend.Controllers
                         EquipmentAndDetails = c.EquipmentAndDetails,
                         Price = c.Price,
                         CreatedAt = c.CreatedAt,
-                        UpdatedAt = c.UpdatedAt
+                        UpdatedAt = c.UpdatedAt,
+                        MainImageUrl = c.Images
+                            .Where(i => i.IsMain)
+                            .Select(i => i.Url)
+                            .FirstOrDefault()
+                            ?? c.Images.Select(i => i.Url).FirstOrDefault(),
+                        ImageUrls = c.Images.Select(i => i.Url).ToList()
                     })
                     .ToListAsync();
 

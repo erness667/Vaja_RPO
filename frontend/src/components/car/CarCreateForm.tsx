@@ -26,7 +26,7 @@ import {
 
 export function CarCreateForm() {
   const { createCar, isLoading, error, setError } = useCreateCar();
-  
+
   const [formData, setFormData] = useState<CreateCarRequest>({
     makeId: "",
     modelId: "",
@@ -41,6 +41,8 @@ export function CarCreateForm() {
     equipmentAndDetails: "",
     price: 0,
   });
+
+  const [images, setImages] = useState<File[]>([]);
 
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: currentYear - 1949 }, (_, i) => 
@@ -81,12 +83,20 @@ export function CarCreateForm() {
     if (error) setError(null);
   }, [error, setError]);
 
+  const handleImagesChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files ?? []);
+      setImages(files);
+    },
+    []
+  );
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      await createCar(formData);
+      await createCar(formData, images);
     },
-    [formData, createCar]
+    [formData, images, createCar]
   );
 
   return (
@@ -373,6 +383,30 @@ export function CarCreateForm() {
             />
           </Field.Root>
         </SimpleGrid>
+
+        <Heading
+          size="md"
+          mt={4}
+          color={{ base: "gray.800", _dark: "gray.100" }}
+        >
+          Fotografije vozila
+        </Heading>
+
+        <Field.Root>
+          <Field.Label
+            fontSize="sm"
+            fontWeight="medium"
+            color={{ base: "gray.700", _dark: "gray.300" }}
+          >
+            Dodajte slike (lahko več)
+          </Field.Label>
+          <Input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImagesChange}
+          />
+        </Field.Root>
 
         <Field.Root>
           <Field.Label

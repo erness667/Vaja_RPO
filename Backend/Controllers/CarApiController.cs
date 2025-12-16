@@ -1,18 +1,18 @@
-using Backend.DTOs.CarApi;
+using Backend.DTOs.CarCatalog;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
 {
     [ApiController]
-    [Route("api/car-api")]
-    public class CarApiController : ControllerBase
+    [Route("api/car-catalog")]
+    public class CarCatalogController : ControllerBase
     {
-        private readonly AutoDevApiService _autoDevApiService;
+        private readonly CarCatalogService _carCatalogService;
 
-        public CarApiController(AutoDevApiService autoDevApiService)
+        public CarCatalogController(CarCatalogService carCatalogService)
         {
-            _autoDevApiService = autoDevApiService;
+            _carCatalogService = carCatalogService;
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Backend.Controllers
         {
             try
             {
-                var makes = await _autoDevApiService.GetMakesAsync();
+                var makes = await _carCatalogService.GetMakesAsync();
                 return Ok(makes);
             }
             catch (Exception ex)
@@ -45,7 +45,7 @@ namespace Backend.Controllers
 
             try
             {
-                var makes = await _autoDevApiService.SearchMakesAsync(query);
+                var makes = await _carCatalogService.SearchMakesAsync(query);
                 return Ok(makes);
             }
             catch (Exception ex)
@@ -67,7 +67,7 @@ namespace Backend.Controllers
 
             try
             {
-                var models = await _autoDevApiService.GetModelsAsync(makeId);
+                var models = await _carCatalogService.GetModelsAsync(makeId);
                 return Ok(models);
             }
             catch (Exception ex)

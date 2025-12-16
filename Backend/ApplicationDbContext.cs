@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<CarImage> CarImages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,6 +47,14 @@ public class ApplicationDbContext : DbContext
             // Configure Price with proper precision for currency
             entity.Property(c => c.Price)
                 .HasPrecision(18, 2); // 18 total digits, 2 decimal places
+        });
+
+        modelBuilder.Entity<CarImage>(entity =>
+        {
+            entity.HasOne(ci => ci.Car)
+                .WithMany(c => c.Images)
+                .HasForeignKey(ci => ci.CarId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Comment>(entity =>

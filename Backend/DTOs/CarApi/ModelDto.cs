@@ -1,4 +1,4 @@
-namespace Backend.DTOs.CarApi
+namespace Backend.DTOs.CarCatalog
 {
     public class ModelDto
     {

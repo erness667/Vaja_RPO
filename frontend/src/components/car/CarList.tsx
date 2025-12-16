@@ -8,7 +8,6 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { PageShell } from "@/components/layout/PageShell";
 import { useCars } from "@/lib/hooks/useCars";
 import { CarCard } from "./CarCard";
 
@@ -16,14 +15,30 @@ export function CarList() {
   const { cars, isLoading, error } = useCars();
 
   return (
-    <PageShell maxWidthClass="max-w-6xl">
-      <VStack align="stretch" gap={6}>
-        <Heading
-          size="lg"
-          color={{ base: "gray.800", _dark: "gray.100" }}
-        >
-          Najnovejši oglasi
-        </Heading>
+    <Box
+      suppressHydrationWarning
+      pt={0}
+      pb={8}
+      px={4}
+    >
+      <Box
+        suppressHydrationWarning
+        maxW="72rem"
+        mx="auto"
+        rounded="2xl"
+        bg={{ base: "white", _dark: "gray.800" }}
+        borderWidth="1px"
+        borderColor={{ base: "gray.200", _dark: "gray.700" }}
+        boxShadow="2xl"
+        p={8}
+      >
+        <VStack align="stretch" gap={6}>
+          <Heading
+            size="lg"
+            color={{ base: "gray.800", _dark: "gray.100" }}
+          >
+            Najnovejši oglasi
+          </Heading>
 
         {isLoading && (
           <Box display="flex" justifyContent="center" py={10}>
@@ -67,8 +82,9 @@ export function CarList() {
             ))}
           </SimpleGrid>
         )}
-      </VStack>
-    </PageShell>
+        </VStack>
+      </Box>
+    </Box>
   );
 }
 

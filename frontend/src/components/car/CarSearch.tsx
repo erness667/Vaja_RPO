@@ -11,7 +11,6 @@ import {
   Select,
   useListCollection,
 } from "@chakra-ui/react";
-import { PageShell } from "@/components/layout/PageShell";
 import { LuSettings2, LuSearch } from "react-icons/lu";
 import { MakeDropdown } from "./MakeDropdown";
 import { ModelDropdown } from "./ModelDropdown";
@@ -101,14 +100,31 @@ export function CarSearch() {
   });
 
   return (
-    <PageShell maxWidthClass="max-w-6xl">
-      <Heading
-        size="lg"
-        mb={6}
-        color={{ base: "gray.800", _dark: "gray.100" }}
+    <Box
+      suppressHydrationWarning
+      pt={8}
+      pb={2}
+      px={4}
+      bgGradient={{ base: "linear(to-br, gray.50, gray.100, gray.50)", _dark: "linear(to-br, gray.900, gray.950, gray.900)" }}
+    >
+      <Box
+        suppressHydrationWarning
+        maxW="72rem"
+        mx="auto"
+        rounded="2xl"
+        bg={{ base: "white", _dark: "gray.800" }}
+        borderWidth="1px"
+        borderColor={{ base: "gray.200", _dark: "gray.700" }}
+        boxShadow="2xl"
+        p={8}
       >
-        Hitro iskanje osebnih vozil
-      </Heading>
+        <Heading
+          size="lg"
+          mb={6}
+          color={{ base: "gray.800", _dark: "gray.100" }}
+        >
+          Hitro iskanje osebnih vozil
+        </Heading>
 
       <Box
         as="form"
@@ -391,6 +407,7 @@ export function CarSearch() {
           </Button>
         </HStack>
       </Box>
-    </PageShell>
+      </Box>
+    </Box>
   );
 }

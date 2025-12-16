@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from "next/navigation";
 import {
   Box,
   Card,
@@ -11,8 +12,10 @@ import {
   Badge,
   Button,
   Stack,
+  Icon,
 } from "@chakra-ui/react";
-import { LuChevronRight } from "react-icons/lu";
+import Image from "next/image";
+import { LuChevronRight, LuGauge, LuFuel, LuSettings2, LuPalette } from "react-icons/lu";
 import type { Car } from "@/lib/types/car";
 
 interface CarCardProps {
@@ -20,92 +23,162 @@ interface CarCardProps {
 }
 
 export function CarCard({ car }: CarCardProps) {
+  const router = useRouter();
   const title = `${car.brand} ${car.model}`.trim();
   const price = `${car.price.toLocaleString("sl-SI")} €`;
   const mileageText = `${car.mileage.toLocaleString("sl-SI")} km`;
   const powerText = `${car.enginePower} kW`;
+  
+  // Get image URL - prefer mainImageUrl, then first imageUrls, or null
+  const imageUrl = car.mainImageUrl || car.imageUrls?.[0] || null;
+
+  const handleDetailsClick = () => {
+    router.push(`/cars/${car.id}`);
+  };
 
   return (
     <Card.Root
       height="100%"
+      borderRadius="xl"
       borderWidth="1px"
       borderColor={{ base: "gray.200", _dark: "gray.700" }}
       bg={{ base: "white", _dark: "gray.900" }}
       overflow="hidden"
       display="flex"
       flexDirection="column"
+      boxShadow={{ base: "sm", _dark: "lg" }}
       _hover={{
         borderColor: "blue.500",
-        boxShadow: "0 10px 30px rgba(37, 99, 235, 0.35)",
-        transform: "translateY(-2px)",
+        boxShadow: { base: "0 10px 30px rgba(37, 99, 235, 0.2)", _dark: "0 10px 30px rgba(37, 99, 235, 0.4)" },
+        transform: "translateY(-4px)",
       }}
-      transition="all 0.2s ease"
+      transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
     >
-      {/* Image placeholder */}
+      {/* Car Image */}
       <Box
-        bgGradient="linear(to-tr, gray.800, gray.700)"
-        height="180px"
+        height="200px"
         position="relative"
+        bgGradient={{ base: "linear(to-tr, gray.200, gray.300)", _dark: "linear(to-tr, gray.800, gray.700)" }}
+        overflow="hidden"
       >
+        {imageUrl ? (
+          <>
+            <Image
+              src={imageUrl}
+              alt={title}
+              fill
+              style={{
+                objectFit: "cover",
+              }}
+              unoptimized
+            />
+            {/* Gradient overlay for better text readability */}
+            <Box
+              position="absolute"
+              bottom={0}
+              left={0}
+              right={0}
+              height="60px"
+              bgGradient="linear(to-t, blackAlpha.600, transparent)"
+            />
+          </>
+        ) : (
+          <Box
+            position="absolute"
+            inset="16px"
+            borderRadius="lg"
+            borderWidth="2px"
+            borderStyle="dashed"
+            borderColor={{ base: "gray.300", _dark: "whiteAlpha.300" }}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text
+              fontSize="sm"
+              color={{ base: "gray.400", _dark: "gray.500" }}
+            >
+              Ni slike
+            </Text>
+          </Box>
+        )}
+        {/* Year Badge on Image */}
         <Box
           position="absolute"
-          inset="16px"
-          borderRadius="lg"
-          borderWidth="1px"
-          borderColor="whiteAlpha.300"
-        />
+          top={3}
+          right={3}
+        >
+          <Badge
+            colorPalette="blue"
+            variant="solid"
+            fontSize="sm"
+            fontWeight="bold"
+            px={3}
+            py={1}
+            borderRadius="full"
+            boxShadow="md"
+          >
+            {car.year}
+          </Badge>
+        </Box>
       </Box>
 
-      <CardBody flex="1">
-        <VStack align="stretch" gap={3}>
-          <HStack justify="space-between" align="flex-start" gap={2}>
-            <Text
-              fontWeight="semibold"
-              fontSize="lg"
-              noOfLines={1}
-              color={{ base: "gray.900", _dark: "gray.100" }}
-            >
-              {title}
-            </Text>
-            <Badge
-              colorPalette="blue"
-              fontWeight="semibold"
-              px={2}
-              py={0.5}
-              borderRadius="full"
-            >
-              {car.year}
-            </Badge>
-          </HStack>
-
+      <CardBody flex="1" p={5}>
+        <VStack align="stretch" gap={4}>
+          {/* Title */}
           <Text
-            fontSize="xl"
             fontWeight="bold"
-            color={{ base: "blue.600", _dark: "blue.300" }}
+            fontSize="xl"
+            noOfLines={2}
+            color={{ base: "gray.900", _dark: "gray.100" }}
+            lineHeight="1.3"
+            minH="3.2em"
           >
-            {price}
+            {title}
           </Text>
 
-          <Stack
-            direction="row"
-            spacing={4}
-            fontSize="sm"
-            color={{ base: "gray.600", _dark: "gray.300" }}
-          >
-            <Text noOfLines={1}>{mileageText}</Text>
-            <Text>• {car.fuelType}</Text>
-            <Text>• {powerText}</Text>
-          </Stack>
+          {/* Price */}
+          <Box>
+            <Text
+              fontSize="2xl"
+              fontWeight="bold"
+              color={{ base: "blue.600", _dark: "blue.400" }}
+              lineHeight="1.2"
+            >
+              {price}
+            </Text>
+          </Box>
 
-          <Stack
-            direction="row"
-            spacing={4}
-            fontSize="xs"
-            color={{ base: "gray.500", _dark: "gray.400" }}
-          >
-            <Text noOfLines={1}>{car.transmission}</Text>
-            <Text noOfLines={1}>• {car.color}</Text>
-          </Stack>
+          {/* Main Specs with Icons */}
+          <VStack align="stretch" gap={2.5}>
+            <HStack gap={3} color={{ base: "gray.700", _dark: "gray.300" }}>
+              <Icon as={LuGauge} boxSize={4} color={{ base: "blue.500", _dark: "blue.400" }} />
+              <Text fontSize="sm" fontWeight="medium">
+                {mileageText}
+              </Text>
+            </HStack>
+            
+            <HStack gap={3} color={{ base: "gray.700", _dark: "gray.300" }}>
+              <Icon as={LuFuel} boxSize={4} color={{ base: "blue.500", _dark: "blue.400" }} />
+              <Text fontSize="sm" fontWeight="medium">
+                {car.fuelType}
+              </Text>
+            </HStack>
+
+            <HStack gap={3} color={{ base: "gray.700", _dark: "gray.300" }}>
+              <Icon as={LuSettings2} boxSize={4} color={{ base: "blue.500", _dark: "blue.400" }} />
+              <Text fontSize="sm" fontWeight="medium">
+                {powerText} • {car.transmission}
+              </Text>
+            </HStack>
+
+            <HStack gap={3} color={{ base: "gray.600", _dark: "gray.400" }}>
+              <Icon as={LuPalette} boxSize={4} color={{ base: "gray.500", _dark: "gray.500" }} />
+              <Text fontSize="sm">
+                {car.color}
+              </Text>
+            </HStack>
+          </VStack>
         </VStack>
       </CardBody>
 
@@ -114,12 +187,19 @@ export function CarCard({ car }: CarCardProps) {
         borderColor={{ base: "gray.200", _dark: "gray.700" }}
       />
 
-      <CardFooter>
+      <CardFooter p={5} pt={4}>
         <Button
           width="full"
-          variant="outline"
           colorPalette="blue"
+          variant="solid"
+          size="md"
+          fontWeight="semibold"
           rightIcon={<LuChevronRight />}
+          onClick={handleDetailsClick}
+          _hover={{
+            transform: "translateX(2px)",
+          }}
+          transition="all 0.2s"
         >
           Podrobnosti vozila
         </Button>

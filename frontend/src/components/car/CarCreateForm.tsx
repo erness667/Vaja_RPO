@@ -216,15 +216,21 @@ export function CarCreateForm() {
         </Box>
       )}
 
-      <VStack gap={6} align="stretch">
-        <Heading
-          size="lg"
-          color={{ base: "gray.800", _dark: "gray.100" }}
-        >
-          Osnovni podatki
-        </Heading>
+      <VStack gap={8} align="stretch">
+        {/* Osnovni podatki Section */}
+        <Box>
+          <Heading
+            size="lg"
+            color={{ base: "gray.800", _dark: "gray.100" }}
+            mb={6}
+            pb={3}
+            borderBottomWidth="2px"
+            borderBottomColor={{ base: "blue.200", _dark: "blue.700" }}
+          >
+            Osnovni podatki
+          </Heading>
 
-        <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
           <MakeDropdown
             value={formData.makeId}
             onChange={(value) => handleChange("makeId", value)}
@@ -471,53 +477,64 @@ export function CarCreateForm() {
           placeholder="0"
             />
           </Field.Root>
-        </SimpleGrid>
+          </SimpleGrid>
+        </Box>
 
-        <Heading
-          size="md"
-          mt={4}
-          color={{ base: "gray.800", _dark: "gray.100" }}
+        {/* Fotografije vozila Section */}
+        <Box
+          pt={6}
+          borderTopWidth="1px"
+          borderTopColor={{ base: "gray.200", _dark: "gray.700" }}
         >
-          Fotografije vozila
-        </Heading>
+          <Heading
+            size="lg"
+            color={{ base: "gray.800", _dark: "gray.100" }}
+            mb={6}
+            pb={3}
+            borderBottomWidth="2px"
+            borderBottomColor={{ base: "blue.200", _dark: "blue.700" }}
+          >
+            Fotografije vozila
+          </Heading>
 
-        <Field.Root>
-          <Field.Label
-            fontSize="sm"
-            fontWeight="medium"
-            color={{ base: "gray.700", _dark: "gray.300" }}
-            mb={2}
-          >
-            Dodajte slike (lahko več)
-          </Field.Label>
-          
-          {/* Upload Area */}
-          <Box
-            borderWidth="2px"
-            borderStyle="dashed"
-            borderColor={{
-              base: "gray.300",
-              _dark: "gray.600",
-              _hover: "blue.400",
-            }}
-            borderRadius="lg"
-            p={8}
-            textAlign="center"
-            cursor="pointer"
-            transition="all 0.2s"
-            bg={{
-              base: "gray.50",
-              _dark: "gray.800",
-              _hover: { base: "blue.50", _dark: "blue.900" },
-            }}
-            _hover={{
-              borderColor: "blue.400",
-              bg: { base: "blue.50", _dark: "blue.900" },
-            }}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onClick={() => fileInputRef.current?.click()}
-          >
+          <Field.Root>
+            <Field.Label
+              fontSize="sm"
+              fontWeight="medium"
+              color={{ base: "gray.700", _dark: "gray.300" }}
+              mb={3}
+            >
+              Dodajte slike (lahko več)
+            </Field.Label>
+            
+            {/* Upload Area - Full Width */}
+            <Box
+              width="100%"
+              borderWidth="2px"
+              borderStyle="dashed"
+              borderColor={{
+                base: "gray.300",
+                _dark: "gray.600",
+                _hover: "blue.400",
+              }}
+              borderRadius="lg"
+              p={10}
+              textAlign="center"
+              cursor="pointer"
+              transition="all 0.2s"
+              bg={{
+                base: "gray.50",
+                _dark: "gray.800",
+                _hover: { base: "blue.50", _dark: "blue.900" },
+              }}
+              _hover={{
+                borderColor: "blue.400",
+                bg: { base: "blue.50", _dark: "blue.900" },
+              }}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onClick={() => fileInputRef.current?.click()}
+            >
             <VStack gap={3}>
               <Box
                 fontSize="4xl"
@@ -717,33 +734,63 @@ export function CarCreateForm() {
               </Box>
             </Box>
           )}
-        </Field.Root>
+          </Field.Root>
+        </Box>
 
-        <Field.Root>
-          <Field.Label
-            fontSize="sm"
-            fontWeight="medium"
-            color={{ base: "gray.700", _dark: "gray.300" }}
+        {/* Oprema in dodatni podatki Section */}
+        <Box
+          pt={6}
+          borderTopWidth="1px"
+          borderTopColor={{ base: "gray.200", _dark: "gray.700" }}
+        >
+          <Heading
+            size="lg"
+            color={{ base: "gray.800", _dark: "gray.100" }}
+            mb={4}
+            pb={3}
+            borderBottomWidth="2px"
+            borderBottomColor={{ base: "blue.200", _dark: "blue.700" }}
           >
             Oprema in dodatni podatki
-          </Field.Label>
+          </Heading>
+
+          <Field.Root>
+            <Field.Label
+              fontSize="sm"
+              fontWeight="medium"
+              color={{ base: "gray.700", _dark: "gray.300" }}
+            >
+              Opis opreme in dodatnih podatkov
+            </Field.Label>
           <Textarea
             value={formData.equipmentAndDetails || ""}
             onChange={(e) => handleChange("equipmentAndDetails", e.target.value)}
             rows={6}
             placeholder="Opišite opremo vozila, dodatne podatke, stanje vozila..."
           />
-        </Field.Root>
+          </Field.Root>
+        </Box>
 
-        <Button
-          type="submit"
-          colorPalette="blue"
-          size="lg"
-          loading={isLoading}
-          loadingText="Objavljanje..."
+        {/* Submit Button */}
+        <Box
+          pt={6}
+          borderTopWidth="1px"
+          borderTopColor={{ base: "gray.200", _dark: "gray.700" }}
         >
-          Objavi oglas
-        </Button>
+          <Button
+            type="submit"
+            colorPalette="blue"
+            size="lg"
+            width="100%"
+            loading={isLoading}
+            loadingText="Objavljanje..."
+            fontSize="md"
+            fontWeight="semibold"
+            py={6}
+          >
+            Objavi oglas
+          </Button>
+        </Box>
       </VStack>
       </Box>
     </form>

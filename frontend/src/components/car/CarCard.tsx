@@ -26,7 +26,7 @@ export function CarCard({ car }: CarCardProps) {
   const powerText = `${car.enginePower} kW`;
 
   return (
-    <Card
+    <Card.Root
       height="100%"
       borderWidth="1px"
       borderColor={{ base: "gray.200", _dark: "gray.700" }}
@@ -124,7 +124,7 @@ export function CarCard({ car }: CarCardProps) {
           Podrobnosti vozila
         </Button>
       </CardFooter>
-    </Card>
+    </Card.Root>
   );
 }
 

@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <>
       <CarSearch />
-      {/* <CarList /> */}
+      <CarList />
     </>
   );
 }

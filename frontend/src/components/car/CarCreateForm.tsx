@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
+import Image from "next/image";
 import {
   Box,
   VStack,
@@ -12,7 +13,11 @@ import {
   Input,
   Select,
   useListCollection,
+  HStack,
+  Text,
+  IconButton,
 } from "@chakra-ui/react";
+import { LuUpload, LuX, LuImage, LuStar } from "react-icons/lu";
 import { useCreateCar } from "@/lib/hooks/useCreateCar";
 import { MakeDropdown } from "./MakeDropdown";
 import { ModelDropdown } from "./ModelDropdown";
@@ -43,6 +48,11 @@ export function CarCreateForm() {
   });
 
   const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [imageIds, setImageIds] = useState<string[]>([]); // Unique IDs for each image
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [mainImageIndex, setMainImageIndex] = useState<number | null>(null);
+  const [hoveredImageIndex, setHoveredImageIndex] = useState<number | null>(null);
 
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: currentYear - 1949 }, (_, i) => 
@@ -87,17 +97,96 @@ export function CarCreateForm() {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files ?? []);
       setImages(files);
+
+      // Create preview URLs
+      const previews = files.map((file) => URL.createObjectURL(file));
+      setImagePreviews(previews);
+
+      // Create unique IDs for each image
+      const ids = files.map((_, index) => `${Date.now()}-${index}-${Math.random()}`);
+      setImageIds(ids);
+
+      // Default main image to the first selected image
+      setMainImageIndex(files.length > 0 ? 0 : null);
     },
     []
   );
 
+  const handleRemoveImage = useCallback(
+    (index: number) => {
+      // Revoke the object URL to free memory
+      if (imagePreviews[index]) {
+        URL.revokeObjectURL(imagePreviews[index]);
+      }
+
+      const newImages = images.filter((_, i) => i !== index);
+      const newPreviews = imagePreviews.filter((_, i) => i !== index);
+      const newIds = imageIds.filter((_, i) => i !== index);
+
+      setImages(newImages);
+      setImagePreviews(newPreviews);
+      setImageIds(newIds);
+
+      // Main image is always at index 0, so if we removed index 0, the new first image becomes main
+      // If we removed a different index, main stays at 0
+      setMainImageIndex(newImages.length > 0 ? 0 : null);
+
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    },
+    [images, imagePreviews, imageIds]
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const files = Array.from(e.dataTransfer.files).filter((file) =>
+        file.type.startsWith("image/")
+      );
+
+      if (files.length > 0) {
+        const newImages = [...images, ...files];
+        setImages(newImages);
+
+        const newPreviews = files.map((file) => URL.createObjectURL(file));
+        setImagePreviews([...imagePreviews, ...newPreviews]);
+
+        // Create unique IDs for new images
+        const newIds = files.map((_, index) => `${Date.now()}-${index}-${Math.random()}`);
+        setImageIds([...imageIds, ...newIds]);
+
+        if (mainImageIndex === null && newImages.length > 0) {
+          setMainImageIndex(0);
+        }
+      }
+    },
+    [images, imagePreviews, imageIds, mainImageIndex]
+  );
+
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  }, []);
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+
+      // Main image is always first in the array (index 0) so backend marks it as main
       await createCar(formData, images);
     },
     [formData, images, createCar]
   );
+
+  // Cleanup object URLs on unmount
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((preview) => {
+        URL.revokeObjectURL(preview);
+      });
+    };
+  }, [imagePreviews]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -397,15 +486,237 @@ export function CarCreateForm() {
             fontSize="sm"
             fontWeight="medium"
             color={{ base: "gray.700", _dark: "gray.300" }}
+            mb={2}
           >
             Dodajte slike (lahko več)
           </Field.Label>
-          <Input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImagesChange}
-          />
+          
+          {/* Upload Area */}
+          <Box
+            borderWidth="2px"
+            borderStyle="dashed"
+            borderColor={{
+              base: "gray.300",
+              _dark: "gray.600",
+              _hover: "blue.400",
+            }}
+            borderRadius="lg"
+            p={8}
+            textAlign="center"
+            cursor="pointer"
+            transition="all 0.2s"
+            bg={{
+              base: "gray.50",
+              _dark: "gray.800",
+              _hover: { base: "blue.50", _dark: "blue.900" },
+            }}
+            _hover={{
+              borderColor: "blue.400",
+              bg: { base: "blue.50", _dark: "blue.900" },
+            }}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <VStack gap={3}>
+              <Box
+                fontSize="4xl"
+                color={{ base: "gray.400", _dark: "gray.500" }}
+              >
+                <LuImage />
+              </Box>
+              <VStack gap={1}>
+                <Text
+                  fontSize="sm"
+                  fontWeight="medium"
+                  color={{ base: "gray.700", _dark: "gray.300" }}
+                >
+                  Kliknite za izbiro ali povlecite slike sem
+                </Text>
+                <Text
+                  fontSize="xs"
+                  color={{ base: "gray.500", _dark: "gray.400" }}
+                >
+                  Podprte so slike v formatih JPG, PNG, WEBP
+                </Text>
+              </VStack>
+              <Button
+                size="sm"
+                colorPalette="blue"
+                variant="outline"
+                leftIcon={<LuUpload />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                Izberi slike
+              </Button>
+            </VStack>
+            
+            <Input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImagesChange}
+              display="none"
+            />
+          </Box>
+
+          {/* Image Previews */}
+          {imagePreviews.length > 0 && (
+            <Box mt={4}>
+              <Text
+                fontSize="sm"
+                fontWeight="medium"
+                color={{ base: "gray.700", _dark: "gray.300" }}
+                mb={3}
+              >
+                Izbrane slike ({imagePreviews.length})
+              </Text>
+              <Box
+                display="grid"
+                gridTemplateColumns={{ base: "repeat(2, 1fr)", sm: "repeat(4, 1fr)", md: "repeat(4, 1fr)" }}
+                gap={4}
+              >
+                {imagePreviews.map((preview, index) => {
+                  const isMain = index === 0; // Main image is always first
+                  const otherImageIndex = index - 1; // Index for non-main images (0, 1, 2, ...)
+                  const col = 3 + (otherImageIndex % 2); // Column 3 or 4
+                  const row = Math.floor(otherImageIndex / 2) + 1; // Row 1, 2, 3, ...
+                  
+                  return (
+                  <Box
+                    key={imageIds[index] || `image-${index}`}
+                    position="relative"
+                    borderRadius="md"
+                    overflow="hidden"
+                    borderWidth={isMain ? "2px" : "1px"}
+                    borderColor={
+                      isMain
+                        ? { base: "yellow.400", _dark: "yellow.500" }
+                        : { base: "gray.200", _dark: "gray.700" }
+                    }
+                    bg={{ base: "white", _dark: "gray.800" }}
+                    aspectRatio="4/3"
+                    gridColumn={
+                      isMain
+                        ? { base: "span 2", sm: "1 / 3", md: "1 / 3" }
+                        : { base: "span 1", sm: `${col} / ${col + 1}`, md: `${col} / ${col + 1}` }
+                    }
+                    gridRow={
+                      isMain
+                        ? { base: "span 2", sm: "1 / 3", md: "1 / 3" }
+                        : { base: "auto", sm: `${row} / ${row + 1}`, md: `${row} / ${row + 1}` }
+                    }
+                    onMouseEnter={() => setHoveredImageIndex(index)}
+                    onMouseLeave={() => setHoveredImageIndex(null)}
+                  >
+                    <Image
+                      src={preview}
+                      alt={`Preview ${index + 1}`}
+                      width={400}
+                      height={300}
+                      unoptimized
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <Box
+                      position="absolute"
+                      top={2}
+                      right={2}
+                      zIndex={10}
+                      opacity={hoveredImageIndex === index ? 1 : 0}
+                      transition="opacity 0.2s"
+                    >
+                      <HStack gap={1}>
+                        <IconButton
+                          size="sm"
+                          colorPalette={isMain ? "yellow" : "gray"}
+                          variant="solid"
+                          bg={
+                            isMain
+                              ? { base: "yellow.500", _dark: "yellow.600" }
+                              : { base: "whiteAlpha.900", _dark: "gray.800" }
+                          }
+                          color={
+                            isMain
+                              ? { base: "gray.900", _dark: "gray.900" }
+                              : { base: "gray.700", _dark: "gray.200" }
+                          }
+                          shadow="md"
+                          aria-label="Nastavi kot glavno sliko"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Reorder images so the selected one becomes first
+                            const newImages = [...images];
+                            const newPreviews = [...imagePreviews];
+                            const newIds = [...imageIds];
+                            const selectedImage = newImages[index];
+                            const selectedPreview = newPreviews[index];
+                            const selectedId = newIds[index];
+                            
+                            // Remove from current position
+                            newImages.splice(index, 1);
+                            newPreviews.splice(index, 1);
+                            newIds.splice(index, 1);
+                            
+                            // Add to beginning
+                            newImages.unshift(selectedImage);
+                            newPreviews.unshift(selectedPreview);
+                            newIds.unshift(selectedId);
+                            
+                            setImages(newImages);
+                            setImagePreviews(newPreviews);
+                            setImageIds(newIds);
+                            setMainImageIndex(0);
+                          }}
+                        >
+                          <LuStar />
+                        </IconButton>
+                        <IconButton
+                          size="sm"
+                          colorPalette="red"
+                          variant="solid"
+                          bg={{ base: "red.500", _dark: "red.600" }}
+                          color="white"
+                          shadow="md"
+                          aria-label="Odstrani sliko"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveImage(index);
+                          }}
+                        >
+                          <LuX />
+                        </IconButton>
+                      </HStack>
+                    </Box>
+                    <Box
+                      position="absolute"
+                      bottom={0}
+                      left={0}
+                      right={0}
+                      bg="blackAlpha.600"
+                      color="white"
+                      fontSize="xs"
+                      px={2}
+                      py={1}
+                      opacity={hoveredImageIndex === index ? 1 : 0}
+                      transition="opacity 0.2s"
+                    >
+                      {isMain && "Glavna • "}
+                      {images[index]?.name || `Slika ${index + 1}`}
+                    </Box>
+                  </Box>
+                  );
+                })}
+              </Box>
+            </Box>
+          )}
         </Field.Root>
 
         <Field.Root>

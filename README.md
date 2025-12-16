@@ -145,7 +145,7 @@ The database connection is pre-configured in `Backend/appsettings.json`:
 - **Server**: `localhost,1433`
 - **Database**: `vajaRPO` (created automatically)
 - **Username**: `sa`
-- **Password**: `VajaRPO2025!`
+- **Password**: `**********`
 
 For detailed database setup, troubleshooting, and alternative configurations, see [DATABASE_SETUP.md](DATABASE_SETUP.md).
 
@@ -167,7 +167,7 @@ For detailed database setup, troubleshooting, and alternative configurations, se
    ```json
    {
      "ConnectionStrings": {
-       "DefaultConnection": "Server=localhost,1433;Database=vajaRPO;User=sa;Password=VajaRPO2025!;TrustServerCertificate=True;"
+       "DefaultConnection": "Server=localhost,1433;Database=vajaRPO;User=sa;Password=*********;TrustServerCertificate=True;"
      }
    }
    ```

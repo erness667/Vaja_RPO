@@ -339,7 +339,14 @@ namespace Backend.Controllers
                     CreatedAt = car.CreatedAt,
                     UpdatedAt = car.UpdatedAt,
                     MainImageUrl = mainImage?.Url,
-                    ImageUrls = car.Images.Select(i => i.Url).ToList()
+                    ImageUrls = car.Images.Select(i => i.Url).ToList(),
+                    Seller = car.Seller != null ? new SellerInfo
+                    {
+                        Name = car.Seller.Name,
+                        Surname = car.Seller.Surname,
+                        PhoneNumber = car.Seller.PhoneNumber,
+                        AvatarImageUrl = car.Seller.AvatarImageUrl
+                    } : null
                 };
 
                 return Ok(carDto);

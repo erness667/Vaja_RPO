@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetApiCarCatalogMakesByMakeIdModelsData, GetApiCarCatalogMakesByMakeIdModelsResponses, GetApiCarCatalogMakesData, GetApiCarCatalogMakesResponses, GetApiCarCatalogMakesSearchData, GetApiCarCatalogMakesSearchResponses, GetApiCarsByIdData, GetApiCarsByIdResponses, GetApiCarsData, GetApiCarsResponses, GetApiUserMeData, GetApiUserMeResponses, PostApiAuthLoginData, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRefreshData, PostApiAuthRefreshResponses, PostApiAuthRegisterData, PostApiAuthRegisterResponses, PostApiCarsByIdImagesData, PostApiCarsByIdImagesResponses, PostApiCarsData, PostApiCarsResponses, PutApiCarsByIdImagesByImageIdSetMainData, PutApiCarsByIdImagesByImageIdSetMainResponses, PutApiUserAvatarData, PutApiUserAvatarResponses, PutApiUserPasswordData, PutApiUserPasswordResponses, PutApiUserProfileData, PutApiUserProfileResponses } from './types.gen';
+import type { DeleteApiCommentsByIdData, DeleteApiCommentsByIdResponses, DeleteApiFavouritesByCarIdData, DeleteApiFavouritesByCarIdResponses, GetApiCarCatalogMakesByMakeIdModelsData, GetApiCarCatalogMakesByMakeIdModelsResponses, GetApiCarCatalogMakesData, GetApiCarCatalogMakesResponses, GetApiCarCatalogMakesSearchData, GetApiCarCatalogMakesSearchResponses, GetApiCarsByCarIdCommentsData, GetApiCarsByCarIdCommentsResponses, GetApiCarsByIdData, GetApiCarsByIdResponses, GetApiCarsData, GetApiCarsResponses, GetApiFavouritesByCarIdCheckData, GetApiFavouritesByCarIdCheckResponses, GetApiFavouritesData, GetApiFavouritesResponses, GetApiUserMeData, GetApiUserMeResponses, PostApiAuthLoginData, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRefreshData, PostApiAuthRefreshResponses, PostApiAuthRegisterData, PostApiAuthRegisterResponses, PostApiCarsByCarIdCommentsData, PostApiCarsByCarIdCommentsResponses, PostApiCarsByIdImagesData, PostApiCarsByIdImagesResponses, PostApiCarsData, PostApiCarsResponses, PostApiFavouritesByCarIdData, PostApiFavouritesByCarIdResponses, PostApiFavouritesByCarIdToggleData, PostApiFavouritesByCarIdToggleResponses, PutApiCarsByIdImagesByImageIdSetMainData, PutApiCarsByIdImagesByImageIdSetMainResponses, PutApiCommentsByIdData, PutApiCommentsByIdResponses, PutApiUserAvatarData, PutApiUserAvatarResponses, PutApiUserPasswordData, PutApiUserPasswordResponses, PutApiUserProfileData, PutApiUserProfileResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -77,6 +77,38 @@ export const getApiCarCatalogMakes = <ThrowOnError extends boolean = false>(opti
 export const getApiCarCatalogMakesSearch = <ThrowOnError extends boolean = false>(options?: Options<GetApiCarCatalogMakesSearchData, ThrowOnError>) => (options?.client ?? client).get<GetApiCarCatalogMakesSearchResponses, unknown, ThrowOnError>({ url: '/api/car-catalog/makes/search', ...options });
 
 export const getApiCarCatalogMakesByMakeIdModels = <ThrowOnError extends boolean = false>(options: Options<GetApiCarCatalogMakesByMakeIdModelsData, ThrowOnError>) => (options.client ?? client).get<GetApiCarCatalogMakesByMakeIdModelsResponses, unknown, ThrowOnError>({ url: '/api/car-catalog/makes/{makeId}/models', ...options });
+
+export const getApiCarsByCarIdComments = <ThrowOnError extends boolean = false>(options: Options<GetApiCarsByCarIdCommentsData, ThrowOnError>) => (options.client ?? client).get<GetApiCarsByCarIdCommentsResponses, unknown, ThrowOnError>({ url: '/api/cars/{carId}/comments', ...options });
+
+export const postApiCarsByCarIdComments = <ThrowOnError extends boolean = false>(options: Options<PostApiCarsByCarIdCommentsData, ThrowOnError>) => (options.client ?? client).post<PostApiCarsByCarIdCommentsResponses, unknown, ThrowOnError>({
+    url: '/api/cars/{carId}/comments',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const deleteApiCommentsById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiCommentsByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiCommentsByIdResponses, unknown, ThrowOnError>({ url: '/api/comments/{id}', ...options });
+
+export const putApiCommentsById = <ThrowOnError extends boolean = false>(options: Options<PutApiCommentsByIdData, ThrowOnError>) => (options.client ?? client).put<PutApiCommentsByIdResponses, unknown, ThrowOnError>({
+    url: '/api/comments/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const getApiFavourites = <ThrowOnError extends boolean = false>(options?: Options<GetApiFavouritesData, ThrowOnError>) => (options?.client ?? client).get<GetApiFavouritesResponses, unknown, ThrowOnError>({ url: '/api/favourites', ...options });
+
+export const deleteApiFavouritesByCarId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiFavouritesByCarIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiFavouritesByCarIdResponses, unknown, ThrowOnError>({ url: '/api/favourites/{carId}', ...options });
+
+export const postApiFavouritesByCarId = <ThrowOnError extends boolean = false>(options: Options<PostApiFavouritesByCarIdData, ThrowOnError>) => (options.client ?? client).post<PostApiFavouritesByCarIdResponses, unknown, ThrowOnError>({ url: '/api/favourites/{carId}', ...options });
+
+export const getApiFavouritesByCarIdCheck = <ThrowOnError extends boolean = false>(options: Options<GetApiFavouritesByCarIdCheckData, ThrowOnError>) => (options.client ?? client).get<GetApiFavouritesByCarIdCheckResponses, unknown, ThrowOnError>({ url: '/api/favourites/{carId}/check', ...options });
+
+export const postApiFavouritesByCarIdToggle = <ThrowOnError extends boolean = false>(options: Options<PostApiFavouritesByCarIdToggleData, ThrowOnError>) => (options.client ?? client).post<PostApiFavouritesByCarIdToggleResponses, unknown, ThrowOnError>({ url: '/api/favourites/{carId}/toggle', ...options });
 
 export const getApiUserMe = <ThrowOnError extends boolean = false>(options?: Options<GetApiUserMeData, ThrowOnError>) => (options?.client ?? client).get<GetApiUserMeResponses, unknown, ThrowOnError>({ url: '/api/user/me', ...options });
 

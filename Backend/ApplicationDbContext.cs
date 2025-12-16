@@ -12,6 +12,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<CarImage> CarImages { get; set; }
+    public DbSet<Favourite> Favourites { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,6 +69,22 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of user if they have comments
+        });
+
+        modelBuilder.Entity<Favourite>(entity =>
+        {
+            // Unique constraint: a user can only favourite a car once
+            entity.HasIndex(f => new { f.UserId, f.CarId }).IsUnique();
+
+            entity.HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Delete favourites when user is deleted
+
+            entity.HasOne(f => f.Car)
+                .WithMany()
+                .HasForeignKey(f => f.CarId)
+                .OnDelete(DeleteBehavior.Cascade); // Delete favourites when car is deleted
         });
     }
 }

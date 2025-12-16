@@ -24,6 +24,10 @@ export type CreateCarRequest = {
     price: number;
 };
 
+export type CreateCommentRequest = {
+    content: string;
+};
+
 export type LoginRequest = {
     username: string;
     password: string;
@@ -40,6 +44,10 @@ export type RegisterRequest = {
     phoneNumber: string;
     username: string;
     password: string;
+};
+
+export type UpdateCommentRequest = {
+    content: string;
 };
 
 export type UpdateProfileRequest = {
@@ -234,6 +242,148 @@ export type GetApiCarCatalogMakesByMakeIdModelsData = {
 };
 
 export type GetApiCarCatalogMakesByMakeIdModelsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiCarsByCarIdCommentsData = {
+    body?: never;
+    path: {
+        carId: number;
+    };
+    query?: never;
+    url: '/api/cars/{carId}/comments';
+};
+
+export type GetApiCarsByCarIdCommentsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiCarsByCarIdCommentsData = {
+    body?: CreateCommentRequest;
+    path: {
+        carId: number;
+    };
+    query?: never;
+    url: '/api/cars/{carId}/comments';
+};
+
+export type PostApiCarsByCarIdCommentsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type DeleteApiCommentsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/comments/{id}';
+};
+
+export type DeleteApiCommentsByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiCommentsByIdData = {
+    body?: UpdateCommentRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/comments/{id}';
+};
+
+export type PutApiCommentsByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiFavouritesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/favourites';
+};
+
+export type GetApiFavouritesResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type DeleteApiFavouritesByCarIdData = {
+    body?: never;
+    path: {
+        carId: number;
+    };
+    query?: never;
+    url: '/api/favourites/{carId}';
+};
+
+export type DeleteApiFavouritesByCarIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiFavouritesByCarIdData = {
+    body?: never;
+    path: {
+        carId: number;
+    };
+    query?: never;
+    url: '/api/favourites/{carId}';
+};
+
+export type PostApiFavouritesByCarIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiFavouritesByCarIdCheckData = {
+    body?: never;
+    path: {
+        carId: number;
+    };
+    query?: never;
+    url: '/api/favourites/{carId}/check';
+};
+
+export type GetApiFavouritesByCarIdCheckResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiFavouritesByCarIdToggleData = {
+    body?: never;
+    path: {
+        carId: number;
+    };
+    query?: never;
+    url: '/api/favourites/{carId}/toggle';
+};
+
+export type PostApiFavouritesByCarIdToggleResponses = {
     /**
      * Success
      */

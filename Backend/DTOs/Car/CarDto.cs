@@ -28,6 +28,19 @@ namespace Backend.DTOs.Car
         /// All image URLs associated with this car.
         /// </summary>
         public List<string> ImageUrls { get; set; } = new();
+
+        /// <summary>
+        /// Seller information (only included in detail view).
+        /// </summary>
+        public SellerInfo? Seller { get; set; }
+    }
+
+    public class SellerInfo
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Surname { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string? AvatarImageUrl { get; set; }
     }
 }
 

@@ -17,6 +17,29 @@ export interface Car {
   updatedAt: string;
   mainImageUrl?: string | null;
   imageUrls?: string[];
+  seller?: SellerInfo | null;
 }
 
+export interface SellerInfo {
+  name: string;
+  surname: string;
+  phoneNumber: string;
+  avatarImageUrl?: string | null;
+}
+
+export interface CommentAuthor {
+  name: string;
+  surname: string;
+  avatarImageUrl?: string | null;
+}
+
+export interface Comment {
+  id: number;
+  carId: number;
+  userId: string;
+  content: string;
+  createdAt: string;
+  updatedAt?: string | null;
+  author?: CommentAuthor | null;
+}
 

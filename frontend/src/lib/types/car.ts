@@ -13,6 +13,7 @@ export interface Car {
   color: string;
   equipmentAndDetails?: string | null;
   price: number;
+  viewCount?: number;
   createdAt: string;
   updatedAt: string;
   mainImageUrl?: string | null;

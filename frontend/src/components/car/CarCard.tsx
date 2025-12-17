@@ -15,7 +15,7 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import { LuChevronRight, LuGauge, LuFuel, LuSettings2, LuPalette } from "react-icons/lu";
+import { LuChevronRight, LuGauge, LuFuel, LuSettings2, LuPalette, LuEye } from "react-icons/lu";
 import type { Car } from "@/lib/types/car";
 
 interface CarCardProps {
@@ -28,6 +28,7 @@ export function CarCard({ car }: CarCardProps) {
   const price = `${car.price.toLocaleString("sl-SI")} €`;
   const mileageText = `${car.mileage.toLocaleString("sl-SI")} km`;
   const powerText = `${car.enginePower} kW`;
+  const viewsText = `${(car.viewCount ?? 0).toLocaleString("sl-SI")} ogledov`;
   
   // Get image URL - prefer mainImageUrl, then first imageUrls, or null
   const imageUrl = car.mainImageUrl || car.imageUrls?.[0] || null;
@@ -147,6 +148,10 @@ export function CarCard({ car }: CarCardProps) {
             >
               {price}
             </Text>
+            <HStack gap={2} color={{ base: "gray.500", _dark: "gray.400" }} fontSize="xs" mt={1}>
+              <Icon as={LuEye} boxSize={4} />
+              <Text>{viewsText}</Text>
+            </HStack>
           </Box>
 
           {/* Main Specs with Icons */}

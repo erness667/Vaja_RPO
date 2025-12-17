@@ -57,6 +57,9 @@ namespace SuperCarsApi.Models
         [Range(0, double.MaxValue, ErrorMessage = "Price must be greater than or equal to 0")]
         public decimal Price { get; set; }
 
+        // Number of times this car detail page was viewed
+        public int ViewCount { get; set; } = 0;
+
         // Timestamps
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

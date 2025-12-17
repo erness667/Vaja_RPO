@@ -38,6 +38,7 @@ import {
   LuChevronLeft,
   LuChevronRight,
   LuHeart,
+  LuEye,
 } from "react-icons/lu";
 import { PageShell } from "@/components/layout/PageShell";
 import { useCar } from "@/lib/hooks/useCar";
@@ -387,6 +388,10 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
               >
                 {price}
               </Text>
+              <HStack gap={2} color={{ base: "gray.600", _dark: "gray.400" }} fontSize="sm">
+                <Icon as={LuEye} boxSize={4} />
+                <Text>{(car.viewCount ?? 0).toLocaleString("sl-SI")} ogledov</Text>
+              </HStack>
             </VStack>
 
             {/* Seller Info */}

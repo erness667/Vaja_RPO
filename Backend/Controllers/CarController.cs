@@ -99,6 +99,7 @@ namespace Backend.Controllers
                     Color = car.Color,
                     EquipmentAndDetails = car.EquipmentAndDetails,
                     Price = car.Price,
+                    ViewCount = car.ViewCount,
                     CreatedAt = car.CreatedAt,
                     UpdatedAt = car.UpdatedAt,
                     MainImageUrl = null,
@@ -320,6 +321,10 @@ namespace Backend.Controllers
                 var mainImage = car.Images.FirstOrDefault(i => i.IsMain)
                                 ?? car.Images.FirstOrDefault();
 
+                // Increment view count
+                car.ViewCount += 1;
+                await _dbContext.SaveChangesAsync();
+
                 var carDto = new CarDto
                 {
                     Id = car.Id,
@@ -336,6 +341,7 @@ namespace Backend.Controllers
                     Color = car.Color,
                     EquipmentAndDetails = car.EquipmentAndDetails,
                     Price = car.Price,
+                    ViewCount = car.ViewCount,
                     CreatedAt = car.CreatedAt,
                     UpdatedAt = car.UpdatedAt,
                     MainImageUrl = mainImage?.Url,
@@ -450,6 +456,7 @@ namespace Backend.Controllers
                         Color = c.Color,
                         EquipmentAndDetails = c.EquipmentAndDetails,
                         Price = c.Price,
+                        ViewCount = c.ViewCount,
                         CreatedAt = c.CreatedAt,
                         UpdatedAt = c.UpdatedAt,
                         MainImageUrl = c.Images

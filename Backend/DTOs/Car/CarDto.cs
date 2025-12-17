@@ -30,6 +30,11 @@ namespace Backend.DTOs.Car
         public List<string> ImageUrls { get; set; } = new();
 
         /// <summary>
+        /// Number of times this car detail page was viewed.
+        /// </summary>
+        public int ViewCount { get; set; }
+
+        /// <summary>
         /// Seller information (only included in detail view).
         /// </summary>
         public SellerInfo? Seller { get; set; }

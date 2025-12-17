@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import {
@@ -11,6 +11,7 @@ import {
   Select,
   useListCollection,
 } from "@chakra-ui/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { LuSettings2, LuSearch } from "react-icons/lu";
 import { MakeDropdown } from "../ui/MakeDropdown";
 import { ModelDropdown } from "../ui/ModelDropdown";
@@ -21,15 +22,18 @@ import {
 } from "@/lib/constants/car-options";
 
 export function CarSearch() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [filters, setFilters] = useState({
-    makeId: "",
-    modelId: "",
-    priceFrom: "",
-    priceTo: "",
-    yearFrom: "",
-    yearTo: "",
-    kilometers: "",
-    fuel: "",
+    makeId: searchParams.get("makeId") ?? "",
+    modelId: searchParams.get("modelId") ?? "",
+    priceFrom: searchParams.get("priceFrom") ?? "",
+    priceTo: searchParams.get("priceTo") ?? "",
+    yearFrom: searchParams.get("yearFrom") ?? "",
+    yearTo: searchParams.get("yearTo") ?? "",
+    kilometers: searchParams.get("mileageTo") ?? "",
+    fuel: searchParams.get("fuelType") ?? "",
   });
 
   const handleChange = (field: keyof typeof filters, value: string) => {
@@ -45,7 +49,20 @@ export function CarSearch() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Search filters:", filters);
+
+    const params = new URLSearchParams();
+
+    if (filters.makeId) params.set("makeId", filters.makeId);
+    if (filters.modelId) params.set("modelId", filters.modelId);
+    if (filters.priceFrom) params.set("priceFrom", filters.priceFrom);
+    if (filters.priceTo) params.set("priceTo", filters.priceTo);
+    if (filters.yearFrom) params.set("yearFrom", filters.yearFrom);
+    if (filters.yearTo) params.set("yearTo", filters.yearTo);
+    if (filters.kilometers) params.set("mileageTo", filters.kilometers);
+    if (filters.fuel) params.set("fuelType", filters.fuel);
+
+    const query = params.toString();
+    router.push(query ? `/?${query}` : "/");
   };
 
   const handleAdvancedSearch = () => {

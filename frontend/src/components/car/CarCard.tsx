@@ -11,12 +11,12 @@ import {
   Text,
   Badge,
   Button,
-  Stack,
   Icon,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { LuChevronRight, LuGauge, LuFuel, LuSettings2, LuPalette, LuEye } from "react-icons/lu";
 import type { Car } from "@/lib/types/car";
+import { Trans } from "@lingui/macro";
 
 interface CarCardProps {
   car: Car;
@@ -153,10 +153,10 @@ export function CarCard({ car, viewedAt }: CarCardProps) {
           <Text
             fontWeight="bold"
             fontSize="xl"
-            noOfLines={2}
             color={{ base: "gray.900", _dark: "gray.100" }}
             lineHeight="1.3"
             minH="3.2em"
+         
           >
             {title}
           </Text>
@@ -222,14 +222,13 @@ export function CarCard({ car, viewedAt }: CarCardProps) {
           variant="solid"
           size="md"
           fontWeight="semibold"
-          rightIcon={<LuChevronRight />}
           onClick={handleDetailsClick}
           _hover={{
             transform: "translateX(2px)",
           }}
           transition="all 0.2s"
         >
-          Podrobnosti vozila
+          <Trans>Podrobnosti vozila</Trans>
         </Button>
       </CardFooter>
     </Card.Root>

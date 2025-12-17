@@ -1,11 +1,22 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { getApiCars } from "@/client";
+import { useCallback, useState } from "react";
+import { getApiCars, type GetApiCarsData } from "@/client";
 import "@/lib/api-client";
 import type { Car } from "@/lib/types/car";
 
-export function useCars() {
+export interface UseCarsFilters {
+  makeId?: string | null;
+  modelId?: string | null;
+  yearFrom?: string | null;
+  yearTo?: string | null;
+  priceFrom?: string | null;
+  priceTo?: string | null;
+  mileageTo?: string | null;
+  fuelType?: string | null;
+}
+
+export function useCars(filters?: UseCarsFilters) {
   const [cars, setCars] = useState<Car[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,11 +26,62 @@ export function useCars() {
     setError(null);
 
     try {
+      const query: NonNullable<GetApiCarsData["query"]> = {
+        page: 1,
+        pageSize: 12,
+      };
+
+      if (filters?.makeId) {
+        query.makeId = filters.makeId;
+      }
+      if (filters?.modelId) {
+        query.modelId = filters.modelId;
+      }
+
+      const parseIntSafe = (value?: string | null) => {
+        if (!value) return undefined;
+        const parsed = parseInt(value, 10);
+        return Number.isNaN(parsed) ? undefined : parsed;
+      };
+
+      const parseNumberWithSeparators = (value?: string | null) => {
+        if (!value) return undefined;
+        const normalized = value.replace(/\./g, "").replace(",", ".");
+        const num = Number(normalized);
+        return Number.isFinite(num) ? num : undefined;
+      };
+
+      const yearFrom = parseIntSafe(filters?.yearFrom);
+      const yearTo = parseIntSafe(filters?.yearTo);
+      const priceFrom = parseNumberWithSeparators(filters?.priceFrom);
+      const priceTo = parseNumberWithSeparators(filters?.priceTo);
+      const mileageTo = parseIntSafe(
+        filters?.mileageTo
+          ? filters.mileageTo.replace(/\./g, "").replace(",", ".")
+          : undefined,
+      );
+
+      if (yearFrom !== undefined) {
+        query.yearFrom = yearFrom;
+      }
+      if (yearTo !== undefined) {
+        query.yearTo = yearTo;
+      }
+      if (priceFrom !== undefined) {
+        query.priceFrom = priceFrom;
+      }
+      if (priceTo !== undefined) {
+        query.priceTo = priceTo;
+      }
+      if (mileageTo !== undefined) {
+        query.mileageTo = mileageTo;
+      }
+      if (filters?.fuelType) {
+        query.fuelType = filters.fuelType;
+      }
+
       const response = await getApiCars({
-        query: {
-          page: 1,
-          pageSize: 12,
-        },
+        query,
       });
 
       if (response.error || (response.response && !response.response.ok)) {
@@ -30,8 +92,8 @@ export function useCars() {
 
       if (response.data) {
         // API wraps cars in an object: { cars, totalCount, ... }
-        const raw = response.data as any;
-        const data = (raw.cars ?? []) as Car[];
+        const raw = response.data as { cars?: Car[] } | undefined;
+        const data = raw?.cars ?? [];
         setCars(data);
         setIsLoading(false);
         return data;
@@ -49,11 +111,7 @@ export function useCars() {
       setIsLoading(false);
       return [];
     }
-  }, []);
-
-  useEffect(() => {
-    fetchCars();
-  }, [fetchCars]);
+  }, [filters]);
 
   return {
     cars,

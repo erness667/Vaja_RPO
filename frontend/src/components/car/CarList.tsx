@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Box,
@@ -9,14 +9,50 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
-import { useCars } from "@/lib/hooks/useCars";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useCars, type UseCarsFilters } from "@/lib/hooks/useCars";
 import { CarCard } from "./CarCard";
 import { SortBar, SortOption } from "../layout/SortBar";
-import { useMemo, useState } from "react";
 
 export function CarList() {
-  const { cars, isLoading, error } = useCars();
+  const searchParams = useSearchParams();
+
+  const filters: UseCarsFilters = useMemo(() => {
+    const get = (key: string) => searchParams.get(key) || undefined;
+
+    return {
+      makeId: get("makeId"),
+      modelId: get("modelId"),
+      yearFrom: get("yearFrom"),
+      yearTo: get("yearTo"),
+      priceFrom: get("priceFrom"),
+      priceTo: get("priceTo"),
+      mileageTo: get("mileageTo"),
+      fuelType: get("fuelType"),
+    };
+  }, [searchParams]);
+
+  const { cars, isLoading, error, refetch } = useCars(filters);
   const [sort, setSort] = useState<SortOption>("newest");
+
+  useEffect(() => {
+    void refetch();
+  }, [refetch]);
+
+  const headingText = useMemo(() => {
+    switch (sort) {
+      case "oldest":
+        return "Najstarejši oglasi";
+      case "priceDesc":
+        return "Najdražji oglasi";
+      case "priceAsc":
+        return "Najcenejši oglasi";
+      case "newest":
+      default:
+        return "Najnovejši oglasi";
+    }
+  }, [sort]);
 
   const sortedCars = useMemo(() => {
     const list = [...cars];
@@ -63,7 +99,7 @@ export function CarList() {
               size="lg"
               color={{ base: "gray.800", _dark: "gray.100" }}
             >
-              Najnovejši oglasi
+              {headingText}
             </Heading>
             <SortBar value={sort} onChange={setSort} />
           </HStack>

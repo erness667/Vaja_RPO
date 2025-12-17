@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon } from "react-icons/hi";
+import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon, HiHeart } from "react-icons/hi";
 import { 
   Box, 
   HStack, 
@@ -167,12 +167,10 @@ export function Navbar() {
         <Link href="/" style={{ display: "flex", alignItems: "center" }}>
           <ClientOnly fallback={
             <Box
-              as="img"
-              src="/logo.png"
-              alt="SUPERCARS Logo"
-              width={200}
-              height={70}
-              style={{ height: "4rem", width: "auto", objectFit: "contain" }}
+              width="200px"
+              height="70px"
+              bg="gray.200"
+              borderRadius="md"
             />
           }>
             <Image
@@ -244,6 +242,16 @@ export function Navbar() {
                     bg={{ base: "white", _dark: "#1f2937" }}
                     borderColor={{ base: "#e5e7eb", _dark: "#374151" }}
                   >
+                    <MenuItem
+                      value="favourites"
+                      onClick={() => router.push("/favourites")}
+                      color={{ base: "#374151", _dark: "#f3f4f6" }}
+                      _hover={{
+                        bg: { base: "#f3f4f6", _dark: "#374151" },
+                      }}
+                    >
+                      Priljubljene
+                    </MenuItem>
                     <MenuItem
                       value="profile"
                       onClick={() => router.push("/profile")}

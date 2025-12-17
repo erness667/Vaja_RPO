@@ -43,3 +43,10 @@ export interface Comment {
   author?: CommentAuthor | null;
 }
 
+export interface FavouriteItem {
+  id: number;
+  carId: number;
+  createdAt: string;
+  car?: Car | null;
+}
+

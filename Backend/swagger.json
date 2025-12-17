@@ -721,6 +721,18 @@
           }
         }
       }
+    },
+    "/api/view-history": {
+      "get": {
+        "tags": [
+          "ViewHistory"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
     }
   },
   "components": {

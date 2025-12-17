@@ -323,7 +323,52 @@ namespace Backend.Controllers
 
                 // Increment view count
                 car.ViewCount += 1;
+
+                // Track view history for authenticated users (keep last 10)
+                Guid? currentUserId = null;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var parsedUserId))
+                {
+                    currentUserId = parsedUserId;
+                }
+
+                if (currentUserId.HasValue)
+                {
+                    var historyEntry = await _dbContext.ViewHistories
+                        .FirstOrDefaultAsync(vh => vh.UserId == currentUserId.Value && vh.CarId == id);
+
+                    if (historyEntry != null)
+                    {
+                        historyEntry.ViewedAt = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        _dbContext.ViewHistories.Add(new ViewHistory
+                        {
+                            UserId = currentUserId.Value,
+                            CarId = id,
+                            ViewedAt = DateTime.UtcNow
+                        });
+                    }
+                }
+
                 await _dbContext.SaveChangesAsync();
+
+                // Trim history to last 10 entries per user
+                if (currentUserId.HasValue)
+                {
+                    var extraEntries = await _dbContext.ViewHistories
+                        .Where(vh => vh.UserId == currentUserId.Value)
+                        .OrderByDescending(vh => vh.ViewedAt)
+                        .Skip(10)
+                        .ToListAsync();
+
+                    if (extraEntries.Count > 0)
+                    {
+                        _dbContext.ViewHistories.RemoveRange(extraEntries);
+                        await _dbContext.SaveChangesAsync();
+                    }
+                }
 
                 var carDto = new CarDto
                 {

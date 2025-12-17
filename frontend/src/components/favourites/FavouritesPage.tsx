@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import { useState } from "react";
 import {
   Box,
   VStack,
@@ -10,12 +11,15 @@ import {
   Text,
   Button,
   Icon,
+  HStack,
 } from "@chakra-ui/react";
 import { LuArrowLeft, LuHeart } from "react-icons/lu";
 import { PageShell } from "@/components/layout/PageShell";
 import { useFavourites } from "@/lib/hooks/useFavourites";
 import type { Car } from "@/lib/types/car";
-import { CarCard } from "./CarCard";
+import { CarCard } from "../car/CarCard";
+import type { SortOption } from "../layout/SortBar";
+import { SortBar } from "../layout/SortBar";
 
 export function FavouritesPage() {
   const { favourites, isLoading, error } = useFavourites();
@@ -24,6 +28,32 @@ export function FavouritesPage() {
   const favouriteCars: Car[] = favourites
     .map((f) => f.car)
     .filter((c): c is Car => Boolean(c));
+
+  const [sort, setSort] = useState<SortOption>("newest");
+
+  const sortOptions: { key: SortOption; label: string }[] = [
+    { key: "newest", label: "Najnovejši" },
+    { key: "oldest", label: "Najstarejši" },
+    { key: "priceDesc", label: "Najdražji" },
+    { key: "priceAsc", label: "Najcenejši" },
+  ];
+
+  const sortedCars = [...favouriteCars].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    switch (sort) {
+      case "newest":
+        return dateB - dateA;
+      case "oldest":
+        return dateA - dateB;
+      case "priceDesc":
+        return (b.price ?? 0) - (a.price ?? 0);
+      case "priceAsc":
+        return (a.price ?? 0) - (b.price ?? 0);
+      default:
+        return 0;
+    }
+  });
 
   return (
     <PageShell maxWidthClass="max-w-6xl">
@@ -41,12 +71,20 @@ export function FavouritesPage() {
         </Button>
 
         <VStack align="stretch" gap={2}>
-          <Heading size="xl" color={{ base: "gray.900", _dark: "gray.100" }}>
-            Moje priljubljene
-          </Heading>
-          <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-            Vsa vozila, ki ste jih dodali med priljubljene.
-          </Text>
+          <HStack justify="space-between" align="center" wrap="wrap" gap={3}>
+            <VStack align="start" gap={1}>
+              <Heading size="xl" color={{ base: "gray.900", _dark: "gray.100" }}>
+                Moje priljubljene
+              </Heading>
+              <Text color={{ base: "gray.600", _dark: "gray.400" }}>
+                Vsa vozila, ki ste jih dodali med priljubljene.
+              </Text>
+            </VStack>
+
+            {favouriteCars.length > 0 && (
+              <SortBar value={sort} onChange={setSort} />
+            )}
+          </HStack>
         </VStack>
 
         {isLoading ? (
@@ -82,7 +120,7 @@ export function FavouritesPage() {
           </Box>
         ) : (
           <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} gap={6}>
-            {favouriteCars.map((car) => (
+            {sortedCars.map((car) => (
               <CarCard key={car.id} car={car} />
             ))}
           </SimpleGrid>

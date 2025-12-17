@@ -7,12 +7,37 @@ import {
   Spinner,
   Text,
   VStack,
+  HStack,
 } from "@chakra-ui/react";
 import { useCars } from "@/lib/hooks/useCars";
 import { CarCard } from "./CarCard";
+import { SortBar, SortOption } from "../layout/SortBar";
+import { useMemo, useState } from "react";
 
 export function CarList() {
   const { cars, isLoading, error } = useCars();
+  const [sort, setSort] = useState<SortOption>("newest");
+
+  const sortedCars = useMemo(() => {
+    const list = [...cars];
+    switch (sort) {
+      case "priceDesc":
+        return list.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+      case "priceAsc":
+        return list.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+      case "oldest":
+        return list.sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+        );
+      case "newest":
+      default:
+        return list.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
+    }
+  }, [cars, sort]);
 
   return (
     <Box
@@ -33,12 +58,15 @@ export function CarList() {
         p={8}
       >
         <VStack align="stretch" gap={6}>
-          <Heading
-            size="lg"
-            color={{ base: "gray.800", _dark: "gray.100" }}
-          >
-            Najnovejši oglasi
-          </Heading>
+          <HStack justify="space-between" align="center" wrap="wrap" gap={3}>
+            <Heading
+              size="lg"
+              color={{ base: "gray.800", _dark: "gray.100" }}
+            >
+              Najnovejši oglasi
+            </Heading>
+            <SortBar value={sort} onChange={setSort} />
+          </HStack>
 
         {isLoading && (
           <Box display="flex" justifyContent="center" py={10}>
@@ -63,7 +91,7 @@ export function CarList() {
           </Box>
         )}
 
-        {!isLoading && !error && cars.length === 0 && (
+        {!isLoading && !error && sortedCars.length === 0 && (
           <Text
             fontSize="sm"
             color={{ base: "gray.600", _dark: "gray.400" }}
@@ -72,12 +100,12 @@ export function CarList() {
           </Text>
         )}
 
-        {!isLoading && !error && cars.length > 0 && (
+        {!isLoading && !error && sortedCars.length > 0 && (
           <SimpleGrid
             columns={{ base: 1, sm: 2, lg: 3 }}
             gap={6}
           >
-            {cars.map((car) => (
+            {sortedCars.map((car) => (
               <CarCard key={car.id} car={car} />
             ))}
           </SimpleGrid>

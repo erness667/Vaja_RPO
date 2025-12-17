@@ -12,8 +12,8 @@ import {
   useListCollection,
 } from "@chakra-ui/react";
 import { LuSettings2, LuSearch } from "react-icons/lu";
-import { MakeDropdown } from "./MakeDropdown";
-import { ModelDropdown } from "./ModelDropdown";
+import { MakeDropdown } from "../ui/MakeDropdown";
+import { ModelDropdown } from "../ui/ModelDropdown";
 import {
   FUEL_TYPES,
   PRICE_OPTIONS,

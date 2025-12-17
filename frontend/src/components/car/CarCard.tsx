@@ -20,9 +20,10 @@ import type { Car } from "@/lib/types/car";
 
 interface CarCardProps {
   car: Car;
+  viewedAt?: string;
 }
 
-export function CarCard({ car }: CarCardProps) {
+export function CarCard({ car, viewedAt }: CarCardProps) {
   const router = useRouter();
   const title = `${car.brand} ${car.model}`.trim();
   const price = `${car.price.toLocaleString("sl-SI")} €`;
@@ -62,6 +63,28 @@ export function CarCard({ car }: CarCardProps) {
         bgGradient={{ base: "linear(to-tr, gray.200, gray.300)", _dark: "linear(to-tr, gray.800, gray.700)" }}
         overflow="hidden"
       >
+        {viewedAt && (
+          <Box position="absolute" top={3} left={3} zIndex={1}>
+            <Badge
+              colorPalette="blue"
+              variant="solid"
+              display="inline-flex"
+              alignItems="center"
+              gap={1}
+              px={2.5}
+              py={1}
+              boxShadow="md"
+            >
+              <LuEye />
+              {new Date(viewedAt).toLocaleString("sl-SI", {
+                day: "numeric",
+                month: "short",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Badge>
+          </Box>
+        )}
         {imageUrl ? (
           <>
             <Image

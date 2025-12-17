@@ -447,3 +447,17 @@ export type PutApiUserAvatarResponses = {
      */
     200: unknown;
 };
+
+export type GetApiViewHistoryData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/view-history';
+};
+
+export type GetApiViewHistoryResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};

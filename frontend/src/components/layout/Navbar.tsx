@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon, HiHeart } from "react-icons/hi";
+import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon, HiHeart, HiClock } from "react-icons/hi";
 import { 
   Box, 
   HStack, 
@@ -251,6 +251,16 @@ export function Navbar() {
                       }}
                     >
                       Priljubljene
+                    </MenuItem>
+                    <MenuItem
+                      value="view-history"
+                      onClick={() => router.push("/view-history")}
+                      color={{ base: "#374151", _dark: "#f3f4f6" }}
+                      _hover={{
+                        bg: { base: "#f3f4f6", _dark: "#374151" },
+                      }}
+                    >
+                      Zgodovina ogledov
                     </MenuItem>
                     <MenuItem
                       value="profile"

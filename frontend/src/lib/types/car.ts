@@ -51,3 +51,10 @@ export interface FavouriteItem {
   car?: Car | null;
 }
 
+export interface ViewHistoryItem {
+  id: number;
+  carId: number;
+  viewedAt: string;
+  car?: Car | null;
+}
+

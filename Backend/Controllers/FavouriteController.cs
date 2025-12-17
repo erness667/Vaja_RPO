@@ -58,6 +58,7 @@ namespace Backend.Controllers
                         Color = f.Car.Color,
                         EquipmentAndDetails = f.Car.EquipmentAndDetails,
                         Price = f.Car.Price,
+                    ViewCount = f.Car.ViewCount,
                         CreatedAt = f.Car.CreatedAt,
                         UpdatedAt = f.Car.UpdatedAt,
                         MainImageUrl = f.Car.Images
@@ -140,6 +141,7 @@ namespace Backend.Controllers
                     Color = car.Color,
                     EquipmentAndDetails = car.EquipmentAndDetails,
                     Price = car.Price,
+                    ViewCount = car.ViewCount,
                     CreatedAt = car.CreatedAt,
                     UpdatedAt = car.UpdatedAt,
                     MainImageUrl = car.Images

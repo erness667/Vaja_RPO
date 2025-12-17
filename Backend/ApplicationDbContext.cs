@@ -13,6 +13,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Comment> Comments { get; set; }
     public DbSet<CarImage> CarImages { get; set; }
     public DbSet<Favourite> Favourites { get; set; }
+    public DbSet<ViewHistory> ViewHistories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -85,6 +86,22 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(f => f.CarId)
                 .OnDelete(DeleteBehavior.Cascade); // Delete favourites when car is deleted
+        });
+
+        modelBuilder.Entity<ViewHistory>(entity =>
+        {
+            // One record per user+car, updated with the latest view time
+            entity.HasIndex(vh => new { vh.UserId, vh.CarId }).IsUnique();
+
+            entity.HasOne(vh => vh.User)
+                .WithMany()
+                .HasForeignKey(vh => vh.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(vh => vh.Car)
+                .WithMany()
+                .HasForeignKey(vh => vh.CarId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

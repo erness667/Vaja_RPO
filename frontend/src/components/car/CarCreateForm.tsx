@@ -19,8 +19,8 @@ import {
 } from "@chakra-ui/react";
 import { LuUpload, LuX, LuImage, LuStar } from "react-icons/lu";
 import { useCreateCar } from "@/lib/hooks/useCreateCar";
-import { MakeDropdown } from "./MakeDropdown";
-import { ModelDropdown } from "./ModelDropdown";
+import { MakeDropdown } from "../ui/MakeDropdown";
+import { ModelDropdown } from "../ui/ModelDropdown";
 import type { CreateCarRequest } from "@/client/types.gen";
 import "@/lib/api-client";
 import {

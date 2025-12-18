@@ -15,6 +15,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { useRegister } from "@/lib/hooks/useRegister";
 import type { RegisterFormData } from "@/lib/types/auth";
 import "@/lib/api-client";
+import { Trans, t } from "@lingui/macro";
 
 export function RegisterForm() {
   const { register, isLoading, error, setError } = useRegister();
@@ -52,13 +53,13 @@ export function RegisterForm() {
             mb={2}
             color={{ base: "gray.800", _dark: "gray.100" }}
           >
-            Create account
+            <Trans>Create account</Trans>
           </Heading>
           <Text
             fontSize="sm"
             color={{ base: "gray.600", _dark: "gray.400" }}
           >
-            Sign up with a username and password to get started.
+            <Trans>Sign up with a username and password to get started.</Trans>
           </Text>
         </Box>
 
@@ -84,7 +85,7 @@ export function RegisterForm() {
                 fontWeight="medium"
                 color={{ base: "gray.700", _dark: "gray.300" }}
               >
-                Name
+              <Trans>Name</Trans>
               </Field.Label>
               <Input
                 id="name"
@@ -93,7 +94,7 @@ export function RegisterForm() {
                 autoComplete="given-name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Enter your name"
+              placeholder={t`Enter your name`}
                 disabled={isLoading}
               />
             </Field.Root>
@@ -104,7 +105,7 @@ export function RegisterForm() {
                 fontWeight="medium"
                 color={{ base: "gray.700", _dark: "gray.300" }}
               >
-                Surname
+              <Trans>Surname</Trans>
               </Field.Label>
               <Input
                 id="surname"
@@ -113,7 +114,7 @@ export function RegisterForm() {
                 autoComplete="family-name"
                 value={formData.surname}
                 onChange={handleChange}
-                placeholder="Enter your surname"
+              placeholder={t`Enter your surname`}
                 disabled={isLoading}
               />
             </Field.Root>
@@ -124,7 +125,7 @@ export function RegisterForm() {
                 fontWeight="medium"
                 color={{ base: "gray.700", _dark: "gray.300" }}
               >
-                Email Address
+              <Trans>Email Address</Trans>
               </Field.Label>
               <Input
                 id="email"
@@ -133,7 +134,7 @@ export function RegisterForm() {
                 autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter your email"
+              placeholder={t`Enter your email`}
                 disabled={isLoading}
               />
             </Field.Root>
@@ -144,7 +145,7 @@ export function RegisterForm() {
                 fontWeight="medium"
                 color={{ base: "gray.700", _dark: "gray.300" }}
               >
-                Phone Number
+              <Trans>Phone Number</Trans>
               </Field.Label>
               <Input
                 id="phone"
@@ -153,7 +154,7 @@ export function RegisterForm() {
                 autoComplete="tel"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                placeholder="Enter your phone number"
+              placeholder={t`Enter your phone number`}
                 disabled={isLoading}
               />
             </Field.Root>
@@ -164,7 +165,7 @@ export function RegisterForm() {
                 fontWeight="medium"
                 color={{ base: "gray.700", _dark: "gray.300" }}
               >
-                Username
+              <Trans>Username</Trans>
               </Field.Label>
               <Input
                 id="username"
@@ -173,7 +174,7 @@ export function RegisterForm() {
                 autoComplete="username"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="Choose a username"
+              placeholder={t`Choose a username`}
                 disabled={isLoading}
               />
             </Field.Root>
@@ -184,7 +185,7 @@ export function RegisterForm() {
                 fontWeight="medium"
                 color={{ base: "gray.700", _dark: "gray.300" }}
               >
-                Password
+              <Trans>Password</Trans>
               </Field.Label>
               <Input
                 id="password"
@@ -193,7 +194,7 @@ export function RegisterForm() {
                 autoComplete="new-password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Create a password"
+              placeholder={t`Create a password`}
                 disabled={isLoading}
               />
             </Field.Root>
@@ -207,7 +208,7 @@ export function RegisterForm() {
               loadingText="Registering..."
               disabled={isLoading}
             >
-              Register
+              <Trans>Register</Trans>
             </Button>
           </Stack>
         </form>

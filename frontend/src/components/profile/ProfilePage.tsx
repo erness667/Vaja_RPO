@@ -12,7 +12,6 @@ import {
   Input,
   Button,
   Field,
-  Stack,
   HStack,
   IconButton,
   Icon,
@@ -33,21 +32,22 @@ import { useChangePassword } from "@/lib/hooks/useChangePassword";
 import { useUpdateAvatar } from "@/lib/hooks/useUpdateAvatar";
 import { useAppLocale } from "@/components/i18n/LinguiProvider";
 import "@/lib/api-client";
+import { Trans, t } from "@lingui/macro";
 
 const LanguageFlag = ({ variant }: { variant: "sl" | "en" }) => {
   const countryCode = variant === "sl" ? "SI" : "GB";
 
   return (
-    <Box
-      as="img"
+    <img
       src={`https://flagsapi.com/${countryCode}/flat/24.png`}
       alt={variant === "sl" ? "Slovenian flag" : "English flag"}
-      w="24px"
-      h="22px"
-      
-      
-     
-    
+      width={24}
+      height={22}
+      style={{
+        borderRadius: 3,
+        border: "1px solid rgba(156, 163, 175, 0.8)",
+        boxShadow: "0 0 0 1px rgba(15, 23, 42, 0.1)",
+      }}
     />
   );
 };
@@ -161,7 +161,7 @@ export function ProfilePage() {
   const handlePasswordSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordError("New passwords do not match.");
+      setPasswordError(t`New passwords do not match.`);
       return;
     }
     const result = await changePassword({
@@ -191,7 +191,7 @@ export function ProfilePage() {
   const handleAvatarSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedFile) {
-      setAvatarError("Please select a file.");
+      setAvatarError(t`Please select a file.`);
       return;
     }
     const result = await updateAvatar({ file: selectedFile });
@@ -229,7 +229,9 @@ export function ProfilePage() {
         <Box display="flex" justifyContent="center" alignItems="center" minH="400px">
           <VStack gap={4}>
             <Spinner size="xl" color="blue.500" />
-            <Text color={{ base: "gray.600", _dark: "gray.400" }}>Loading profile...</Text>
+            <Text color={{ base: "gray.600", _dark: "gray.400" }}>
+              <Trans>Loading profile...</Trans>
+            </Text>
           </VStack>
         </Box>
       </PageShell>
@@ -260,10 +262,10 @@ export function ProfilePage() {
         {/* Header */}
         <Box>
           <Heading size="xl" mb={2} color={{ base: "gray.800", _dark: "gray.100" }}>
-            Moj profil
+            <Trans>Moj profil</Trans>
           </Heading>
           <Text fontSize="md" color={{ base: "gray.600", _dark: "gray.400" }}>
-            Upravljajte svoje profilne informacije in nastavitve računa
+            <Trans>Upravljajte svoje profilne informacije in nastavitve računa</Trans>
           </Text>
         </Box>
 
@@ -279,10 +281,10 @@ export function ProfilePage() {
             <HStack justify="space-between" align="center">
               <VStack align="flex-start" gap={1}>
                 <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
-                  Jezik aplikacije
+                  <Trans>Jezik aplikacije</Trans>
                 </Heading>
                 <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                  Izberite jezik uporabniškega vmesnika
+                  <Trans>Izberite jezik uporabniškega vmesnika</Trans>
                 </Text>
               </VStack>
 
@@ -298,20 +300,20 @@ export function ProfilePage() {
                   </Button>
                 </MenuTrigger>
                 <MenuPositioner>
-                  <MenuContent>
-                    <MenuItem onClick={() => setLocale("sl")}>
+                <MenuContent>
+                  <MenuItem value="sl" onClick={() => setLocale("sl")}>
                       <HStack gap={2}>
                         <LanguageFlag variant="sl" />
                         <Text fontWeight={locale === "sl" ? "semibold" : "normal"}>
-                          Slovenščina
+                          <Trans>Slovenščina</Trans>
                         </Text>
                       </HStack>
                     </MenuItem>
-                    <MenuItem onClick={() => setLocale("en")}>
+                    <MenuItem value="en" onClick={() => setLocale("en")}>
                       <HStack gap={2}>
                         <LanguageFlag variant="en" />
                         <Text fontWeight={locale === "en" ? "semibold" : "normal"}>
-                          English
+                          <Trans>English</Trans>
                         </Text>
                       </HStack>
                     </MenuItem>
@@ -336,7 +338,7 @@ export function ProfilePage() {
                 <HStack gap={3}>
                   <Icon as={LuUser} boxSize={5} color={{ base: "blue.500", _dark: "blue.400" }} />
                   <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
-                    Profilna slika
+                    <Trans>Profilna slika</Trans>
                   </Heading>
                 </HStack>
               </HStack>
@@ -496,7 +498,7 @@ export function ProfilePage() {
                         <Box p={4} borderRadius="lg" bg={{ base: "blue.50", _dark: "blue.900" }} borderWidth="1px" borderColor={{ base: "blue.200", _dark: "blue.700" }}>
                           <HStack justify="space-between" align="center">
                             <VStack align="start" gap={1} flex={1}>
-                              <Text fontSize="sm" fontWeight="semibold" color={{ base: "gray.700", _dark: "gray.300" }} noOfLines={1}>
+                          <Text fontSize="sm" fontWeight="semibold" color={{ base: "gray.700", _dark: "gray.300" }}>
                                 {selectedFile.name}
                               </Text>
                               <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.400" }}>
@@ -539,7 +541,7 @@ export function ProfilePage() {
                           disabled={isUpdatingAvatar}
                           fontWeight="semibold"
                         >
-                          Shrani profilno sliko
+                          <Trans>Shrani profilno sliko</Trans>
                         </Button>
                       </VStack>
                     </form>
@@ -591,7 +593,7 @@ export function ProfilePage() {
                 <HStack gap={3}>
                   <Icon as={LuPencil} boxSize={5} color={{ base: "blue.500", _dark: "blue.400" }} />
                   <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
-                    Profilne informacije
+                    <Trans>Profilne informacije</Trans>
                   </Heading>
                 </HStack>
                 <Button
@@ -599,7 +601,6 @@ export function ProfilePage() {
                   variant={isEditingProfile ? "outline" : "solid"}
                   colorPalette="blue"
                   size="sm"
-                  leftIcon={<LuPencil />}
                   onClick={() => {
                     if (isEditingProfile) {
                       handleProfileCancel();
@@ -609,7 +610,12 @@ export function ProfilePage() {
                   }}
                   disabled={isUpdatingProfile}
                 >
-                  {isEditingProfile ? "Prekliči" : "Uredi"}
+                  <HStack gap={2}>
+                    <LuPencil />
+                    <Text as="span">
+                      {isEditingProfile ? <Trans>Prekliči</Trans> : <Trans>Uredi</Trans>}
+                    </Text>
+                  </HStack>
                 </Button>
               </HStack>
               <form onSubmit={handleProfileSubmit}>
@@ -618,7 +624,7 @@ export function ProfilePage() {
                     <HStack gap={2} mb={1}>
                       <Icon as={LuMail} boxSize={4} color={{ base: "gray.500", _dark: "gray.400" }} />
                       <Field.Label fontSize="sm" fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
-                        E-pošta
+                        <Trans>E-pošta</Trans>
                       </Field.Label>
                     </HStack>
                     <Input
@@ -630,7 +636,7 @@ export function ProfilePage() {
                       color={{ base: "gray.500", _dark: "gray.400" }}
                     />
                     <Field.HelperText color={{ base: "gray.500", _dark: "gray.400" }}>
-                      E-pošte ni mogoče spremeniti
+                      <Trans>E-pošte ni mogoče spremeniti</Trans>
                     </Field.HelperText>
                   </Field.Root>
 
@@ -638,7 +644,7 @@ export function ProfilePage() {
                     <HStack gap={2} mb={1}>
                       <Icon as={LuUser} boxSize={4} color={{ base: "gray.500", _dark: "gray.400" }} />
                       <Field.Label fontSize="sm" fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
-                        Uporabniško ime
+                        <Trans>Uporabniško ime</Trans>
                       </Field.Label>
                     </HStack>
                     <Input
@@ -650,13 +656,13 @@ export function ProfilePage() {
                       color={{ base: "gray.500", _dark: "gray.400" }}
                     />
                     <Field.HelperText color={{ base: "gray.500", _dark: "gray.400" }}>
-                      Uporabniškega imena ni mogoče spremeniti
+                      <Trans>Uporabniškega imena ni mogoče spremeniti</Trans>
                     </Field.HelperText>
                   </Field.Root>
 
                   <Field.Root>
                     <Field.Label fontSize="sm" fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
-                      Ime
+                      <Trans>Ime</Trans>
                     </Field.Label>
                     <Input
                       id="name"
@@ -664,7 +670,7 @@ export function ProfilePage() {
                       type="text"
                       value={profileData.name}
                       onChange={handleProfileChange}
-                      placeholder="Vnesite vaše ime"
+                      placeholder={t`Vnesite vaše ime`}
                       disabled={!isEditingProfile || isUpdatingProfile}
                       bg={!isEditingProfile ? { base: "gray.50", _dark: "gray.700" } : undefined}
                       color={!isEditingProfile ? { base: "gray.500", _dark: "gray.400" } : undefined}
@@ -673,7 +679,7 @@ export function ProfilePage() {
 
                   <Field.Root>
                     <Field.Label fontSize="sm" fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
-                      Priimek
+                      <Trans>Priimek</Trans>
                     </Field.Label>
                     <Input
                       id="surname"
@@ -681,7 +687,7 @@ export function ProfilePage() {
                       type="text"
                       value={profileData.surname}
                       onChange={handleProfileChange}
-                      placeholder="Vnesite vaš priimek"
+                      placeholder={t`Vnesite vaš priimek`}
                       disabled={!isEditingProfile || isUpdatingProfile}
                       bg={!isEditingProfile ? { base: "gray.50", _dark: "gray.700" } : undefined}
                       color={!isEditingProfile ? { base: "gray.500", _dark: "gray.400" } : undefined}
@@ -692,7 +698,7 @@ export function ProfilePage() {
                     <HStack gap={2} mb={1}>
                       <Icon as={LuPhone} boxSize={4} color={{ base: "gray.500", _dark: "gray.400" }} />
                       <Field.Label fontSize="sm" fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
-                        Telefonska številka
+                        <Trans>Telefonska številka</Trans>
                       </Field.Label>
                     </HStack>
                     <Input
@@ -701,7 +707,7 @@ export function ProfilePage() {
                       type="tel"
                       value={profileData.phoneNumber}
                       onChange={handleProfileChange}
-                      placeholder="Vnesite vašo telefonsko številko"
+                      placeholder={t`Vnesite vašo telefonsko številko`}
                       disabled={!isEditingProfile || isUpdatingProfile}
                       bg={!isEditingProfile ? { base: "gray.50", _dark: "gray.700" } : undefined}
                       color={!isEditingProfile ? { base: "gray.500", _dark: "gray.400" } : undefined}
@@ -730,12 +736,12 @@ export function ProfilePage() {
                       size="md"
                       width="full"
                       loading={isUpdatingProfile}
-                      loadingText="Posodabljanje..."
+                      loadingText={t`Posodabljanje...`}
                       disabled={isUpdatingProfile}
                       fontWeight="semibold"
                       gridColumn={{ base: "span 1", md: "span 2" }}
                     >
-                      Shrani spremembe
+                      <Trans>Shrani spremembe</Trans>
                     </Button>
                   )}
                 </SimpleGrid>
@@ -758,7 +764,7 @@ export function ProfilePage() {
                 <HStack gap={3}>
                   <Icon as={LuLock} boxSize={5} color={{ base: "blue.500", _dark: "blue.400" }} />
                   <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
-                    Sprememba gesla
+                    <Trans>Sprememba gesla</Trans>
                   </Heading>
                 </HStack>
                 <Button
@@ -766,7 +772,6 @@ export function ProfilePage() {
                   variant={isEditingPassword ? "outline" : "solid"}
                   colorPalette="blue"
                   size="sm"
-                  leftIcon={<LuPencil />}
                   onClick={() => {
                     if (isEditingPassword) {
                       handlePasswordCancel();
@@ -776,7 +781,12 @@ export function ProfilePage() {
                   }}
                   disabled={isChangingPassword}
                 >
-                  {isEditingPassword ? "Prekliči" : "Uredi"}
+                  <HStack gap={2}>
+                    <LuPencil />
+                    <Text as="span">
+                      {isEditingPassword ? <Trans>Prekliči</Trans> : <Trans>Uredi</Trans>}
+                    </Text>
+                  </HStack>
                 </Button>
               </HStack>
               <form onSubmit={handlePasswordSubmit}>
@@ -785,7 +795,7 @@ export function ProfilePage() {
                     <HStack gap={2} mb={1}>
                       <Icon as={LuLock} boxSize={4} color={{ base: "gray.500", _dark: "gray.400" }} />
                       <Field.Label fontSize="sm" fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
-                        Trenutno geslo
+                        <Trans>Trenutno geslo</Trans>
                       </Field.Label>
                     </HStack>
                     <Input
@@ -794,7 +804,7 @@ export function ProfilePage() {
                       type="password"
                       value={passwordData.currentPassword}
                       onChange={handlePasswordChange}
-                      placeholder="Vnesite vaše trenutno geslo"
+                      placeholder={t`Vnesite vaše trenutno geslo`}
                       disabled={!isEditingPassword || isChangingPassword}
                       bg={!isEditingPassword ? { base: "gray.50", _dark: "gray.700" } : undefined}
                       color={!isEditingPassword ? { base: "gray.500", _dark: "gray.400" } : undefined}
@@ -805,7 +815,7 @@ export function ProfilePage() {
                     <HStack gap={2} mb={1}>
                       <Icon as={LuLock} boxSize={4} color={{ base: "gray.500", _dark: "gray.400" }} />
                       <Field.Label fontSize="sm" fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
-                        Novo geslo
+                        <Trans>Novo geslo</Trans>
                       </Field.Label>
                     </HStack>
                     <Input
@@ -814,7 +824,7 @@ export function ProfilePage() {
                       type="password"
                       value={passwordData.newPassword}
                       onChange={handlePasswordChange}
-                      placeholder="Vnesite vaše novo geslo"
+                      placeholder={t`Vnesite vaše novo geslo`}
                       disabled={!isEditingPassword || isChangingPassword}
                       bg={!isEditingPassword ? { base: "gray.50", _dark: "gray.700" } : undefined}
                       color={!isEditingPassword ? { base: "gray.500", _dark: "gray.400" } : undefined}
@@ -825,7 +835,7 @@ export function ProfilePage() {
                     <HStack gap={2} mb={1}>
                       <Icon as={LuLock} boxSize={4} color={{ base: "gray.500", _dark: "gray.400" }} />
                       <Field.Label fontSize="sm" fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
-                        Potrdite novo geslo
+                        <Trans>Potrdite novo geslo</Trans>
                       </Field.Label>
                     </HStack>
                     <Input
@@ -834,7 +844,7 @@ export function ProfilePage() {
                       type="password"
                       value={passwordData.confirmPassword}
                       onChange={handlePasswordChange}
-                      placeholder="Potrdite vaše novo geslo"
+                      placeholder={t`Potrdite vaše novo geslo`}
                       disabled={!isEditingPassword || isChangingPassword}
                       bg={!isEditingPassword ? { base: "gray.50", _dark: "gray.700" } : undefined}
                       color={!isEditingPassword ? { base: "gray.500", _dark: "gray.400" } : undefined}
@@ -862,11 +872,11 @@ export function ProfilePage() {
                       size="md"
                       width="full"
                       loading={isChangingPassword}
-                      loadingText="Spreminjanje..."
+                      loadingText={t`Spreminjanje...`}
                       disabled={isChangingPassword}
                       fontWeight="semibold"
                     >
-                      Spremeni geslo
+                      <Trans>Spremeni geslo</Trans>
                     </Button>
                   )}
                 </VStack>

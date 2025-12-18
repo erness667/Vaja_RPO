@@ -11,8 +11,498 @@ msgstr ""
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Plural-Forms: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/components/car/CarCard.tsx:231
+#: src/components/car/CarDetailPage.tsx:577
+msgid "Barva"
+msgstr "Color"
+
+#: src/components/car/CarSearch.tsx:211
+msgid "Cena do"
+msgstr "Price up to"
+
+#: src/components/car/CarSearch.tsx:175
+msgid "Cena od"
+msgstr "Price from"
+
+#: src/components/auth/RegisterForm.tsx:177
+msgid "Choose a username"
+msgstr "Choose a username"
+
+#: src/components/auth/RegisterForm.tsx:197
+msgid "Create a password"
+msgstr "Create a password"
+
+#: src/components/auth/RegisterForm.tsx:56
+msgid "Create account"
+msgstr "Create account"
+
+#: src/components/car/CarDetailPage.tsx:369
+msgid "Dodaj med priljubljene"
+msgstr "Add to favourites"
+
+#: src/components/profile/ProfilePage.tsx:627
+msgid "E-pošta"
+msgstr "Email"
+
+#: src/components/profile/ProfilePage.tsx:639
+msgid "E-pošte ni mogoče spremeniti"
+msgstr "Email cannot be changed"
+
+#: src/components/auth/RegisterForm.tsx:128
+msgid "Email Address"
+msgstr "Email address"
+
+#: src/components/profile/ProfilePage.tsx:316
+msgid "English"
+msgstr "English"
+
+#: src/components/auth/LoginForm.tsx:57
+msgid "Enter your credentials to access your account."
+msgstr "Enter your credentials to access your account."
+
+#: src/components/auth/RegisterForm.tsx:137
+msgid "Enter your email"
+msgstr "Enter your email"
+
+#: src/components/auth/RegisterForm.tsx:97
+msgid "Enter your name"
+msgstr "Enter your name"
+
+#: src/components/auth/LoginForm.tsx:110
+msgid "Enter your password"
+msgstr "Enter your password"
+
+#: src/components/auth/RegisterForm.tsx:157
+msgid "Enter your phone number"
+msgstr "Enter your phone number"
+
+#: src/components/auth/RegisterForm.tsx:117
+msgid "Enter your surname"
+msgstr "Enter your surname"
+
+#: src/components/auth/LoginForm.tsx:90
+msgid "Enter your username or email"
+msgstr "Enter your username or email"
+
+#: src/components/car/CarDetailPage.tsx:541
+#: src/components/car/CarSearch.tsx:91
+#: src/components/car/CarSearch.tsx:368
+msgid "Gorivo"
+msgstr "Fuel"
+
+#: src/components/car/CarSearch.tsx:144
+msgid "Hitro iskanje osebnih vozil"
+msgstr "Quick search of passenger cars"
+
+#: src/components/profile/ProfilePage.tsx:665
+msgid "Ime"
+msgstr "First name"
+
+#: src/components/car/CarSearch.tsx:424
+msgid "Iskanje vozil"
+msgstr "Search vehicles"
+
+#: src/components/profile/ProfilePage.tsx:287
+msgid "Izberite jezik uporabniškega vmesnika"
+msgstr "Select the application language"
+
+#: src/components/profile/ProfilePage.tsx:284
+msgid "Jezik aplikacije"
+msgstr "Application language"
+
+#: src/components/car/CarDetailPage.tsx:296
+msgid "Klikni za povečavo"
+msgstr "Click to zoom"
+
+#: src/components/car/CarDetailPage.tsx:655
+msgid "Komentarji"
+msgstr "Comments"
+
+#: src/components/car/CarSearch.tsx:332
+msgid "Letnik do"
+msgstr "Year to"
+
+#: src/components/car/CarSearch.tsx:296
+msgid "Letnik od"
+msgstr "Year from"
+
+#: src/components/profile/ProfilePage.tsx:233
+msgid "Loading profile..."
+msgstr "Loading profile..."
+
+#: src/components/layout/Navbar.tsx:285
+msgid "Log out"
+msgstr "Log out"
+
+#: src/components/layout/Navbar.tsx:285
+msgid "Logging out..."
+msgstr "Logging out..."
+
+#: src/components/layout/Navbar.tsx:300
+msgid "Login"
+msgstr "Login"
+
+#: src/components/car/CarDetailPage.tsx:565
+msgid "Menjalnik"
+msgstr "Transmission"
+
+#: src/components/car/CarDetailPage.tsx:553
+msgid "Moč motorja"
+msgstr "Engine power"
+
+#: src/components/profile/ProfilePage.tsx:265
+msgid "Moj profil"
+msgstr "My profile"
+
+#: src/components/favourites/FavouritesPage.tsx:78
+msgid "Moje priljubljene"
+msgstr "My favourites"
+
+#: src/components/history/ViewHistoryPage.tsx:96
+msgid "Na seznam vozil"
+msgstr "Back to vehicle list"
+
+#: src/components/layout/SortBar.tsx:58
+msgid "Najcenejši"
+msgstr "Cheapest"
+
+#: src/components/car/CarList.tsx:51
+msgid "Najcenejši oglasi"
+msgstr "Cheapest listings"
+
+#: src/components/layout/SortBar.tsx:57
+msgid "Najdražji"
+msgstr "Most expensive"
+
+#: src/components/car/CarList.tsx:49
+msgid "Najdražji oglasi"
+msgstr "Most expensive listings"
+
+#: src/components/layout/SortBar.tsx:55
+msgid "Najnovejši"
+msgstr "Newest"
+
+#: src/components/car/CarList.tsx:54
+msgid "Najnovejši oglasi"
+msgstr "Newest listings"
+
+#: src/components/layout/SortBar.tsx:56
+msgid "Najstarejši"
+msgstr "Oldest"
+
+#: src/components/car/CarList.tsx:47
+msgid "Najstarejši oglasi"
+msgstr "Oldest listings"
+
+#: src/components/car/CarDetailPage.tsx:189
+msgid "Nalaganje podrobnosti vozila..."
+msgstr "Loading vehicle details..."
+
+#: src/components/auth/RegisterForm.tsx:88
+msgid "Name"
+msgstr "Name"
+
+#: src/components/car/CarDetailPage.tsx:664
+msgid "Napišite komentar..."
+msgstr "Write a comment..."
+
+#: src/components/car/CarSearch.tsx:416
+msgid "Napredno iskanje z dodatnimi filtri"
+msgstr "Advanced search with additional filters"
+
+#: src/components/car/CarDetailPage.tsx:207
+#: src/components/car/CarDetailPage.tsx:248
+msgid "Nazaj"
+msgstr "Back"
+
+#: src/components/favourites/FavouritesPage.tsx:119
+msgid "Nazaj na iskanje"
+msgstr "Back to search"
+
+#: src/components/favourites/FavouritesPage.tsx:71
+#: src/components/history/ViewHistoryPage.tsx:42
+msgid "Nazaj na seznam"
+msgstr "Back to list"
+
+#: src/components/profile/ProfilePage.tsx:164
+msgid "New passwords do not match."
+msgstr "New passwords do not match."
+
+#: src/components/car/CarCard.tsx:126
+msgid "Ni slike"
+msgstr "No image"
+
+#: src/components/profile/ProfilePage.tsx:818
+msgid "Novo geslo"
+msgstr "New password"
+
+#: src/components/car/CarDetailPage.tsx:684
+msgid "Objavi komentar"
+msgstr "Post comment"
+
+#: src/components/layout/Navbar.tsx:198
+msgid "Objavi oglas"
+msgstr "Post listing"
+
+#: src/components/car/CarDetailPage.tsx:368
+msgid "Odstrani iz priljubljenih"
+msgstr "Remove from favourites"
+
+#: src/components/car/CarCard.tsx:178
+#: src/components/car/CarDetailPage.tsx:401
+msgid "ogledov"
+msgstr "views"
+
+#: src/components/car/CarDetailPage.tsx:624
+msgid "Oprema in dodatni podatki"
+msgstr "Equipment and additional information"
+
+#: src/components/auth/LoginForm.tsx:103
+#: src/components/auth/RegisterForm.tsx:188
+msgid "Password"
+msgstr "Password"
+
+#: src/components/auth/RegisterForm.tsx:148
+msgid "Phone Number"
+msgstr "Phone number"
+
+#: src/components/profile/ProfilePage.tsx:194
+msgid "Please select a file."
+msgstr "Please select a file."
+
+#: src/components/car/CarCard.tsx:234
 msgid "Podrobnosti vozila"
-msgstr "Vechile details"
+msgstr "Vehicle details"
+
+#: src/components/car/CarDetailPage.tsx:498
+msgid "Pokliči prodajalca"
+msgstr "Call seller"
+
+#: src/components/profile/ProfilePage.tsx:739
+msgid "Posodabljanje..."
+msgstr "Updating..."
+
+#: src/components/profile/ProfilePage.tsx:838
+msgid "Potrdite novo geslo"
+msgstr "Confirm new password"
+
+#: src/components/profile/ProfilePage.tsx:847
+msgid "Potrdite vaše novo geslo"
+msgstr "Confirm your new password"
+
+#: src/components/car/CarDetailPage.tsx:601
+msgid "Predhodnih lastnikov"
+msgstr "Previous owners"
+
+#: src/components/car/CarDetailPage.tsx:857
+#: src/components/profile/ProfilePage.tsx:616
+#: src/components/profile/ProfilePage.tsx:787
+msgid "Prekliči"
+msgstr "Cancel"
+
+#: src/components/car/CarDetailPage.tsx:529
+msgid "Prevoženih km"
+msgstr "Kilometres driven"
+
+#: src/components/car/CarSearch.tsx:247
+msgid "Prevoženih km do"
+msgstr "Kilometres up to"
+
+#: src/components/profile/ProfilePage.tsx:682
+msgid "Priimek"
+msgstr "Last name"
+
+#: src/components/layout/Navbar.tsx:254
+msgid "Priljubljene"
+msgstr "Favourites"
+
+#: src/components/car/CarDetailPage.tsx:417
+msgid "Prodajalec"
+msgstr "Seller"
+
+#: src/components/layout/Navbar.tsx:274
+msgid "Profile"
+msgstr "Profile"
+
+#: src/components/profile/ProfilePage.tsx:341
+msgid "Profilna slika"
+msgstr "Profile picture"
+
+#: src/components/profile/ProfilePage.tsx:596
+msgid "Profilne informacije"
+msgstr "Profile information"
+
+#: src/components/car/CarDetailPage.tsx:589
+msgid "Prva registracija"
+msgstr "First registration"
+
+#: src/components/layout/SortBar.tsx:43
+msgid "Razvrsti"
+msgstr "Sort"
+
+#: src/components/auth/RegisterForm.tsx:211
+#: src/components/layout/Navbar.tsx:310
+msgid "Register"
+msgstr "Register"
+
+#: src/components/car/CarDetailPage.tsx:743
+msgid "Še ni komentarjev. Bodite prvi, ki komentirate!"
+msgstr "No comments yet. Be the first to comment!"
+
+#: src/components/history/ViewHistoryPage.tsx:92
+msgid "Še nimate ogledov. Začnite z raziskovanjem ponudbe."
+msgstr "You have no views yet. Start exploring the listings."
+
+#: src/components/car/CarDetailPage.tsx:867
+msgid "Shrani"
+msgstr "Save"
+
+#: src/components/profile/ProfilePage.tsx:544
+msgid "Shrani profilno sliko"
+msgstr "Save profile picture"
+
+#: src/components/profile/ProfilePage.tsx:744
+msgid "Shrani spremembe"
+msgstr "Save changes"
+
+#: src/components/auth/LoginForm.tsx:51
+#: src/components/auth/LoginForm.tsx:125
+msgid "Sign in"
+msgstr "Sign in"
+
+#: src/components/auth/RegisterForm.tsx:62
+msgid "Sign up with a username and password to get started."
+msgstr "Sign up with a username and password to get started."
+
+#: src/components/auth/LoginForm.tsx:125
+msgid "Signing in..."
+msgstr "Signing in..."
+
+#: src/components/profile/ProfilePage.tsx:308
+msgid "Slovenščina"
+msgstr "Slovenian"
+
+#: src/components/car/CarDetailPage.tsx:521
+msgid "Specifikacije"
+msgstr "Specifications"
+
+#: src/components/profile/ProfilePage.tsx:767
+msgid "Sprememba gesla"
+msgstr "Change password"
+
+#: src/components/profile/ProfilePage.tsx:879
+msgid "Spremeni geslo"
+msgstr "Change password"
+
+#: src/components/profile/ProfilePage.tsx:875
+msgid "Spreminjanje..."
+msgstr "Changing..."
+
+#: src/components/layout/Navbar.tsx:179
+msgid "SUPERCARS Logo"
+msgstr "SUPERCARS Logo"
+
+#: src/components/auth/RegisterForm.tsx:108
+msgid "Surname"
+msgstr "Surname"
+
+#: src/components/profile/ProfilePage.tsx:701
+msgid "Telefonska številka"
+msgstr "Phone number"
+
+#: src/components/layout/Navbar.tsx:208
+msgid "Toggle dark mode"
+msgstr "Toggle dark mode"
+
+#: src/components/profile/ProfilePage.tsx:798
+msgid "Trenutno geslo"
+msgstr "Current password"
+
+#: src/components/car/CarList.tsx:136
+msgid "Trenutno ni objavljenih vozil."
+msgstr "There are currently no vehicles listed."
+
+#: src/components/favourites/FavouritesPage.tsx:116
+msgid "Trenutno nimate priljubljenih vozil."
+msgstr "You currently have no favourite vehicles."
+
+#: src/components/profile/ProfilePage.tsx:659
+msgid "Uporabniškega imena ni mogoče spremeniti"
+msgstr "Username cannot be changed"
+
+#: src/components/profile/ProfilePage.tsx:647
+msgid "Uporabniško ime"
+msgstr "Username"
+
+#: src/components/profile/ProfilePage.tsx:268
+msgid "Upravljajte svoje profilne informacije in nastavitve računa"
+msgstr "Manage your profile information and account settings"
+
+#: src/components/profile/ProfilePage.tsx:616
+#: src/components/profile/ProfilePage.tsx:787
+msgid "Uredi"
+msgstr "Edit"
+
+#: src/components/car/CarDetailPage.tsx:809
+msgid "urejeno"
+msgstr "edited"
+
+#: src/components/layout/Navbar.tsx:230
+msgid "User menu"
+msgstr "User menu"
+
+#: src/components/auth/RegisterForm.tsx:168
+msgid "Username"
+msgstr "Username"
+
+#: src/components/auth/LoginForm.tsx:83
+msgid "Username or Email"
+msgstr "Username or Email"
+
+#: src/components/profile/ProfilePage.tsx:690
+msgid "Vnesite vaš priimek"
+msgstr "Enter your last name"
+
+#: src/components/profile/ProfilePage.tsx:673
+msgid "Vnesite vaše ime"
+msgstr "Enter your first name"
+
+#: src/components/profile/ProfilePage.tsx:827
+msgid "Vnesite vaše novo geslo"
+msgstr "Enter your new password"
+
+#: src/components/profile/ProfilePage.tsx:807
+msgid "Vnesite vaše trenutno geslo"
+msgstr "Enter your current password"
+
+#: src/components/profile/ProfilePage.tsx:710
+msgid "Vnesite vašo telefonsko številko"
+msgstr "Enter your phone number"
+
+#: src/components/car/CarDetailPage.tsx:217
+msgid "Vozilo ni bilo najdeno."
+msgstr "Vehicle was not found."
+
+#: src/components/favourites/FavouritesPage.tsx:81
+msgid "Vsa vozila, ki ste jih dodali med priljubljene."
+msgstr "All vehicles you have added to favourites."
+
+#: src/components/car/CarSearch.tsx:81
+#: src/components/car/CarSearch.tsx:86
+#: src/components/car/CarSearch.tsx:88
+msgid "Vse"
+msgstr "All"
+
+#: src/components/car/CarDetailPage.tsx:696
+msgid "Za komentiranje se morate <0>prijaviti</0>."
+msgstr "You must <0>log in</0> to comment."
+
+#: src/components/history/ViewHistoryPage.tsx:58
+msgid "Zadnjih 10 vozil, ki ste jih odprli (najnovejše na vrhu)."
+msgstr "The last 10 vehicles you opened (newest at the top)."
+
+#: src/components/history/ViewHistoryPage.tsx:53
+#: src/components/layout/Navbar.tsx:264
+msgid "Zgodovina ogledov"
+msgstr "View history"

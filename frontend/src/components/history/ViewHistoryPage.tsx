@@ -12,13 +12,13 @@ import {
   Button,
   Icon,
   HStack,
-  Badge,
 } from "@chakra-ui/react";
-import { LuArrowLeft, LuClock, LuEye } from "react-icons/lu";
+import { LuArrowLeft, LuClock } from "react-icons/lu";
 import { PageShell } from "@/components/layout/PageShell";
 import { useViewHistory } from "@/lib/hooks/useViewHistory";
 import { CarCard } from "../car/CarCard";
 import type { Car } from "@/lib/types/car";
+import { Trans } from "@lingui/macro";
 
 export function ViewHistoryPage() {
   const { history, isLoading, error } = useViewHistory();
@@ -39,7 +39,7 @@ export function ViewHistoryPage() {
             _hover={{ color: { base: "blue.600", _dark: "blue.400" } }}
           >
             <Icon as={LuArrowLeft} mr={2} />
-            Nazaj na seznam
+            <Trans>Nazaj na seznam</Trans>
           </Button>
         </Link>
 
@@ -50,12 +50,12 @@ export function ViewHistoryPage() {
                 size="xl"
                 color={{ base: "gray.900", _dark: "gray.100" }}
               >
-                Zgodovina ogledov
+                <Trans>Zgodovina ogledov</Trans>
               </Heading>
             </HStack>
           </HStack>
           <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-            Zadnjih 10 vozil, ki ste jih odprli (najnovejše na vrhu).
+            <Trans>Zadnjih 10 vozil, ki ste jih odprli (najnovejše na vrhu).</Trans>
           </Text>
         </VStack>
 
@@ -89,11 +89,11 @@ export function ViewHistoryPage() {
               mb={2}
             />
             <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-              Še nimate ogledov. Začnite z raziskovanjem ponudbe.
+              <Trans>Še nimate ogledov. Začnite z raziskovanjem ponudbe.</Trans>
             </Text>
             <Link href="/">
               <Button mt={3} colorPalette="blue">
-                Na seznam vozil
+                <Trans>Na seznam vozil</Trans>
               </Button>
             </Link>
           </Box>

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon, HiHeart, HiClock } from "react-icons/hi";
+import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon } from "react-icons/hi";
+import { Trans, t } from "@lingui/macro";
 import { 
   Box, 
   HStack, 
@@ -175,7 +176,7 @@ export function Navbar() {
           }>
             <Image
               src={isDark ? "/logo_dark.png" : "/logo.png"}
-              alt="SUPERCARS Logo"
+              alt={t`SUPERCARS Logo`}
               width={200}
               height={70}
               style={{ height: "4rem", width: "auto", objectFit: "contain" }}
@@ -194,7 +195,7 @@ export function Navbar() {
                 size="sm"
               >
                 <HiPlus style={{ width: "20px", height: "20px", marginRight: "8px" }} />
-                Objavi oglas
+                <Trans>Objavi oglas</Trans>
               </Button>
             </Link>
           )}
@@ -204,7 +205,7 @@ export function Navbar() {
             <IconButton
               onClick={toggleColorMode}
               variant="ghost"
-              aria-label="Toggle dark mode"
+              aria-label={t`Toggle dark mode`}
               size="sm"
               color={{ base: "#374151", _dark: "#f3f4f6" }}
               _hover={{
@@ -226,7 +227,7 @@ export function Navbar() {
                 <MenuTrigger asChild>
                   <IconButton
                     variant="ghost"
-                    aria-label="User menu"
+                    aria-label={t`User menu`}
                     size="sm"
                     borderRadius="full"
                     p={0}
@@ -250,7 +251,7 @@ export function Navbar() {
                         bg: { base: "#f3f4f6", _dark: "#374151" },
                       }}
                     >
-                      Priljubljene
+                      <Trans>Priljubljene</Trans>
                     </MenuItem>
                     <MenuItem
                       value="view-history"
@@ -260,7 +261,7 @@ export function Navbar() {
                         bg: { base: "#f3f4f6", _dark: "#374151" },
                       }}
                     >
-                      Zgodovina ogledov
+                      <Trans>Zgodovina ogledov</Trans>
                     </MenuItem>
                     <MenuItem
                       value="profile"
@@ -270,7 +271,7 @@ export function Navbar() {
                         bg: { base: "#f3f4f6", _dark: "#374151" },
                       }}
                     >
-                      Profile
+                      <Trans>Profile</Trans>
                     </MenuItem>
                     <MenuItem
                       value="logout"
@@ -281,7 +282,7 @@ export function Navbar() {
                         bg: { base: "#f3f4f6", _dark: "#374151" },
                       }}
                     >
-                      {isLoggingOut ? "Logging out..." : "Log out"}
+                      {isLoggingOut ? <Trans>Logging out...</Trans> : <Trans>Log out</Trans>}
                     </MenuItem>
                   </MenuContent>
                 </MenuPositioner>
@@ -296,7 +297,7 @@ export function Navbar() {
                     color={{ base: "#374151", _dark: "#f3f4f6" }}
                   >
                     <HiUser style={{ width: "20px", height: "20px", marginRight: "8px" }} />
-                    Login
+                    <Trans>Login</Trans>
                   </Button>
                 </Link>
 
@@ -306,7 +307,7 @@ export function Navbar() {
                     size="sm"
                   >
                     <HiUserAdd style={{ width: "20px", height: "20px", marginRight: "8px" }} />
-                    Register
+                    <Trans>Register</Trans>
                   </Button>
                 </Link>
               </>

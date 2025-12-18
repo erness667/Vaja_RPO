@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ import {
   Textarea,
   Portal,
 } from "@chakra-ui/react";
+import { Trans, t } from "@lingui/macro";
 import {
   LuGauge,
   LuFuel,
@@ -184,7 +185,9 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
         <Box display="flex" justifyContent="center" alignItems="center" minH="400px">
           <VStack gap={4}>
             <Spinner size="xl" color="blue.500" />
-            <Text color={{ base: "gray.600", _dark: "gray.400" }}>Nalaganje podrobnosti vozila...</Text>
+            <Text color={{ base: "gray.600", _dark: "gray.400" }}>
+              <Trans>Nalaganje podrobnosti vozila...</Trans>
+            </Text>
           </VStack>
         </Box>
       </PageShell>
@@ -201,7 +204,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
             alignSelf="flex-start"
           >
             <Icon as={LuArrowLeft} mr={2} />
-            Nazaj
+            <Trans>Nazaj</Trans>
           </Button>
           <Box
             p={6}
@@ -211,7 +214,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
             borderColor={{ base: "red.200", _dark: "red.700" }}
           >
             <Text color={{ base: "red.800", _dark: "red.200" }} fontWeight="medium">
-              {error || "Vozilo ni bilo najdeno."}
+              {error || <Trans>Vozilo ni bilo najdeno.</Trans>}
             </Text>
           </Box>
         </VStack>
@@ -242,7 +245,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
           _hover={{ color: { base: "blue.600", _dark: "blue.400" } }}
         >
           <Icon as={LuArrowLeft} mr={2} />
-          Nazaj
+          <Trans>Nazaj</Trans>
         </Button>
 
         {/* Main Content */}
@@ -290,7 +293,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                   justifyContent="center"
                 >
                   <Text color="white" fontWeight="semibold" fontSize="lg">
-                    Klikni za povečavo
+                    <Trans>Klikni za povečavo</Trans>
                   </Text>
                 </Box>
               </Box>
@@ -360,7 +363,11 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                     p={2}
                     onClick={toggleFavourite}
                     loading={isFavouriteLoading}
-                    aria-label={isFavourite ? "Odstrani iz priljubljenih" : "Dodaj med priljubljene"}
+                    aria-label={
+                      isFavourite
+                        ? t`Odstrani iz priljubljenih`
+                        : t`Dodaj med priljubljene`
+                    }
                     aria-pressed={isFavourite}
                     _hover={{
                       bg: isFavourite
@@ -390,7 +397,9 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
               </Text>
               <HStack gap={2} color={{ base: "gray.600", _dark: "gray.400" }} fontSize="sm">
                 <Icon as={LuEye} boxSize={4} />
-                <Text>{(car.viewCount ?? 0).toLocaleString("sl-SI")} ogledov</Text>
+                <Text>
+                  {(car.viewCount ?? 0).toLocaleString("sl-SI")} <Trans>ogledov</Trans>
+                </Text>
               </HStack>
             </VStack>
 
@@ -405,7 +414,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                 <CardBody p={6}>
                   <VStack align="stretch" gap={4}>
                     <Heading size="sm" color={{ base: "gray.800", _dark: "gray.100" }}>
-                      Prodajalec
+                      <Trans>Prodajalec</Trans>
                     </Heading>
                     <HStack gap={4} align="center">
                       {/* Seller Avatar */}
@@ -486,7 +495,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                       onClick={() => window.location.href = `tel:${car.seller?.phoneNumber}`}
                     >
                       <Icon as={LuPhone} mr={2} />
-                      Pokliči prodajalca
+                    <Trans>Pokliči prodajalca</Trans>
                     </Button>
                   </VStack>
                 </CardBody>
@@ -509,7 +518,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
               <CardBody p={6}>
                 <VStack align="stretch" gap={4}>
                   <Heading size="sm" color={{ base: "gray.800", _dark: "gray.100" }} mb={2}>
-                    Specifikacije
+                    <Trans>Specifikacije</Trans>
                   </Heading>
                   
                   <SimpleGrid columns={2} gap={4}>
@@ -517,7 +526,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                       <Icon as={LuGauge} boxSize={5} color={{ base: "blue.500", _dark: "blue.400" }} />
                       <VStack align="start" gap={0}>
                         <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.400" }}>
-                          Prevoženih km
+                          <Trans>Prevoženih km</Trans>
                         </Text>
                         <Text fontSize="sm" fontWeight="semibold" color={{ base: "gray.700", _dark: "gray.300" }}>
                           {mileageText}
@@ -529,7 +538,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                       <Icon as={LuFuel} boxSize={5} color={{ base: "blue.500", _dark: "blue.400" }} />
                       <VStack align="start" gap={0}>
                         <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.400" }}>
-                          Gorivo
+                          <Trans>Gorivo</Trans>
                         </Text>
                         <Text fontSize="sm" fontWeight="semibold" color={{ base: "gray.700", _dark: "gray.300" }}>
                           {car.fuelType}
@@ -541,7 +550,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                       <Icon as={LuSettings2} boxSize={5} color={{ base: "blue.500", _dark: "blue.400" }} />
                       <VStack align="start" gap={0}>
                         <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.400" }}>
-                          Moč motorja
+                          <Trans>Moč motorja</Trans>
                         </Text>
                         <Text fontSize="sm" fontWeight="semibold" color={{ base: "gray.700", _dark: "gray.300" }}>
                           {powerText}
@@ -553,7 +562,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                       <Icon as={LuSettings2} boxSize={5} color={{ base: "blue.500", _dark: "blue.400" }} />
                       <VStack align="start" gap={0}>
                         <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.400" }}>
-                          Menjalnik
+                          <Trans>Menjalnik</Trans>
                         </Text>
                         <Text fontSize="sm" fontWeight="semibold" color={{ base: "gray.700", _dark: "gray.300" }}>
                           {car.transmission}
@@ -565,7 +574,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                       <Icon as={LuPalette} boxSize={5} color={{ base: "blue.500", _dark: "blue.400" }} />
                       <VStack align="start" gap={0}>
                         <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.400" }}>
-                          Barva
+                          <Trans>Barva</Trans>
                         </Text>
                         <Text fontSize="sm" fontWeight="semibold" color={{ base: "gray.700", _dark: "gray.300" }}>
                           {car.color}
@@ -577,7 +586,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                       <Icon as={LuCalendar} boxSize={5} color={{ base: "blue.500", _dark: "blue.400" }} />
                       <VStack align="start" gap={0}>
                         <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.400" }}>
-                          Prva registracija
+                          <Trans>Prva registracija</Trans>
                         </Text>
                         <Text fontSize="sm" fontWeight="semibold" color={{ base: "gray.700", _dark: "gray.300" }}>
                           {registrationDate}
@@ -589,7 +598,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                       <Icon as={LuUsers} boxSize={5} color={{ base: "blue.500", _dark: "blue.400" }} />
                       <VStack align="start" gap={0}>
                         <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.400" }}>
-                          Predhodnih lastnikov
+                          <Trans>Predhodnih lastnikov</Trans>
                         </Text>
                         <Text fontSize="sm" fontWeight="semibold" color={{ base: "gray.700", _dark: "gray.300" }}>
                           {car.previousOwners}
@@ -612,7 +621,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                 <CardBody p={6}>
                   <VStack align="stretch" gap={3}>
                     <Heading size="sm" color={{ base: "gray.800", _dark: "gray.100" }}>
-                      Oprema in dodatni podatki
+                      <Trans>Oprema in dodatni podatki</Trans>
                     </Heading>
                     <Text
                       fontSize="sm"
@@ -643,7 +652,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
               <HStack gap={3}>
                 <Icon as={LuMessageSquare} boxSize={5} color={{ base: "blue.500", _dark: "blue.400" }} />
                 <Heading size="sm" color={{ base: "gray.800", _dark: "gray.100" }}>
-                  Komentarji ({comments.length})
+                  <Trans>Komentarji</Trans> ({comments.length})
                 </Heading>
               </HStack>
 
@@ -652,7 +661,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                 <Box>
                   <VStack align="stretch" gap={3}>
                     <Textarea
-                      placeholder="Napišite komentar..."
+                      placeholder={t`Napišite komentar...`}
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                       bg={{ base: "gray.50", _dark: "gray.700" }}
@@ -672,7 +681,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                       disabled={!newComment.trim() || isSubmitting}
                     >
                       <Icon as={LuSend} mr={2} />
-                      Objavi komentar
+                      <Trans>Objavi komentar</Trans>
                     </Button>
                   </VStack>
                 </Box>
@@ -684,18 +693,22 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                   textAlign="center"
                 >
                   <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-                    Za komentiranje se morate{" "}
-                    <Text
-                      as="span"
-                      color={{ base: "blue.600", _dark: "blue.400" }}
-                      fontWeight="semibold"
-                      cursor="pointer"
-                      _hover={{ textDecoration: "underline" }}
-                      onClick={() => router.push("/login")}
+                    <Trans
+                      components={{
+                        link: (
+                          <Text
+                            as="span"
+                            color={{ base: "blue.600", _dark: "blue.400" }}
+                            fontWeight="semibold"
+                            cursor="pointer"
+                            _hover={{ textDecoration: "underline" }}
+                            onClick={() => router.push("/login")}
+                          />
+                        ),
+                      }}
                     >
-                      prijaviti
-                    </Text>
-                    .
+                      Za komentiranje se morate <link>prijaviti</link>.
+                    </Trans>
                   </Text>
                 </Box>
               )}
@@ -727,7 +740,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                   textAlign="center"
                 >
                   <Text color={{ base: "gray.500", _dark: "gray.400" }}>
-                    Še ni komentarjev. Bodite prvi, ki komentirate!
+                    <Trans>Še ni komentarjev. Bodite prvi, ki komentirate!</Trans>
                   </Text>
                 </Box>
               ) : (
@@ -791,7 +804,10 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                               <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.400" }}>
                                 {formatDate(comment.createdAt)}
                                 {comment.updatedAt && (
-                                  <Text as="span" fontStyle="italic"> (urejeno)</Text>
+                                  <Text as="span" fontStyle="italic">
+                                    {" "}
+                                    <Trans>urejeno</Trans>
+                                  </Text>
                                 )}
                               </Text>
                             </VStack>
@@ -838,7 +854,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                                 onClick={handleCancelEdit}
                               >
                                 <Icon as={LuX} mr={2} />
-                                Prekliči
+                                <Trans>Prekliči</Trans>
                               </Button>
                               <Button
                                 size="sm"
@@ -848,7 +864,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                                 disabled={!editContent.trim() || isSubmitting}
                               >
                                 <Icon as={LuCheck} mr={2} />
-                                Shrani
+                                <Trans>Shrani</Trans>
                               </Button>
                             </HStack>
                           </VStack>

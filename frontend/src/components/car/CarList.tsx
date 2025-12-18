@@ -14,6 +14,7 @@ import { useSearchParams } from "next/navigation";
 import { useCars, type UseCarsFilters } from "@/lib/hooks/useCars";
 import { CarCard } from "./CarCard";
 import { SortBar, SortOption } from "../layout/SortBar";
+import { Trans } from "@lingui/macro";
 
 export function CarList() {
   const searchParams = useSearchParams();
@@ -40,19 +41,19 @@ export function CarList() {
     void refetch();
   }, [refetch]);
 
-  const headingText = useMemo(() => {
+  const renderHeading = () => {
     switch (sort) {
       case "oldest":
-        return "Najstarejši oglasi";
+        return <Trans>Najstarejši oglasi</Trans>;
       case "priceDesc":
-        return "Najdražji oglasi";
+        return <Trans>Najdražji oglasi</Trans>;
       case "priceAsc":
-        return "Najcenejši oglasi";
+        return <Trans>Najcenejši oglasi</Trans>;
       case "newest":
       default:
-        return "Najnovejši oglasi";
+        return <Trans>Najnovejši oglasi</Trans>;
     }
-  }, [sort]);
+  };
 
   const sortedCars = useMemo(() => {
     const list = [...cars];
@@ -99,7 +100,7 @@ export function CarList() {
               size="lg"
               color={{ base: "gray.800", _dark: "gray.100" }}
             >
-              {headingText}
+              {renderHeading()}
             </Heading>
             <SortBar value={sort} onChange={setSort} />
           </HStack>
@@ -132,7 +133,7 @@ export function CarList() {
             fontSize="sm"
             color={{ base: "gray.600", _dark: "gray.400" }}
           >
-            Trenutno ni objavljenih vozil.
+            <Trans>Trenutno ni objavljenih vozil.</Trans>
           </Text>
         )}
 

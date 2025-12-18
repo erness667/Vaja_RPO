@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   HStack,
@@ -12,15 +12,23 @@ import {
   Text,
 } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
-import { LuArrowDownWideNarrow, LuArrowUpNarrowWide, LuArrowDown01, LuArrowUp01, LuFilter, LuCheck } from "react-icons/lu";
+import {
+  LuArrowDownWideNarrow,
+  LuArrowUpNarrowWide,
+  LuArrowDown01,
+  LuArrowUp01,
+  LuFilter,
+  LuCheck,
+} from "react-icons/lu";
+import { Trans, t } from "@lingui/macro";
 
 export type SortOption = "newest" | "oldest" | "priceDesc" | "priceAsc";
 
-const options: { key: SortOption; label: string; icon: IconType }[] = [
-  { key: "newest", label: "Najnovejši", icon: LuArrowDownWideNarrow },
-  { key: "oldest", label: "Najstarejši", icon: LuArrowUpNarrowWide },
-  { key: "priceDesc", label: "Najdražji", icon: LuArrowDown01 },
-  { key: "priceAsc", label: "Najcenejši", icon: LuArrowUp01 },
+const options: { key: SortOption; icon: IconType }[] = [
+  { key: "newest", icon: LuArrowDownWideNarrow },
+  { key: "oldest", icon: LuArrowUpNarrowWide },
+  { key: "priceDesc", icon: LuArrowDown01 },
+  { key: "priceAsc", icon: LuArrowUp01 },
 ];
 
 interface SortBarProps {
@@ -32,11 +40,7 @@ export function SortBar({ value, onChange }: SortBarProps) {
   return (
     <MenuRoot positioning={{ placement: "bottom-end", offset: { mainAxis: 6 } }}>
       <MenuTrigger asChild>
-        <IconButton
-          aria-label="Razvrsti"
-          variant="outline"
-          size="sm"
-        >
+        <IconButton aria-label={t`Razvrsti`} variant="outline" size="sm">
           <LuFilter />
         </IconButton>
       </MenuTrigger>
@@ -47,7 +51,12 @@ export function SortBar({ value, onChange }: SortBarProps) {
               <HStack justify="space-between" w="full">
                 <HStack gap={2}>
                   <Icon as={opt.icon} />
-                  <Text>{opt.label}</Text>
+                  <Text>
+                    {opt.key === "newest" && <Trans>Najnovejši</Trans>}
+                    {opt.key === "oldest" && <Trans>Najstarejši</Trans>}
+                    {opt.key === "priceDesc" && <Trans>Najdražji</Trans>}
+                    {opt.key === "priceAsc" && <Trans>Najcenejši</Trans>}
+                  </Text>
                 </HStack>
                 {value === opt.key && <Icon as={LuCheck} color="blue.500" boxSize={4} />}
               </HStack>

@@ -14,7 +14,7 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import { LuChevronRight, LuGauge, LuFuel, LuSettings2, LuPalette, LuEye } from "react-icons/lu";
+import { LuGauge, LuFuel, LuSettings2, LuPalette, LuEye } from "react-icons/lu";
 import type { Car } from "@/lib/types/car";
 import { Trans } from "@lingui/macro";
 
@@ -29,7 +29,8 @@ export function CarCard({ car, viewedAt }: CarCardProps) {
   const price = `${car.price.toLocaleString("sl-SI")} €`;
   const mileageText = `${car.mileage.toLocaleString("sl-SI")} km`;
   const powerText = `${car.enginePower} kW`;
-  const viewsText = `${(car.viewCount ?? 0).toLocaleString("sl-SI")} ogledov`;
+  const viewCount = car.viewCount ?? 0;
+  const formattedViewCount = viewCount.toLocaleString("sl-SI");
   
   // Get image URL - prefer mainImageUrl, then first imageUrls, or null
   const imageUrl = car.mainImageUrl || car.imageUrls?.[0] || null;
@@ -122,7 +123,7 @@ export function CarCard({ car, viewedAt }: CarCardProps) {
               fontSize="sm"
               color={{ base: "gray.400", _dark: "gray.500" }}
             >
-              Ni slike
+              <Trans>Ni slike</Trans>
             </Text>
           </Box>
         )}
@@ -173,7 +174,9 @@ export function CarCard({ car, viewedAt }: CarCardProps) {
             </Text>
             <HStack gap={2} color={{ base: "gray.500", _dark: "gray.400" }} fontSize="xs" mt={1}>
               <Icon as={LuEye} boxSize={4} />
-              <Text>{viewsText}</Text>
+              <Text>
+                {formattedViewCount} <Trans>ogledov</Trans>
+              </Text>
             </HStack>
           </Box>
 

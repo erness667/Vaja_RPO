@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -20,6 +20,7 @@ import type { Car } from "@/lib/types/car";
 import { CarCard } from "../car/CarCard";
 import type { SortOption } from "../layout/SortBar";
 import { SortBar } from "../layout/SortBar";
+import { Trans } from "@lingui/macro";
 
 export function FavouritesPage() {
   const { favourites, isLoading, error } = useFavourites();
@@ -67,17 +68,17 @@ export function FavouritesPage() {
           _hover={{ color: { base: "blue.600", _dark: "blue.400" } }}
         >
           <Icon as={LuArrowLeft} mr={2} />
-          Nazaj na seznam
+          <Trans>Nazaj na seznam</Trans>
         </Button>
 
         <VStack align="stretch" gap={2}>
           <HStack justify="space-between" align="center" wrap="wrap" gap={3}>
             <VStack align="start" gap={1}>
               <Heading size="xl" color={{ base: "gray.900", _dark: "gray.100" }}>
-                Moje priljubljene
+                <Trans>Moje priljubljene</Trans>
               </Heading>
               <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-                Vsa vozila, ki ste jih dodali med priljubljene.
+                <Trans>Vsa vozila, ki ste jih dodali med priljubljene.</Trans>
               </Text>
             </VStack>
 
@@ -112,10 +113,10 @@ export function FavouritesPage() {
           >
             <Icon as={LuHeart} boxSize={8} color={{ base: "gray.400", _dark: "gray.500" }} mb={2} />
             <Text color={{ base: "gray.600", _dark: "gray.400" }} mb={3}>
-              Trenutno nimate priljubljenih vozil.
+              <Trans>Trenutno nimate priljubljenih vozil.</Trans>
             </Text>
             <Button as={Link} href="/" colorPalette="blue">
-              Nazaj na iskanje
+              <Trans>Nazaj na iskanje</Trans>
             </Button>
           </Box>
         ) : (

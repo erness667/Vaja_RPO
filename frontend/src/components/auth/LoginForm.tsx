@@ -15,6 +15,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { useLogin } from "@/lib/hooks/useLogin";
 import type { LoginFormData } from "@/lib/types/auth";
 import "@/lib/api-client";
+import { Trans, t } from "@lingui/macro";
 
 export function LoginForm() {
   const { login, isLoading, error, setError } = useLogin();
@@ -47,13 +48,13 @@ export function LoginForm() {
             mb={2}
             color={{ base: "gray.800", _dark: "gray.100" }}
           >
-            Sign in
+            <Trans>Sign in</Trans>
           </Heading>
           <Text
             fontSize="sm"
             color={{ base: "gray.600", _dark: "gray.400" }}
           >
-            Enter your credentials to access your account.
+            <Trans>Enter your credentials to access your account.</Trans>
           </Text>
         </Box>
 
@@ -79,14 +80,14 @@ export function LoginForm() {
                 fontWeight="medium"
                 color={{ base: "gray.700", _dark: "gray.300" }}
               >
-                Username or Email
+              <Trans>Username or Email</Trans>
               </Field.Label>
               <Input
                 id="username"
                 name="username"
                 type="text"
                 autoComplete="username"
-                placeholder="Enter your username or email"
+              placeholder={t`Enter your username or email`}
                 value={formData.username}
                 onChange={handleChange}
                 disabled={isLoading}
@@ -99,14 +100,14 @@ export function LoginForm() {
                 fontWeight="medium"
                 color={{ base: "gray.700", _dark: "gray.300" }}
               >
-                Password
+              <Trans>Password</Trans>
               </Field.Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
-                placeholder="Enter your password"
+              placeholder={t`Enter your password`}
                 value={formData.password}
                 onChange={handleChange}
                 disabled={isLoading}
@@ -121,7 +122,7 @@ export function LoginForm() {
               loading={isLoading}
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? <Trans>Signing in...</Trans> : <Trans>Sign in</Trans>}
             </Button>
           </Stack>
         </form>

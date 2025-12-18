@@ -20,6 +20,7 @@ import {
   PRICE_OPTIONS,
   KILOMETER_OPTIONS,
 } from "@/lib/constants/car-options";
+import { Trans, t } from "@lingui/macro";
 
 export function CarSearch() {
   const searchParams = useSearchParams();
@@ -77,19 +78,19 @@ export function CarSearch() {
   // Chakra Select collections
   const priceFromItems = PRICE_OPTIONS.map((price) =>
     price === "Vse"
-      ? { value: "", label: "Vse" }
+      ? { value: "", label: t`Vse` }
       : { value: price, label: `€ ${price}` }
   );
   const priceToItems = priceFromItems;
   const kilometerItems = KILOMETER_OPTIONS.map((km) =>
-    km === "Vse" ? { value: "", label: "Vse" } : { value: km, label: `${km} km` }
+    km === "Vse" ? { value: "", label: t`Vse` } : { value: km, label: `${km} km` }
   );
-  const yearFromItems = [{ value: "", label: "Vse" }, ...yearOptions.map((y) => ({ value: y, label: y }))];
+  const yearFromItems = [{ value: "", label: t`Vse` }, ...yearOptions.map((y) => ({ value: y, label: y }))];
   const yearToItems = yearFromItems;
-  const fuelItems = ["Gorivo", ...FUEL_TYPES.map((f) => f.value)].map(
-    (fuel) =>
-    fuel === "Gorivo" ? { value: "", label: "Gorivo" } : { value: fuel, label: fuel }
-  );
+  const fuelItems = [
+    { value: "", label: t`Gorivo` },
+    ...FUEL_TYPES.map((f) => ({ value: f.value, label: f.label })),
+  ];
 
   const priceFromList = useListCollection({
     initialItems: priceFromItems,
@@ -140,7 +141,7 @@ export function CarSearch() {
           mb={6}
           color={{ base: "gray.800", _dark: "gray.100" }}
         >
-          Hitro iskanje osebnih vozil
+          <Trans>Hitro iskanje osebnih vozil</Trans>
         </Heading>
 
       <Box
@@ -171,7 +172,7 @@ export function CarSearch() {
               fontWeight="medium"
               color={{ base: "gray.700", _dark: "gray.300" }}
             >
-              Cena od
+                <Trans>Cena od</Trans>
             </Field.Label>
             <Select.Root
               collection={priceFromList.collection}
@@ -207,7 +208,7 @@ export function CarSearch() {
               fontWeight="medium"
               color={{ base: "gray.700", _dark: "gray.300" }}
             >
-              Cena do
+                <Trans>Cena do</Trans>
             </Field.Label>
             <Select.Root
               collection={priceToList.collection}
@@ -243,7 +244,7 @@ export function CarSearch() {
               fontWeight="medium"
               color={{ base: "gray.700", _dark: "gray.300" }}
             >
-              Prevoženih km do
+                <Trans>Prevoženih km do</Trans>
             </Field.Label>
             <Select.Root
               collection={kilometerList.collection}
@@ -292,7 +293,7 @@ export function CarSearch() {
               fontWeight="medium"
               color={{ base: "gray.700", _dark: "gray.300" }}
             >
-              Letnik od
+                <Trans>Letnik od</Trans>
             </Field.Label>
             <Select.Root
               collection={yearFromList.collection}
@@ -328,7 +329,7 @@ export function CarSearch() {
               fontWeight="medium"
               color={{ base: "gray.700", _dark: "gray.300" }}
             >
-              Letnik do
+                <Trans>Letnik do</Trans>
             </Field.Label>
             <Select.Root
               collection={yearToList.collection}
@@ -364,7 +365,7 @@ export function CarSearch() {
               fontWeight="medium"
               color={{ base: "gray.700", _dark: "gray.300" }}
             >
-              Gorivo
+                <Trans>Gorivo</Trans>
             </Field.Label>
             <Select.Root
               collection={fuelList.collection}
@@ -412,7 +413,7 @@ export function CarSearch() {
             }}
           >
             <LuSettings2 style={{ marginRight: "8px" }} />
-            Napredno iskanje z dodatnimi filtri
+            <Trans>Napredno iskanje z dodatnimi filtri</Trans>
           </Button>
 
           <Button
@@ -420,7 +421,7 @@ export function CarSearch() {
             colorPalette="blue"
           >
             <LuSearch style={{ marginRight: "8px" }} />
-            Iskanje vozil
+            <Trans>Iskanje vozil</Trans>
           </Button>
         </HStack>
       </Box>

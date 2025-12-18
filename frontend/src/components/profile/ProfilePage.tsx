@@ -20,19 +20,44 @@ import {
   CardBody,
   SimpleGrid,
   Spinner,
+  MenuRoot,
+  MenuTrigger,
+  MenuPositioner,
+  MenuContent,
+  MenuItem,
 } from "@chakra-ui/react";
 import { PageShell } from "@/components/layout/PageShell";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import { useUpdateProfile } from "@/lib/hooks/useUpdateProfile";
 import { useChangePassword } from "@/lib/hooks/useChangePassword";
 import { useUpdateAvatar } from "@/lib/hooks/useUpdateAvatar";
+import { useAppLocale } from "@/components/i18n/LinguiProvider";
 import "@/lib/api-client";
+
+const LanguageFlag = ({ variant }: { variant: "sl" | "en" }) => {
+  const countryCode = variant === "sl" ? "SI" : "GB";
+
+  return (
+    <Box
+      as="img"
+      src={`https://flagsapi.com/${countryCode}/flat/24.png`}
+      alt={variant === "sl" ? "Slovenian flag" : "English flag"}
+      w="24px"
+      h="22px"
+      
+      
+     
+    
+    />
+  );
+};
 
 export function ProfilePage() {
   const { user, isLoading: isLoadingUser, error: userError, refetch } = useUserProfile();
   const { updateProfile, isLoading: isUpdatingProfile, error: profileError, setError: setProfileError } = useUpdateProfile();
   const { changePassword, isLoading: isChangingPassword, error: passwordError, setError: setPasswordError } = useChangePassword();
   const { updateAvatar, isLoading: isUpdatingAvatar, error: avatarError, setError: setAvatarError } = useUpdateAvatar();
+  const { locale, setLocale } = useAppLocale();
 
   const [profileData, setProfileData] = useState({
     name: user?.name || "",
@@ -241,6 +266,61 @@ export function ProfilePage() {
             Upravljajte svoje profilne informacije in nastavitve računa
           </Text>
         </Box>
+
+        {/* Language Settings Section */}
+        <Card.Root
+          borderRadius="xl"
+          borderWidth="1px"
+          borderColor={{ base: "gray.200", _dark: "gray.700" }}
+          bg={{ base: "white", _dark: "gray.800" }}
+          boxShadow="sm"
+        >
+          <CardBody p={6}>
+            <HStack justify="space-between" align="center">
+              <VStack align="flex-start" gap={1}>
+                <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
+                  Jezik aplikacije
+                </Heading>
+                <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
+                  Izberite jezik uporabniškega vmesnika
+                </Text>
+              </VStack>
+
+              <MenuRoot positioning={{ placement: "bottom-end", offset: { mainAxis: 6 } }}>
+                <MenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <HStack gap={2}>
+                      <LanguageFlag variant={locale} />
+                      <Text>
+                        {locale === "sl" ? "Slovenščina" : "English"}
+                      </Text>
+                    </HStack>
+                  </Button>
+                </MenuTrigger>
+                <MenuPositioner>
+                  <MenuContent>
+                    <MenuItem onClick={() => setLocale("sl")}>
+                      <HStack gap={2}>
+                        <LanguageFlag variant="sl" />
+                        <Text fontWeight={locale === "sl" ? "semibold" : "normal"}>
+                          Slovenščina
+                        </Text>
+                      </HStack>
+                    </MenuItem>
+                    <MenuItem onClick={() => setLocale("en")}>
+                      <HStack gap={2}>
+                        <LanguageFlag variant="en" />
+                        <Text fontWeight={locale === "en" ? "semibold" : "normal"}>
+                          English
+                        </Text>
+                      </HStack>
+                    </MenuItem>
+                  </MenuContent>
+                </MenuPositioner>
+              </MenuRoot>
+            </HStack>
+          </CardBody>
+        </Card.Root>
 
         {/* Avatar Section */}
         <Card.Root

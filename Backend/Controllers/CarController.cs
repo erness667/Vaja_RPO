@@ -115,6 +115,105 @@ namespace Backend.Controllers
         }
 
         /// <summary>
+        /// Update an existing car listing (requires authentication, only owner can update)
+        /// </summary>
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> UpdateCar(int id, [FromBody] UpdateCarRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                // Get the current user ID from JWT claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+                {
+                    return Unauthorized(new { message = "Invalid user token." });
+                }
+
+                // Find the car
+                var car = await _dbContext.Cars
+                    .Include(c => c.Images)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (car == null)
+                {
+                    return NotFound(new { message = "Car not found." });
+                }
+
+                // Verify the user is the owner of the car
+                if (car.SellerId != userId)
+                {
+                    return Forbid();
+                }
+
+                // Get make and model names from IDs
+                var make = _carDataService.GetMakeById(request.MakeId);
+                var model = _carDataService.GetModelById(request.MakeId, request.ModelId);
+
+                if (make == null || model == null)
+                {
+                    return BadRequest(new { message = "Invalid make or model ID." });
+                }
+
+                // Update the car properties
+                car.Brand = make.Name ?? string.Empty;
+                car.Model = model.Name ?? string.Empty;
+                car.Year = request.Year;
+                car.FirstRegistrationDate = request.FirstRegistrationDate;
+                car.Mileage = request.Mileage;
+                car.PreviousOwners = request.PreviousOwners;
+                car.FuelType = request.FuelType;
+                car.EnginePower = request.EnginePower;
+                car.Transmission = request.Transmission;
+                car.Color = request.Color;
+                car.EquipmentAndDetails = request.EquipmentAndDetails;
+                car.Price = request.Price;
+                car.UpdatedAt = DateTime.UtcNow;
+
+                await _dbContext.SaveChangesAsync();
+
+                // Get the main image
+                var mainImage = car.Images.FirstOrDefault(i => i.IsMain)
+                                ?? car.Images.FirstOrDefault();
+
+                // Return the updated car as DTO
+                var carDto = new CarDto
+                {
+                    Id = car.Id,
+                    SellerId = car.SellerId,
+                    Brand = car.Brand,
+                    Model = car.Model,
+                    Year = car.Year,
+                    FirstRegistrationDate = car.FirstRegistrationDate,
+                    Mileage = car.Mileage,
+                    PreviousOwners = car.PreviousOwners,
+                    FuelType = car.FuelType,
+                    EnginePower = car.EnginePower,
+                    Transmission = car.Transmission,
+                    Color = car.Color,
+                    EquipmentAndDetails = car.EquipmentAndDetails,
+                    Price = car.Price,
+                    ViewCount = car.ViewCount,
+                    CreatedAt = car.CreatedAt,
+                    UpdatedAt = car.UpdatedAt,
+                    MainImageUrl = mainImage?.Url,
+                    ImageUrls = car.Images.Select(i => i.Url).ToList()
+                };
+
+                return Ok(carDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to update car listing", error = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// Upload images for a car and optionally set the main image.
         /// </summary>
         [HttpPost("{id}/images")]

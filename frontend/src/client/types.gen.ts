@@ -46,6 +46,21 @@ export type RegisterRequest = {
     password: string;
 };
 
+export type UpdateCarRequest = {
+    makeId: string;
+    modelId: string;
+    year: number;
+    firstRegistrationDate: string;
+    mileage: number;
+    previousOwners: number;
+    fuelType: string;
+    enginePower: number;
+    transmission: string;
+    color: string;
+    equipmentAndDetails?: string | null;
+    price: number;
+};
+
 export type UpdateCommentRequest = {
     content: string;
 };
@@ -151,6 +166,38 @@ export type PostApiCarsResponses = {
     200: unknown;
 };
 
+export type GetApiCarsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/cars/{id}';
+};
+
+export type GetApiCarsByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiCarsByIdData = {
+    body?: UpdateCarRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/cars/{id}';
+};
+
+export type PutApiCarsByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
 export type PostApiCarsByIdImagesData = {
     body?: {
         files?: Array<Blob | File>;
@@ -180,22 +227,6 @@ export type PutApiCarsByIdImagesByImageIdSetMainData = {
 };
 
 export type PutApiCarsByIdImagesByImageIdSetMainResponses = {
-    /**
-     * Success
-     */
-    200: unknown;
-};
-
-export type GetApiCarsByIdData = {
-    body?: never;
-    path: {
-        id: number;
-    };
-    query?: never;
-    url: '/api/cars/{id}';
-};
-
-export type GetApiCarsByIdResponses = {
     /**
      * Success
      */

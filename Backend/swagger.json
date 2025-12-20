@@ -232,6 +232,69 @@
         }
       }
     },
+    "/api/cars/{id}": {
+      "put": {
+        "tags": [
+          "Car"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCarRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCarRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCarRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Car"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/cars/{id}/images": {
       "post": {
         "tags": [
@@ -295,29 +358,6 @@
           },
           {
             "name": "imageId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/api/cars/{id}": {
-      "get": {
-        "tags": [
-          "Car"
-        ],
-        "parameters": [
-          {
-            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -920,6 +960,85 @@
             "maxLength": 128,
             "minLength": 6,
             "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateCarRequest": {
+        "required": [
+          "color",
+          "enginePower",
+          "firstRegistrationDate",
+          "fuelType",
+          "makeId",
+          "mileage",
+          "modelId",
+          "previousOwners",
+          "price",
+          "transmission",
+          "year"
+        ],
+        "type": "object",
+        "properties": {
+          "makeId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "modelId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "year": {
+            "maximum": 2100,
+            "minimum": 1900,
+            "type": "integer",
+            "format": "int32"
+          },
+          "firstRegistrationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "mileage": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "previousOwners": {
+            "maximum": 20,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "fuelType": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "enginePower": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "transmission": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "color": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "equipmentAndDetails": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "minimum": 0,
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false

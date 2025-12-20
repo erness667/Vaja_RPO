@@ -83,6 +83,13 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
   const currentUser = useMemo(() => getStoredUser(), []);
   const isLoggedIn = useMemo(() => isAuthenticated(), []);
 
+  // Helper to check if user is the car owner
+  const isCarOwner = useMemo(() => {
+    if (!currentUser || !isLoggedIn || !car) return false;
+    const userId = currentUser.id?.toLowerCase();
+    return userId === car.sellerId?.toLowerCase();
+  }, [currentUser, isLoggedIn, car?.sellerId]);
+
   // Helper to check if user can edit/delete a comment
   const canModifyComment = useCallback((commentUserId: string) => {
     if (!currentUser || !isLoggedIn) return false;
@@ -354,39 +361,58 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                     {car.year}
                   </Badge>
                 </VStack>
-                {/* Favourite Button */}
-                {isLoggedIn && (
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    borderRadius="full"
-                    p={2}
-                    onClick={toggleFavourite}
-                    loading={isFavouriteLoading}
-                    aria-label={
-                      isFavourite
-                        ? t`Odstrani iz priljubljenih`
-                        : t`Dodaj med priljubljene`
-                    }
-                    aria-pressed={isFavourite}
-                    _hover={{
-                      bg: isFavourite
-                        ? { base: "red.100", _dark: "red.900" }
-                        : { base: "gray.100", _dark: "gray.700" },
-                    }}
-                  >
-                    <Icon
-                      as={LuHeart}
-                      boxSize={7}
-                      color={isFavourite ? "red.500" : { base: "gray.400", _dark: "gray.500" }}
-                      transition="all 0.2s"
-                      style={{ fill: isFavourite ? "currentColor" : "none" }}
+                <HStack gap={2}>
+                  {/* Edit Button - Only visible to owner */}
+                  {isCarOwner && carId && (
+                    <Button
+                      variant="outline"
+                      colorPalette="blue"
+                      size="lg"
+                      borderRadius="full"
+                      onClick={() => router.push(`/cars/${carId}/edit`)}
+                      aria-label={t`Uredi oglas`}
                       _hover={{
-                        transform: "scale(1.1)",
+                        bg: { base: "blue.50", _dark: "blue.900" },
                       }}
-                    />
-                  </Button>
-                )}
+                    >
+                      <Icon as={LuPencil} mr={2} />
+                      <Trans>Uredi</Trans>
+                    </Button>
+                  )}
+                  {/* Favourite Button */}
+                  {isLoggedIn && (
+                    <Button
+                      variant="ghost"
+                      size="lg"
+                      borderRadius="full"
+                      p={2}
+                      onClick={toggleFavourite}
+                      loading={isFavouriteLoading}
+                      aria-label={
+                        isFavourite
+                          ? t`Odstrani iz priljubljenih`
+                          : t`Dodaj med priljubljene`
+                      }
+                      aria-pressed={isFavourite}
+                      _hover={{
+                        bg: isFavourite
+                          ? { base: "red.100", _dark: "red.900" }
+                          : { base: "gray.100", _dark: "gray.700" },
+                      }}
+                    >
+                      <Icon
+                        as={LuHeart}
+                        boxSize={7}
+                        color={isFavourite ? "red.500" : { base: "gray.400", _dark: "gray.500" }}
+                        transition="all 0.2s"
+                        style={{ fill: isFavourite ? "currentColor" : "none" }}
+                        _hover={{
+                          transform: "scale(1.1)",
+                        }}
+                      />
+                    </Button>
+                  )}
+                </HStack>
               </HStack>
               <Text
                 fontSize="3xl"

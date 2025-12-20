@@ -1,3 +1,5 @@
+using SuperCarsApi.Models;
+
 namespace Backend.DTOs.Auth
 {
     public class UserDto
@@ -9,6 +11,7 @@ namespace Backend.DTOs.Auth
         public string Username { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string? AvatarImageUrl { get; set; }
+        public Role Role { get; set; }
     }
 }
 

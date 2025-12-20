@@ -81,7 +81,8 @@ namespace Backend.Controllers
                     Surname = user.Surname,
                     Username = user.Username,
                     PhoneNumber = user.PhoneNumber,
-                    AvatarImageUrl = user.AvatarImageUrl
+                    AvatarImageUrl = user.AvatarImageUrl,
+                    Role = user.Role
                 }
             };
 
@@ -134,7 +135,8 @@ namespace Backend.Controllers
                     Surname = user.Surname,
                     Username = user.Username,
                     PhoneNumber = user.PhoneNumber,
-                    AvatarImageUrl = user.AvatarImageUrl
+                    AvatarImageUrl = user.AvatarImageUrl,
+                    Role = user.Role
                 }
             };
 
@@ -272,7 +274,8 @@ namespace Backend.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));

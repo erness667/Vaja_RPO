@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Backend.DTOs.Car;
+using Backend.Helpers;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -148,8 +149,8 @@ namespace Backend.Controllers
                     return NotFound(new { message = "Car not found." });
                 }
 
-                // Verify the user is the owner of the car
-                if (car.SellerId != userId)
+                // Verify the user is the owner of the car or an admin
+                if (!AuthorizationHelper.IsAdminOrOwner(User, car.SellerId))
                 {
                     return Forbid();
                 }
@@ -253,7 +254,7 @@ namespace Backend.Controllers
                 return NotFound(new { message = "Car not found." });
             }
 
-            if (car.SellerId != userId)
+            if (!AuthorizationHelper.IsAdminOrOwner(User, car.SellerId))
             {
                 return Forbid();
             }
@@ -375,7 +376,7 @@ namespace Backend.Controllers
                 return NotFound(new { message = "Car not found." });
             }
 
-            if (car.SellerId != userId)
+            if (!AuthorizationHelper.IsAdminOrOwner(User, car.SellerId))
             {
                 return Forbid();
             }
@@ -472,7 +473,7 @@ namespace Backend.Controllers
                 return NotFound(new { message = "Car not found." });
             }
 
-            if (car.SellerId != userId)
+            if (!AuthorizationHelper.IsAdminOrOwner(User, car.SellerId))
             {
                 return Forbid();
             }
@@ -767,6 +768,71 @@ namespace Backend.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Failed to fetch cars", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Delete a car listing (requires authentication, owner or admin only)
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteCar(int id)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+                {
+                    return Unauthorized(new { message = "Invalid user token." });
+                }
+
+                var car = await _dbContext.Cars
+                    .Include(c => c.Images)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (car == null)
+                {
+                    return NotFound(new { message = "Car not found." });
+                }
+
+                // Verify the user is the owner of the car or an admin
+                if (!AuthorizationHelper.IsAdminOrOwner(User, car.SellerId))
+                {
+                    return Forbid();
+                }
+
+                // Delete all car images from filesystem
+                foreach (var image in car.Images)
+                {
+                    try
+                    {
+                        if (image.Url.StartsWith("http"))
+                        {
+                            var uri = new Uri(image.Url);
+                            var fileName = Path.GetFileName(uri.LocalPath);
+                            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "cars", fileName);
+                            
+                            if (System.IO.File.Exists(filePath))
+                            {
+                                System.IO.File.Delete(filePath);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // Continue even if file deletion fails
+                    }
+                }
+
+                // Remove car and related data (cascade delete should handle related records)
+                _dbContext.Cars.Remove(car);
+                await _dbContext.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to delete car listing", error = ex.Message });
             }
         }
     }

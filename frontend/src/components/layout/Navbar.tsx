@@ -111,6 +111,17 @@ export function Navbar() {
     }, 300);
   }, [performSearch]);
 
+  // Clear search results and hide dropdown when query is empty or too short
+  useEffect(() => {
+    if (searchQuery.length < 3) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    }
+  }, [searchQuery]);
+
   // Close search results when clicking outside (but not when toggling dark mode)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -304,7 +315,7 @@ export function Navbar() {
               value={searchQuery}
               onChange={handleSearchChange}
               onFocus={() => {
-                if (searchResults.length > 0) {
+                if (searchQuery.length >= 3 && searchResults.length > 0) {
                   setShowSearchResults(true);
                 }
               }}
@@ -386,9 +397,13 @@ export function Navbar() {
                           key={car.id}
                           as="button"
                           onClick={() => {
-                            router.push(`/cars/${car.id}`);
-                            setShowSearchResults(false);
                             setSearchQuery("");
+                            setSearchResults([]);
+                            setShowSearchResults(false);
+                            if (searchTimeoutRef.current) {
+                              clearTimeout(searchTimeoutRef.current);
+                            }
+                            router.push(`/cars/${car.id}`);
                           }}
                           p={4}
                           _hover={{

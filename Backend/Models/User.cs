@@ -26,6 +26,8 @@ namespace SuperCarsApi.Models
 
         public string? AvatarImageUrl { get; set; }
 
+        public Role Role { get; set; } = Role.User;
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

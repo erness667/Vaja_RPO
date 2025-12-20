@@ -46,6 +46,8 @@ export type RegisterRequest = {
     password: string;
 };
 
+export type Role = 0 | 1;
+
 export type UpdateCarRequest = {
     makeId: string;
     modelId: string;
@@ -69,6 +71,10 @@ export type UpdateProfileRequest = {
     name?: string | null;
     surname?: string | null;
     phoneNumber?: string | null;
+};
+
+export type UpdateUserRoleRequest = {
+    role: Role;
 };
 
 export type PostApiAuthRegisterData = {
@@ -141,6 +147,7 @@ export type GetApiCarsData = {
         priceTo?: number;
         mileageTo?: number;
         fuelType?: string;
+        search?: string;
     };
     url: '/api/cars';
 };
@@ -160,6 +167,22 @@ export type PostApiCarsData = {
 };
 
 export type PostApiCarsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type DeleteApiCarsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/cars/{id}';
+};
+
+export type DeleteApiCarsByIdResponses = {
     /**
      * Success
      */
@@ -490,6 +513,88 @@ export type PutApiUserAvatarData = {
 };
 
 export type PutApiUserAvatarResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiUserAdminUsersData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        pageSize?: number;
+        search?: string;
+    };
+    url: '/api/user/admin/users';
+};
+
+export type GetApiUserAdminUsersResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type DeleteApiUserAdminUsersByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/user/admin/users/{id}';
+};
+
+export type DeleteApiUserAdminUsersByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiUserAdminUsersByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/user/admin/users/{id}';
+};
+
+export type GetApiUserAdminUsersByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiUserAdminUsersByIdRoleData = {
+    body?: UpdateUserRoleRequest;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/user/admin/users/{id}/role';
+};
+
+export type PutApiUserAdminUsersByIdRoleResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiUserAdminUsersByIdProfileData = {
+    body?: UpdateProfileRequest;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/user/admin/users/{id}/profile';
+};
+
+export type PutApiUserAdminUsersByIdProfileResponses = {
     /**
      * Success
      */

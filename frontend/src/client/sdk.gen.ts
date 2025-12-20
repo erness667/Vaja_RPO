@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteApiCarsByIdImagesByImageIdData, DeleteApiCarsByIdImagesByImageIdResponses, DeleteApiCommentsByIdData, DeleteApiCommentsByIdResponses, DeleteApiFavouritesByCarIdData, DeleteApiFavouritesByCarIdResponses, GetApiCarCatalogMakesByMakeIdModelsData, GetApiCarCatalogMakesByMakeIdModelsResponses, GetApiCarCatalogMakesData, GetApiCarCatalogMakesResponses, GetApiCarCatalogMakesSearchData, GetApiCarCatalogMakesSearchResponses, GetApiCarsByCarIdCommentsData, GetApiCarsByCarIdCommentsResponses, GetApiCarsByIdData, GetApiCarsByIdResponses, GetApiCarsData, GetApiCarsResponses, GetApiFavouritesByCarIdCheckData, GetApiFavouritesByCarIdCheckResponses, GetApiFavouritesData, GetApiFavouritesResponses, GetApiUserMeData, GetApiUserMeResponses, GetApiViewHistoryData, GetApiViewHistoryResponses, PostApiAuthLoginData, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRefreshData, PostApiAuthRefreshResponses, PostApiAuthRegisterData, PostApiAuthRegisterResponses, PostApiCarsByCarIdCommentsData, PostApiCarsByCarIdCommentsResponses, PostApiCarsByIdImagesData, PostApiCarsByIdImagesResponses, PostApiCarsData, PostApiCarsResponses, PostApiFavouritesByCarIdData, PostApiFavouritesByCarIdResponses, PostApiFavouritesByCarIdToggleData, PostApiFavouritesByCarIdToggleResponses, PutApiCarsByIdData, PutApiCarsByIdImagesByImageIdSetMainData, PutApiCarsByIdImagesByImageIdSetMainResponses, PutApiCarsByIdResponses, PutApiCommentsByIdData, PutApiCommentsByIdResponses, PutApiUserAvatarData, PutApiUserAvatarResponses, PutApiUserPasswordData, PutApiUserPasswordResponses, PutApiUserProfileData, PutApiUserProfileResponses } from './types.gen';
+import type { DeleteApiCarsByIdData, DeleteApiCarsByIdImagesByImageIdData, DeleteApiCarsByIdImagesByImageIdResponses, DeleteApiCarsByIdResponses, DeleteApiCommentsByIdData, DeleteApiCommentsByIdResponses, DeleteApiFavouritesByCarIdData, DeleteApiFavouritesByCarIdResponses, DeleteApiUserAdminUsersByIdData, DeleteApiUserAdminUsersByIdResponses, GetApiCarCatalogMakesByMakeIdModelsData, GetApiCarCatalogMakesByMakeIdModelsResponses, GetApiCarCatalogMakesData, GetApiCarCatalogMakesResponses, GetApiCarCatalogMakesSearchData, GetApiCarCatalogMakesSearchResponses, GetApiCarsByCarIdCommentsData, GetApiCarsByCarIdCommentsResponses, GetApiCarsByIdData, GetApiCarsByIdResponses, GetApiCarsData, GetApiCarsResponses, GetApiFavouritesByCarIdCheckData, GetApiFavouritesByCarIdCheckResponses, GetApiFavouritesData, GetApiFavouritesResponses, GetApiUserAdminUsersByIdData, GetApiUserAdminUsersByIdResponses, GetApiUserAdminUsersData, GetApiUserAdminUsersResponses, GetApiUserMeData, GetApiUserMeResponses, GetApiViewHistoryData, GetApiViewHistoryResponses, PostApiAuthLoginData, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRefreshData, PostApiAuthRefreshResponses, PostApiAuthRegisterData, PostApiAuthRegisterResponses, PostApiCarsByCarIdCommentsData, PostApiCarsByCarIdCommentsResponses, PostApiCarsByIdImagesData, PostApiCarsByIdImagesResponses, PostApiCarsData, PostApiCarsResponses, PostApiFavouritesByCarIdData, PostApiFavouritesByCarIdResponses, PostApiFavouritesByCarIdToggleData, PostApiFavouritesByCarIdToggleResponses, PutApiCarsByIdData, PutApiCarsByIdImagesByImageIdSetMainData, PutApiCarsByIdImagesByImageIdSetMainResponses, PutApiCarsByIdResponses, PutApiCommentsByIdData, PutApiCommentsByIdResponses, PutApiUserAdminUsersByIdProfileData, PutApiUserAdminUsersByIdProfileResponses, PutApiUserAdminUsersByIdRoleData, PutApiUserAdminUsersByIdRoleResponses, PutApiUserAvatarData, PutApiUserAvatarResponses, PutApiUserPasswordData, PutApiUserPasswordResponses, PutApiUserProfileData, PutApiUserProfileResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -57,6 +57,8 @@ export const postApiCars = <ThrowOnError extends boolean = false>(options?: Opti
         ...options?.headers
     }
 });
+
+export const deleteApiCarsById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiCarsByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiCarsByIdResponses, unknown, ThrowOnError>({ url: '/api/cars/{id}', ...options });
 
 export const getApiCarsById = <ThrowOnError extends boolean = false>(options: Options<GetApiCarsByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiCarsByIdResponses, unknown, ThrowOnError>({ url: '/api/cars/{id}', ...options });
 
@@ -148,6 +150,30 @@ export const putApiUserAvatar = <ThrowOnError extends boolean = false>(options?:
     headers: {
         'Content-Type': null,
         ...options?.headers
+    }
+});
+
+export const getApiUserAdminUsers = <ThrowOnError extends boolean = false>(options?: Options<GetApiUserAdminUsersData, ThrowOnError>) => (options?.client ?? client).get<GetApiUserAdminUsersResponses, unknown, ThrowOnError>({ url: '/api/user/admin/users', ...options });
+
+export const deleteApiUserAdminUsersById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiUserAdminUsersByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiUserAdminUsersByIdResponses, unknown, ThrowOnError>({ url: '/api/user/admin/users/{id}', ...options });
+
+export const getApiUserAdminUsersById = <ThrowOnError extends boolean = false>(options: Options<GetApiUserAdminUsersByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiUserAdminUsersByIdResponses, unknown, ThrowOnError>({ url: '/api/user/admin/users/{id}', ...options });
+
+export const putApiUserAdminUsersByIdRole = <ThrowOnError extends boolean = false>(options: Options<PutApiUserAdminUsersByIdRoleData, ThrowOnError>) => (options.client ?? client).put<PutApiUserAdminUsersByIdRoleResponses, unknown, ThrowOnError>({
+    url: '/api/user/admin/users/{id}/role',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const putApiUserAdminUsersByIdProfile = <ThrowOnError extends boolean = false>(options: Options<PutApiUserAdminUsersByIdProfileData, ThrowOnError>) => (options.client ?? client).put<PutApiUserAdminUsersByIdProfileResponses, unknown, ThrowOnError>({
+    url: '/api/user/admin/users/{id}/profile',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
     }
 });
 

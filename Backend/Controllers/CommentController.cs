@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Backend.DTOs.Comment;
+using Backend.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -146,8 +147,8 @@ namespace Backend.Controllers
                 return NotFound(new { message = "Komentar ni bil najden." });
             }
 
-            // Check if the user is the owner of the comment
-            if (comment.UserId != userId)
+            // Check if the user is the owner of the comment or an admin
+            if (!AuthorizationHelper.IsAdminOrOwner(User, comment.UserId))
             {
                 return Forbid();
             }
@@ -197,8 +198,8 @@ namespace Backend.Controllers
                 return NotFound(new { message = "Komentar ni bil najden." });
             }
 
-            // Check if the user is the owner of the comment
-            if (comment.UserId != userId)
+            // Check if the user is the owner of the comment or an admin
+            if (!AuthorizationHelper.IsAdminOrOwner(User, comment.UserId))
             {
                 return Forbid();
             }

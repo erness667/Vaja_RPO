@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Backend.DTOs.Auth;
 using Backend.DTOs.User;
+using Backend.Helpers;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -45,7 +46,8 @@ namespace Backend.Controllers
                 Surname = user.Surname,
                 Username = user.Username,
                 PhoneNumber = user.PhoneNumber,
-                AvatarImageUrl = user.AvatarImageUrl
+                AvatarImageUrl = user.AvatarImageUrl,
+                Role = user.Role
             };
 
             return Ok(userDto);
@@ -131,7 +133,8 @@ namespace Backend.Controllers
                 Surname = user.Surname,
                 Username = user.Username,
                 PhoneNumber = user.PhoneNumber,
-                AvatarImageUrl = user.AvatarImageUrl
+                AvatarImageUrl = user.AvatarImageUrl,
+                Role = user.Role
             };
 
             return Ok(userDto);
@@ -223,7 +226,246 @@ namespace Backend.Controllers
                 Surname = user.Surname,
                 Username = user.Username,
                 PhoneNumber = user.PhoneNumber,
-                AvatarImageUrl = user.AvatarImageUrl
+                AvatarImageUrl = user.AvatarImageUrl,
+                Role = user.Role
+            };
+
+            return Ok(userDto);
+        }
+
+        // ========== ADMIN ENDPOINTS ==========
+
+        /// <summary>
+        /// Get all users (Admin only)
+        /// </summary>
+        [HttpGet("admin/users")]
+        [Authorize]
+        public async Task<IActionResult> GetAllUsers(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            [FromQuery] string? search = null)
+        {
+            if (!AuthorizationHelper.IsAdmin(User))
+            {
+                return Forbid();
+            }
+
+            var query = _dbContext.Users.AsQueryable();
+
+            // Search by name, surname, email, or username
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+                query = query.Where(u =>
+                    u.Name.ToLower().Contains(searchLower) ||
+                    u.Surname.ToLower().Contains(searchLower) ||
+                    u.Email.ToLower().Contains(searchLower) ||
+                    u.Username.ToLower().Contains(searchLower));
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var users = await query
+                .OrderByDescending(u => u.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    Name = u.Name,
+                    Surname = u.Surname,
+                    Username = u.Username,
+                    PhoneNumber = u.PhoneNumber,
+                    AvatarImageUrl = u.AvatarImageUrl,
+                    Role = u.Role
+                })
+                .ToListAsync();
+
+            return Ok(new
+            {
+                users,
+                totalCount,
+                page,
+                pageSize,
+                totalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            });
+        }
+
+        /// <summary>
+        /// Get a specific user by ID (Admin only)
+        /// </summary>
+        [HttpGet("admin/users/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetUserById(Guid id)
+        {
+            if (!AuthorizationHelper.IsAdmin(User))
+            {
+                return Forbid();
+            }
+
+            var user = await _dbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            var userDto = new UserDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name,
+                Surname = user.Surname,
+                Username = user.Username,
+                PhoneNumber = user.PhoneNumber,
+                AvatarImageUrl = user.AvatarImageUrl,
+                Role = user.Role
+            };
+
+            return Ok(userDto);
+        }
+
+        /// <summary>
+        /// Update a user's role (Admin only)
+        /// </summary>
+        [HttpPut("admin/users/{id}/role")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUserRole(Guid id, [FromBody] UpdateUserRoleRequest request)
+        {
+            if (!AuthorizationHelper.IsAdmin(User))
+            {
+                return Forbid();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!Enum.IsDefined(typeof(Role), request.Role))
+            {
+                return BadRequest(new { message = "Invalid role." });
+            }
+
+            var user = await _dbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            // Prevent admin from removing their own admin role
+            var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (currentUserIdClaim != null && Guid.TryParse(currentUserIdClaim.Value, out var currentUserId))
+            {
+                if (currentUserId == id && request.Role != Role.Admin)
+                {
+                    return BadRequest(new { message = "You cannot remove your own admin role." });
+                }
+            }
+
+            user.Role = request.Role;
+            await _dbContext.SaveChangesAsync();
+
+            var userDto = new UserDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name,
+                Surname = user.Surname,
+                Username = user.Username,
+                PhoneNumber = user.PhoneNumber,
+                AvatarImageUrl = user.AvatarImageUrl,
+                Role = user.Role
+            };
+
+            return Ok(userDto);
+        }
+
+        /// <summary>
+        /// Delete a user (Admin only)
+        /// </summary>
+        [HttpDelete("admin/users/{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            if (!AuthorizationHelper.IsAdmin(User))
+            {
+                return Forbid();
+            }
+
+            var user = await _dbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            // Prevent admin from deleting themselves
+            var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (currentUserIdClaim != null && Guid.TryParse(currentUserIdClaim.Value, out var currentUserId))
+            {
+                if (currentUserId == id)
+                {
+                    return BadRequest(new { message = "You cannot delete your own account." });
+                }
+            }
+
+            _dbContext.Users.Remove(user);
+            await _dbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Update any user's profile (Admin only)
+        /// </summary>
+        [HttpPut("admin/users/{id}/profile")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUserProfile(Guid id, [FromBody] UpdateProfileRequest request)
+        {
+            if (!AuthorizationHelper.IsAdmin(User))
+            {
+                return Forbid();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _dbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            // Update only provided fields
+            if (!string.IsNullOrWhiteSpace(request.Name))
+            {
+                user.Name = request.Name.Trim();
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Surname))
+            {
+                user.Surname = request.Surname.Trim();
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.PhoneNumber))
+            {
+                user.PhoneNumber = request.PhoneNumber.Trim();
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            var userDto = new UserDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name,
+                Surname = user.Surname,
+                Username = user.Username,
+                PhoneNumber = user.PhoneNumber,
+                AvatarImageUrl = user.AvatarImageUrl,
+                Role = user.Role
             };
 
             return Ok(userDto);

@@ -216,6 +216,23 @@ export type PostApiCarsByIdImagesResponses = {
     200: unknown;
 };
 
+export type DeleteApiCarsByIdImagesByImageIdData = {
+    body?: never;
+    path: {
+        id: number;
+        imageId: number;
+    };
+    query?: never;
+    url: '/api/cars/{id}/images/{imageId}';
+};
+
+export type DeleteApiCarsByIdImagesByImageIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
 export type PutApiCarsByIdImagesByImageIdSetMainData = {
     body?: never;
     path: {

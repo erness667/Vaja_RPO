@@ -16,6 +16,7 @@ namespace Backend.DTOs.Car
         public string Color { get; set; } = string.Empty;
         public string? EquipmentAndDetails { get; set; }
         public decimal Price { get; set; }
+        public decimal? OriginalPrice { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
@@ -28,6 +29,11 @@ namespace Backend.DTOs.Car
         /// All image URLs associated with this car.
         /// </summary>
         public List<string> ImageUrls { get; set; } = new();
+
+        /// <summary>
+        /// Image information with IDs for management purposes.
+        /// </summary>
+        public List<CarImageInfo> Images { get; set; } = new();
 
         /// <summary>
         /// Number of times this car detail page was viewed.
@@ -46,6 +52,13 @@ namespace Backend.DTOs.Car
         public string Surname { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string? AvatarImageUrl { get; set; }
+    }
+
+    public class CarImageInfo
+    {
+        public int Id { get; set; }
+        public string Url { get; set; } = string.Empty;
+        public bool IsMain { get; set; }
     }
 }
 

@@ -75,6 +75,7 @@ namespace Backend.Controllers
                     Color = request.Color,
                     EquipmentAndDetails = request.EquipmentAndDetails,
                     Price = request.Price,
+                    OriginalPrice = request.Price, // Set original price to initial price
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -99,11 +100,13 @@ namespace Backend.Controllers
                     Color = car.Color,
                     EquipmentAndDetails = car.EquipmentAndDetails,
                     Price = car.Price,
+                    OriginalPrice = car.OriginalPrice,
                     ViewCount = car.ViewCount,
                     CreatedAt = car.CreatedAt,
                     UpdatedAt = car.UpdatedAt,
                     MainImageUrl = null,
-                    ImageUrls = new List<string>()
+                    ImageUrls = new List<string>(),
+                    Images = new List<CarImageInfo>()
                 };
 
                 return CreatedAtAction(nameof(GetCar), new { id = car.Id }, carDto);
@@ -172,6 +175,9 @@ namespace Backend.Controllers
                 car.Transmission = request.Transmission;
                 car.Color = request.Color;
                 car.EquipmentAndDetails = request.EquipmentAndDetails;
+                
+                // OriginalPrice should never change - it's set on creation and remains the original listing price
+                // Only update the current price
                 car.Price = request.Price;
                 car.UpdatedAt = DateTime.UtcNow;
 
@@ -196,13 +202,20 @@ namespace Backend.Controllers
                     EnginePower = car.EnginePower,
                     Transmission = car.Transmission,
                     Color = car.Color,
-                    EquipmentAndDetails = car.EquipmentAndDetails,
-                    Price = car.Price,
-                    ViewCount = car.ViewCount,
-                    CreatedAt = car.CreatedAt,
-                    UpdatedAt = car.UpdatedAt,
-                    MainImageUrl = mainImage?.Url,
-                    ImageUrls = car.Images.Select(i => i.Url).ToList()
+                EquipmentAndDetails = car.EquipmentAndDetails,
+                Price = car.Price,
+                OriginalPrice = car.OriginalPrice,
+                ViewCount = car.ViewCount,
+                CreatedAt = car.CreatedAt,
+                UpdatedAt = car.UpdatedAt,
+                MainImageUrl = mainImage?.Url,
+                ImageUrls = car.Images.Select(i => i.Url).ToList(),
+                    Images = car.Images.Select(i => new CarImageInfo
+                    {
+                        Id = i.Id,
+                        Url = i.Url,
+                        IsMain = i.IsMain
+                    }).ToList()
                 };
 
                 return Ok(carDto);
@@ -324,10 +337,114 @@ namespace Backend.Controllers
                 Color = car.Color,
                 EquipmentAndDetails = car.EquipmentAndDetails,
                 Price = car.Price,
+                OriginalPrice = car.OriginalPrice,
                 CreatedAt = car.CreatedAt,
                 UpdatedAt = car.UpdatedAt,
                 MainImageUrl = mainImage?.Url,
-                ImageUrls = car.Images.Select(i => i.Url).ToList()
+                ImageUrls = car.Images.Select(i => i.Url).ToList(),
+                Images = car.Images.Select(i => new CarImageInfo
+                {
+                    Id = i.Id,
+                    Url = i.Url,
+                    IsMain = i.IsMain
+                }).ToList()
+            };
+
+            return Ok(carDto);
+        }
+
+        /// <summary>
+        /// Delete a car image.
+        /// </summary>
+        [HttpDelete("{id}/images/{imageId}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteImage(int id, int imageId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized(new { message = "Invalid user token." });
+            }
+
+            var car = await _dbContext.Cars
+                .Include(c => c.Images)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (car == null)
+            {
+                return NotFound(new { message = "Car not found." });
+            }
+
+            if (car.SellerId != userId)
+            {
+                return Forbid();
+            }
+
+            var image = car.Images.FirstOrDefault(i => i.Id == imageId);
+            if (image == null)
+            {
+                return NotFound(new { message = "Image not found." });
+            }
+
+            // Delete the physical file
+            try
+            {
+                if (image.Url.StartsWith("http"))
+                {
+                    // Extract filename from URL
+                    var uri = new Uri(image.Url);
+                    var fileName = Path.GetFileName(uri.LocalPath);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "cars", fileName);
+                    
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+            }
+            catch
+            {
+                // Continue even if file deletion fails
+            }
+
+            // Remove from database
+            _dbContext.CarImages.Remove(image);
+            await _dbContext.SaveChangesAsync();
+
+            // Reload car to get updated images
+            await _dbContext.Entry(car).Collection(c => c.Images).LoadAsync();
+
+            // Get updated car data
+            var mainImage = car.Images.FirstOrDefault(i => i.IsMain)
+                            ?? car.Images.FirstOrDefault();
+
+            var carDto = new CarDto
+            {
+                Id = car.Id,
+                SellerId = car.SellerId,
+                Brand = car.Brand,
+                Model = car.Model,
+                Year = car.Year,
+                FirstRegistrationDate = car.FirstRegistrationDate,
+                Mileage = car.Mileage,
+                PreviousOwners = car.PreviousOwners,
+                FuelType = car.FuelType,
+                EnginePower = car.EnginePower,
+                Transmission = car.Transmission,
+                Color = car.Color,
+                EquipmentAndDetails = car.EquipmentAndDetails,
+                Price = car.Price,
+                OriginalPrice = car.OriginalPrice,
+                CreatedAt = car.CreatedAt,
+                UpdatedAt = car.UpdatedAt,
+                MainImageUrl = mainImage?.Url,
+                ImageUrls = car.Images.Where(i => i.Id != imageId).Select(i => i.Url).ToList(),
+                Images = car.Images.Where(i => i.Id != imageId).Select(i => new CarImageInfo
+                {
+                    Id = i.Id,
+                    Url = i.Url,
+                    IsMain = i.IsMain
+                }).ToList()
             };
 
             return Ok(carDto);
@@ -393,7 +510,13 @@ namespace Backend.Controllers
                 CreatedAt = car.CreatedAt,
                 UpdatedAt = car.UpdatedAt,
                 MainImageUrl = image.Url,
-                ImageUrls = car.Images.Select(i => i.Url).ToList()
+                ImageUrls = car.Images.Select(i => i.Url).ToList(),
+                Images = car.Images.Select(i => new CarImageInfo
+                {
+                    Id = i.Id,
+                    Url = i.Url,
+                    IsMain = i.IsMain
+                }).ToList()
             };
 
             return Ok(carDto);
@@ -483,13 +606,20 @@ namespace Backend.Controllers
                     EnginePower = car.EnginePower,
                     Transmission = car.Transmission,
                     Color = car.Color,
-                    EquipmentAndDetails = car.EquipmentAndDetails,
-                    Price = car.Price,
-                    ViewCount = car.ViewCount,
-                    CreatedAt = car.CreatedAt,
-                    UpdatedAt = car.UpdatedAt,
-                    MainImageUrl = mainImage?.Url,
-                    ImageUrls = car.Images.Select(i => i.Url).ToList(),
+                EquipmentAndDetails = car.EquipmentAndDetails,
+                Price = car.Price,
+                OriginalPrice = car.OriginalPrice,
+                ViewCount = car.ViewCount,
+                CreatedAt = car.CreatedAt,
+                UpdatedAt = car.UpdatedAt,
+                MainImageUrl = mainImage?.Url,
+                ImageUrls = car.Images.Select(i => i.Url).ToList(),
+                    Images = car.Images.Select(i => new CarImageInfo
+                    {
+                        Id = i.Id,
+                        Url = i.Url,
+                        IsMain = i.IsMain
+                    }).ToList(),
                     Seller = car.Seller != null ? new SellerInfo
                     {
                         Name = car.Seller.Name,
@@ -521,7 +651,8 @@ namespace Backend.Controllers
             [FromQuery] decimal? priceFrom = null,
             [FromQuery] decimal? priceTo = null,
             [FromQuery] int? mileageTo = null,
-            [FromQuery] string? fuelType = null)
+            [FromQuery] string? fuelType = null,
+            [FromQuery] string? search = null)
         {
             try
             {
@@ -576,6 +707,17 @@ namespace Backend.Controllers
                     query = query.Where(c => c.FuelType == fuelType);
                 }
 
+                // Search by brand or model name
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    var searchLower = search.ToLower();
+                    query = query.Where(c => 
+                        c.Brand.ToLower().Contains(searchLower) || 
+                        c.Model.ToLower().Contains(searchLower) ||
+                        (c.Brand + " " + c.Model).ToLower().Contains(searchLower)
+                    );
+                }
+
                 // Get total count
                 var totalCount = await query.CountAsync();
 
@@ -600,6 +742,7 @@ namespace Backend.Controllers
                         Color = c.Color,
                         EquipmentAndDetails = c.EquipmentAndDetails,
                         Price = c.Price,
+                        OriginalPrice = c.OriginalPrice,
                         ViewCount = c.ViewCount,
                         CreatedAt = c.CreatedAt,
                         UpdatedAt = c.UpdatedAt,

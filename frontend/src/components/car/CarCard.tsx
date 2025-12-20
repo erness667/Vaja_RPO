@@ -164,20 +164,62 @@ export function CarCard({ car, viewedAt }: CarCardProps) {
 
           {/* Price */}
           <Box>
-            <Text
-              fontSize="2xl"
-              fontWeight="bold"
-              color={{ base: "blue.600", _dark: "blue.400" }}
-              lineHeight="1.2"
-            >
-              {price}
-            </Text>
-            <HStack gap={2} color={{ base: "gray.500", _dark: "gray.400" }} fontSize="xs" mt={1}>
-              <Icon as={LuEye} boxSize={4} />
-              <Text>
-                {formattedViewCount} <Trans>ogledov</Trans>
-              </Text>
-            </HStack>
+            {car.originalPrice && car.originalPrice > car.price ? (
+              <VStack align="start" gap={1}>
+                <HStack gap={2} align="baseline" flexWrap="wrap">
+                  <Text
+                    fontSize="lg"
+                    fontWeight="medium"
+                    color={{ base: "gray.500", _dark: "gray.400" }}
+                    textDecoration="line-through"
+                  >
+                    {car.originalPrice.toLocaleString("sl-SI")} €
+                  </Text>
+                  <Text
+                    fontSize="2xl"
+                    fontWeight="bold"
+                    color={{ base: "blue.600", _dark: "blue.400" }}
+                    lineHeight="1.2"
+                  >
+                    {price}
+                  </Text>
+                  <Badge
+                    colorPalette="red"
+                    variant="solid"
+                    fontSize="xs"
+                    fontWeight="bold"
+                    px={1.5}
+                    py={0.5}
+                    borderRadius="md"
+                  >
+                    -{Math.round(((car.originalPrice - car.price) / car.originalPrice) * 100)}%
+                  </Badge>
+                </HStack>
+                <HStack gap={2} color={{ base: "gray.500", _dark: "gray.400" }} fontSize="xs" mt={1}>
+                  <Icon as={LuEye} boxSize={4} />
+                  <Text>
+                    {formattedViewCount} <Trans>ogledov</Trans>
+                  </Text>
+                </HStack>
+              </VStack>
+            ) : (
+              <>
+                <Text
+                  fontSize="2xl"
+                  fontWeight="bold"
+                  color={{ base: "blue.600", _dark: "blue.400" }}
+                  lineHeight="1.2"
+                >
+                  {price}
+                </Text>
+                <HStack gap={2} color={{ base: "gray.500", _dark: "gray.400" }} fontSize="xs" mt={1}>
+                  <Icon as={LuEye} boxSize={4} />
+                  <Text>
+                    {formattedViewCount} <Trans>ogledov</Trans>
+                  </Text>
+                </HStack>
+              </>
+            )}
           </Box>
 
           {/* Main Specs with Icons */}

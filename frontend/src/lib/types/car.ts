@@ -1,3 +1,9 @@
+export interface CarImageInfo {
+  id: number;
+  url: string;
+  isMain: boolean;
+}
+
 export interface Car {
   id: number;
   sellerId: string;
@@ -13,11 +19,13 @@ export interface Car {
   color: string;
   equipmentAndDetails?: string | null;
   price: number;
+  originalPrice?: number | null;
   viewCount?: number;
   createdAt: string;
   updatedAt: string;
   mainImageUrl?: string | null;
   imageUrls?: string[];
+  images?: CarImageInfo[];
   seller?: SellerInfo | null;
 }
 

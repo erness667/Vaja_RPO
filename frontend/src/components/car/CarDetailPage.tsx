@@ -414,13 +414,46 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                   )}
                 </HStack>
               </HStack>
-              <Text
-                fontSize="3xl"
-                fontWeight="bold"
-                color={{ base: "blue.600", _dark: "blue.400" }}
-              >
-                {price}
-              </Text>
+              <VStack align="start" gap={1}>
+                {car.originalPrice && car.originalPrice > car.price ? (
+                  <HStack gap={3} align="baseline" flexWrap="wrap">
+                    <Text
+                      fontSize="2xl"
+                      fontWeight="medium"
+                      color={{ base: "gray.500", _dark: "gray.400" }}
+                      textDecoration="line-through"
+                    >
+                      {car.originalPrice.toLocaleString("sl-SI")} €
+                    </Text>
+                    <Text
+                      fontSize="3xl"
+                      fontWeight="bold"
+                      color={{ base: "blue.600", _dark: "blue.400" }}
+                    >
+                      {price}
+                    </Text>
+                    <Badge
+                      colorPalette="red"
+                      variant="solid"
+                      fontSize="sm"
+                      fontWeight="bold"
+                      px={2}
+                      py={1}
+                      borderRadius="md"
+                    >
+                      -{Math.round(((car.originalPrice - car.price) / car.originalPrice) * 100)}%
+                    </Badge>
+                  </HStack>
+                ) : (
+                  <Text
+                    fontSize="3xl"
+                    fontWeight="bold"
+                    color={{ base: "blue.600", _dark: "blue.400" }}
+                  >
+                    {price}
+                  </Text>
+                )}
+              </VStack>
               <HStack gap={2} color={{ base: "gray.600", _dark: "gray.400" }} fontSize="sm">
                 <Icon as={LuEye} boxSize={4} />
                 <Text>
@@ -721,7 +754,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                   <Text color={{ base: "gray.600", _dark: "gray.400" }}>
                     <Trans
                       components={{
-                        link: (
+                        a: (
                           <Text
                             as="span"
                             color={{ base: "blue.600", _dark: "blue.400" }}
@@ -733,7 +766,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                         ),
                       }}
                     >
-                      Za komentiranje se morate <link>prijaviti</link>.
+                      Za komentiranje se morate <a>prijaviti</a>.
                     </Trans>
                   </Text>
                 </Box>

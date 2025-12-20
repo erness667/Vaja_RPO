@@ -41,13 +41,8 @@ const LanguageFlag = ({ variant }: { variant: "sl" | "en" }) => {
     <img
       src={`https://flagsapi.com/${countryCode}/flat/24.png`}
       alt={variant === "sl" ? "Slovenian flag" : "English flag"}
-      width={24}
-      height={22}
-      style={{
-        borderRadius: 3,
-        border: "1px solid rgba(156, 163, 175, 0.8)",
-        boxShadow: "0 0 0 1px rgba(15, 23, 42, 0.1)",
-      }}
+      width={22}
+      height={20}
     />
   );
 };

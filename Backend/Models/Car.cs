@@ -57,6 +57,9 @@ namespace SuperCarsApi.Models
         [Range(0, double.MaxValue, ErrorMessage = "Price must be greater than or equal to 0")]
         public decimal Price { get; set; }
 
+        // Original price (for showing price reduction - set when price is lowered)
+        public decimal? OriginalPrice { get; set; }
+
         // Number of times this car detail page was viewed
         public int ViewCount { get; set; } = 0;
 

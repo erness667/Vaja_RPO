@@ -64,6 +64,7 @@ namespace Backend.Controllers
                         Color = vh.Car.Color,
                         EquipmentAndDetails = vh.Car.EquipmentAndDetails,
                         Price = vh.Car.Price,
+                        OriginalPrice = vh.Car.OriginalPrice,
                         CreatedAt = vh.Car.CreatedAt,
                         UpdatedAt = vh.Car.UpdatedAt,
                         MainImageUrl = mainImage?.Url,

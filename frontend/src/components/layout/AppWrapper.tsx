@@ -2,6 +2,7 @@
 
 import { Box } from "@chakra-ui/react";
 import { Navbar } from "./Navbar";
+import { ImpersonationBanner } from "./ImpersonationBanner";
 
 export function AppWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -13,6 +14,7 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
       transition="background-color 0.3s ease, color 0.3s ease"
     >
       <Navbar />
+      <ImpersonationBanner />
       <Box as="main" width="100%" position="relative">
         {children}
       </Box>

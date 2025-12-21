@@ -6,6 +6,7 @@ import {
   putApiUserAdminUsersByIdRole,
   putApiUserAdminUsersByIdProfile,
   deleteApiUserAdminUsersById,
+  postApiUserAdminUsersByIdImpersonate,
 } from "@/client";
 import { extractValidationErrors } from "@/lib/utils/error-utils";
 import { getAccessToken } from "@/lib/utils/auth-storage";
@@ -127,6 +128,58 @@ export function useAdminUsers() {
         const updatedUser = response.data as AdminUser;
         setUsers(prev => prev.map(u => u.id === userId ? updatedUser : u));
         return updatedUser;
+      }
+
+      return null;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";
+      setError(errorMessage);
+      return null;
+    }
+  }, []);
+
+  const impersonateUser = useCallback(async (userId: string) => {
+    setError(null);
+
+    try {
+      const response = await postApiUserAdminUsersByIdImpersonate({
+        path: { id: userId },
+      });
+
+      if (response.error || (response.response && !response.response.ok)) {
+        let errorData: unknown = response.error;
+        if (!errorData && response.response) {
+          try {
+            const text = await response.response.text();
+            errorData = JSON.parse(text);
+          } catch {
+            errorData = { message: "Failed to impersonate user" };
+          }
+        }
+        const errorMessage = extractValidationErrors(errorData);
+        setError(errorMessage);
+        return null;
+      }
+
+      if (response.data) {
+        // Parse the response data - SDK returns it in the correct format
+        const authData = response.data as {
+          accessToken: string;
+          refreshToken: string;
+          expiresAt: string;
+          refreshTokenExpiresAt: string;
+          user: {
+            id: string;
+            email: string;
+            username: string;
+            name: string;
+            surname: string;
+            phoneNumber: string;
+            avatarImageUrl?: string | null;
+            role: 0 | 1;
+          };
+        };
+        return authData;
       }
 
       return null;
@@ -269,6 +322,7 @@ export function useAdminUsers() {
     updateUserProfile,
     updateUserAvatar,
     deleteUser,
+    impersonateUser,
     setError,
   };
 }

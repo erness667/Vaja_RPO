@@ -5,6 +5,7 @@
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
 const USER_KEY = 'user';
+const ORIGINAL_ADMIN_TOKENS_KEY = 'originalAdminTokens';
 
 export interface StoredUser {
   id: string;
@@ -97,6 +98,57 @@ export function isAuthenticated(): boolean {
 }
 
 /**
+ * Store original admin tokens before impersonating
+ */
+export function storeOriginalAdminTokens(tokens: AuthTokens): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(ORIGINAL_ADMIN_TOKENS_KEY, JSON.stringify(tokens));
+}
+
+/**
+ * Get original admin tokens (if impersonating)
+ */
+export function getOriginalAdminTokens(): AuthTokens | null {
+  if (typeof window === 'undefined') return null;
+  const tokensStr = localStorage.getItem(ORIGINAL_ADMIN_TOKENS_KEY);
+  if (!tokensStr) return null;
+  try {
+    return JSON.parse(tokensStr) as AuthTokens;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Check if currently impersonating
+ */
+export function isImpersonating(): boolean {
+  return getOriginalAdminTokens() !== null;
+}
+
+/**
+ * Stop impersonating and restore original admin session
+ */
+export function stopImpersonating(): boolean {
+  const originalTokens = getOriginalAdminTokens();
+  if (!originalTokens) return false;
+  
+  // Restore original admin tokens
+  storeAuthTokens(originalTokens);
+  
+  // Clear the stored original tokens
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(ORIGINAL_ADMIN_TOKENS_KEY);
+    // Dispatch event to notify components that impersonation has stopped
+    window.dispatchEvent(new Event('impersonationStopped'));
+    window.dispatchEvent(new Event('authStateChanged'));
+    window.dispatchEvent(new Event('userDataUpdated'));
+  }
+  
+  return true;
+}
+
+/**
  * Clear all authentication data
  */
 export function clearAuthTokens(): void {
@@ -106,6 +158,7 @@ export function clearAuthTokens(): void {
   localStorage.removeItem('tokenExpiresAt');
   localStorage.removeItem('refreshTokenExpiresAt');
   localStorage.removeItem(USER_KEY);
+  localStorage.removeItem(ORIGINAL_ADMIN_TOKENS_KEY);
   // Dispatch custom event to notify components of authentication state change
   window.dispatchEvent(new Event('authStateChanged'));
   window.dispatchEvent(new Event('userDataUpdated'));

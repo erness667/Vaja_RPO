@@ -36,13 +36,16 @@ import {
   LuCheck,
   LuShieldCheck,
   LuUpload,
+  LuUserCheck,
 } from "react-icons/lu";
 import { PageShell } from "@/components/layout/PageShell";
 import { useAdminUsers } from "@/lib/hooks/useAdminUsers";
-import { getStoredUser, isAuthenticated } from "@/lib/utils/auth-storage";
+import { getStoredUser, isAuthenticated, storeAuthTokens, storeOriginalAdminTokens, getAccessToken, getRefreshToken } from "@/lib/utils/auth-storage";
 import type { AdminUser } from "@/lib/hooks/useAdminUsers";
+import { useRouter } from "next/navigation";
 
 export function AdminUsersPage() {
+  const router = useRouter();
   const {
     users,
     isLoading,
@@ -53,6 +56,7 @@ export function AdminUsersPage() {
     updateUserProfile,
     updateUserAvatar,
     deleteUser,
+    impersonateUser,
     setError,
   } = useAdminUsers();
 
@@ -217,6 +221,48 @@ export function AdminUsersPage() {
       fetchUsers({ page: currentPage, pageSize: 20, search: searchQuery || undefined });
     }
   }, [deleteUser, currentPage, searchQuery, fetchUsers]);
+
+  const handleImpersonate = useCallback(async (userId: string) => {
+    // Store current admin tokens before impersonating
+    const currentUser = getStoredUser();
+    const currentAccessToken = getAccessToken();
+    const currentRefreshToken = getRefreshToken();
+    const tokenExpiresAt = localStorage.getItem('tokenExpiresAt');
+    const refreshTokenExpiresAt = localStorage.getItem('refreshTokenExpiresAt');
+    
+    if (currentUser && currentAccessToken && currentRefreshToken && tokenExpiresAt && refreshTokenExpiresAt) {
+      storeOriginalAdminTokens({
+        accessToken: currentAccessToken,
+        refreshToken: currentRefreshToken,
+        expiresAt: tokenExpiresAt,
+        refreshTokenExpiresAt: refreshTokenExpiresAt,
+        user: currentUser,
+      });
+    }
+    
+    const result = await impersonateUser(userId);
+    if (result) {
+      // Store the new auth tokens
+      storeAuthTokens({
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+        expiresAt: result.expiresAt,
+        refreshTokenExpiresAt: result.refreshTokenExpiresAt,
+        user: {
+          id: result.user.id,
+          email: result.user.email,
+          username: result.user.username,
+          name: result.user.name,
+          surname: result.user.surname,
+          phoneNumber: result.user.phoneNumber,
+          avatarImageUrl: result.user.avatarImageUrl || undefined,
+          role: result.user.role,
+        },
+      });
+      // Redirect to home page
+      router.push("/");
+    }
+  }, [impersonateUser, router]);
 
 
   if (!isAdmin) {
@@ -587,14 +633,23 @@ export function AdminUsersPage() {
                                 <Trans>Uredi</Trans>
                               </MenuItem>
                               {currentUser?.id !== user.id && (
-                                <MenuItem
-                                  value="delete"
-                                  onClick={() => setDeletingUserId(user.id)}
-                                  colorPalette="red"
-                                >
-                                  <Icon as={LuTrash2} mr={2} />
-                                  <Trans>Izbriši</Trans>
-                                </MenuItem>
+                                <>
+                                  <MenuItem
+                                    value="impersonate"
+                                    onClick={() => handleImpersonate(user.id)}
+                                  >
+                                    <Icon as={LuUserCheck} mr={2} />
+                                    <Trans>Impersoniraj</Trans>
+                                  </MenuItem>
+                                  <MenuItem
+                                    value="delete"
+                                    onClick={() => setDeletingUserId(user.id)}
+                                    colorPalette="red"
+                                  >
+                                    <Icon as={LuTrash2} mr={2} />
+                                    <Trans>Izbriši</Trans>
+                                  </MenuItem>
+                                </>
                               )}
                             </MenuContent>
                           </MenuPositioner>

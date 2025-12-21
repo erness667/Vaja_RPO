@@ -620,6 +620,22 @@ export type PutApiUserAdminUsersByIdAvatarResponses = {
     200: unknown;
 };
 
+export type PostApiUserAdminUsersByIdImpersonateData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/user/admin/users/{id}/impersonate';
+};
+
+export type PostApiUserAdminUsersByIdImpersonateResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
 export type GetApiViewHistoryData = {
     body?: never;
     path?: never;

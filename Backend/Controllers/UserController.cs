@@ -1,12 +1,17 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using Backend.DTOs.Auth;
 using Backend.DTOs.User;
 using Backend.Helpers;
+using Backend.Options;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using SuperCarsApi.Models;
 
 namespace Backend.Controllers
@@ -17,10 +22,12 @@ namespace Backend.Controllers
     public class UserController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly JwtSettings _jwtSettings;
 
-        public UserController(ApplicationDbContext dbContext)
+        public UserController(ApplicationDbContext dbContext, IOptions<JwtSettings> jwtOptions)
         {
             _dbContext = dbContext;
+            _jwtSettings = jwtOptions.Value;
         }
 
         [HttpGet("me")]
@@ -565,6 +572,85 @@ namespace Backend.Controllers
             };
 
             return Ok(userDto);
+        }
+
+        /// <summary>
+        /// Impersonate a user (Admin only) - Generate auth tokens for the specified user
+        /// </summary>
+        [HttpPost("admin/users/{id}/impersonate")]
+        [Authorize]
+        public async Task<IActionResult> ImpersonateUser(Guid id)
+        {
+            if (!AuthorizationHelper.IsAdmin(User))
+            {
+                return Forbid();
+            }
+
+            var user = await _dbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            // Generate JWT token for the user being impersonated
+            var expires = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenMinutes);
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
+                claims: claims,
+                expires: expires,
+                signingCredentials: creds);
+
+            var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+            // Generate refresh token
+            var refreshTokenValue = Guid.NewGuid().ToString();
+            var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenDays);
+
+            var refreshToken = new RefreshToken
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Token = refreshTokenValue,
+                ExpiresAt = refreshTokenExpiresAt,
+                CreatedAt = DateTime.UtcNow,
+                IsRevoked = false
+            };
+
+            await _dbContext.RefreshTokens.AddAsync(refreshToken);
+            await _dbContext.SaveChangesAsync();
+
+            var response = new AuthResponse
+            {
+                AccessToken = accessToken,
+                ExpiresAt = expires,
+                RefreshToken = refreshTokenValue,
+                RefreshTokenExpiresAt = refreshTokenExpiresAt,
+                User = new UserDto
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Name = user.Name,
+                    Surname = user.Surname,
+                    Username = user.Username,
+                    PhoneNumber = user.PhoneNumber,
+                    AvatarImageUrl = user.AvatarImageUrl,
+                    Role = user.Role
+                }
+            };
+
+            return Ok(response);
         }
     }
 }

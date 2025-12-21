@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon } from "react-icons/hi";
-import { LuHeart, LuHistory, LuUser, LuLogOut, LuSearch, LuX, LuImage, LuShield } from "react-icons/lu";
+import { LuHeart, LuHistory, LuUser, LuLogOut, LuSearch, LuX, LuImage, LuShield, LuFileText } from "react-icons/lu";
 import { Trans, t } from "@lingui/macro";
 import { 
   Box, 
@@ -584,6 +584,19 @@ export function Navbar() {
                       <HStack gap={2}>
                         <Icon as={LuHeart} boxSize={4} />
                         <Trans>Priljubljene</Trans>
+                      </HStack>
+                    </MenuItem>
+                    <MenuItem
+                      value="my-posts"
+                      onClick={() => router.push("/my-posts")}
+                      color={{ base: "#374151", _dark: "#f3f4f6" }}
+                      _hover={{
+                        bg: { base: "#f3f4f6", _dark: "#374151" },
+                      }}
+                    >
+                      <HStack gap={2}>
+                        <Icon as={LuFileText} boxSize={4} />
+                        <Trans>Moji oglasi</Trans>
                       </HStack>
                     </MenuItem>
                     <MenuItem

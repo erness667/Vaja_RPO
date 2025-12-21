@@ -653,7 +653,8 @@ namespace Backend.Controllers
             [FromQuery] decimal? priceTo = null,
             [FromQuery] int? mileageTo = null,
             [FromQuery] string? fuelType = null,
-            [FromQuery] string? search = null)
+            [FromQuery] string? search = null,
+            [FromQuery] string? sellerId = null)
         {
             try
             {
@@ -717,6 +718,15 @@ namespace Backend.Controllers
                         c.Model.ToLower().Contains(searchLower) ||
                         (c.Brand + " " + c.Model).ToLower().Contains(searchLower)
                     );
+                }
+
+                // Filter by seller ID
+                if (!string.IsNullOrWhiteSpace(sellerId))
+                {
+                    if (Guid.TryParse(sellerId, out var sellerGuid))
+                    {
+                        query = query.Where(c => c.SellerId == sellerGuid);
+                    }
                 }
 
                 // Get total count

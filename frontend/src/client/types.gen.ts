@@ -148,6 +148,7 @@ export type GetApiCarsData = {
         mileageTo?: number;
         fuelType?: string;
         search?: string;
+        sellerId?: string;
     };
     url: '/api/cars';
 };
@@ -595,6 +596,24 @@ export type PutApiUserAdminUsersByIdProfileData = {
 };
 
 export type PutApiUserAdminUsersByIdProfileResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiUserAdminUsersByIdAvatarData = {
+    body?: {
+        file?: Blob | File;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/user/admin/users/{id}/avatar';
+};
+
+export type PutApiUserAdminUsersByIdAvatarResponses = {
     /**
      * Success
      */

@@ -14,6 +14,7 @@ export interface UseCarsFilters {
   priceTo?: string | null;
   mileageTo?: string | null;
   fuelType?: string | null;
+  sellerId?: string | null;
 }
 
 export function useCars(filters?: UseCarsFilters) {
@@ -78,6 +79,10 @@ export function useCars(filters?: UseCarsFilters) {
       }
       if (filters?.fuelType) {
         query.fuelType = filters.fuelType;
+      }
+
+      if (filters?.sellerId) {
+        query.sellerId = filters.sellerId;
       }
 
       const response = await getApiCars({

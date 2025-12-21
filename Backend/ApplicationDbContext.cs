@@ -14,6 +14,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<CarImage> CarImages { get; set; }
     public DbSet<Favourite> Favourites { get; set; }
     public DbSet<ViewHistory> ViewHistories { get; set; }
+    public DbSet<FriendRequest> FriendRequests { get; set; }
+    public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -102,6 +104,32 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(vh => vh.CarId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<FriendRequest>(entity =>
+        {
+            // Unique constraint: prevent duplicate friend requests between the same users
+            entity.HasIndex(fr => new { fr.RequesterId, fr.AddresseeId }).IsUnique();
+
+            entity.HasOne(fr => fr.Requester)
+                .WithMany()
+                .HasForeignKey(fr => fr.RequesterId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if user has friend requests
+
+            entity.HasOne(fr => fr.Addressee)
+                .WithMany()
+                .HasForeignKey(fr => fr.AddresseeId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if user has friend requests
+        });
+
+        modelBuilder.Entity<PasswordResetToken>(entity =>
+        {
+            entity.HasIndex(prt => prt.Token).IsUnique();
+
+            entity.HasOne(prt => prt.User)
+                .WithMany()
+                .HasForeignKey(prt => prt.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Delete tokens when user is deleted
         });
     }
 }

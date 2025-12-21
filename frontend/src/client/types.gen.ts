@@ -28,6 +28,10 @@ export type CreateCommentRequest = {
     content: string;
 };
 
+export type ForgotPasswordRequest = {
+    email: string;
+};
+
 export type LoginRequest = {
     username: string;
     password: string;
@@ -46,7 +50,16 @@ export type RegisterRequest = {
     password: string;
 };
 
+export type ResetPasswordRequest = {
+    token: string;
+    newPassword: string;
+};
+
 export type Role = 0 | 1;
+
+export type SendFriendRequestRequest = {
+    addresseeId: string;
+};
 
 export type UpdateCarRequest = {
     makeId: string;
@@ -127,6 +140,34 @@ export type PostApiAuthRefreshData = {
 };
 
 export type PostApiAuthRefreshResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiAuthForgotPasswordData = {
+    body?: ForgotPasswordRequest;
+    path?: never;
+    query?: never;
+    url: '/api/auth/forgot-password';
+};
+
+export type PostApiAuthForgotPasswordResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiAuthResetPasswordData = {
+    body?: ResetPasswordRequest;
+    path?: never;
+    query?: never;
+    url: '/api/auth/reset-password';
+};
+
+export type PostApiAuthResetPasswordResponses = {
     /**
      * Success
      */
@@ -456,6 +497,112 @@ export type PostApiFavouritesByCarIdToggleData = {
 };
 
 export type PostApiFavouritesByCarIdToggleResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiFriendsRequestData = {
+    body?: SendFriendRequestRequest;
+    path?: never;
+    query?: never;
+    url: '/api/friends/request';
+};
+
+export type PostApiFriendsRequestResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiFriendsRequestByIdAcceptData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/friends/request/{id}/accept';
+};
+
+export type PostApiFriendsRequestByIdAcceptResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiFriendsRequestByIdRejectData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/friends/request/{id}/reject';
+};
+
+export type PostApiFriendsRequestByIdRejectResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type DeleteApiFriendsRequestByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/friends/request/{id}';
+};
+
+export type DeleteApiFriendsRequestByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiFriendsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/friends';
+};
+
+export type GetApiFriendsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiFriendsRequestsPendingData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/friends/requests/pending';
+};
+
+export type GetApiFriendsRequestsPendingResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type DeleteApiFriendsByFriendIdData = {
+    body?: never;
+    path: {
+        friendId: string;
+    };
+    query?: never;
+    url: '/api/friends/{friendId}';
+};
+
+export type DeleteApiFriendsByFriendIdResponses = {
     /**
      * Success
      */

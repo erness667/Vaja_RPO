@@ -309,7 +309,7 @@ export function Navbar() {
           maxW="600px"
           mx={4}
         >
-          <Box position="relative">
+          <Box position="relative" suppressHydrationWarning>
             <Input
               type="text"
               placeholder={t`Išči vozila...`}
@@ -329,6 +329,7 @@ export function Navbar() {
                 borderColor: "blue.500",
                 boxShadow: "0 0 0 1px var(--chakra-colors-blue-500)",
               }}
+              autoComplete="off"
             />
             <Icon
               as={LuSearch}

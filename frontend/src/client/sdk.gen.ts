@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteApiCarsByIdData, DeleteApiCarsByIdImagesByImageIdData, DeleteApiCarsByIdImagesByImageIdResponses, DeleteApiCarsByIdResponses, DeleteApiCommentsByIdData, DeleteApiCommentsByIdResponses, DeleteApiFavouritesByCarIdData, DeleteApiFavouritesByCarIdResponses, DeleteApiUserAdminUsersByIdData, DeleteApiUserAdminUsersByIdResponses, GetApiCarCatalogMakesByMakeIdModelsData, GetApiCarCatalogMakesByMakeIdModelsResponses, GetApiCarCatalogMakesData, GetApiCarCatalogMakesResponses, GetApiCarCatalogMakesSearchData, GetApiCarCatalogMakesSearchResponses, GetApiCarsByCarIdCommentsData, GetApiCarsByCarIdCommentsResponses, GetApiCarsByIdData, GetApiCarsByIdResponses, GetApiCarsData, GetApiCarsResponses, GetApiFavouritesByCarIdCheckData, GetApiFavouritesByCarIdCheckResponses, GetApiFavouritesData, GetApiFavouritesResponses, GetApiUserAdminUsersByIdData, GetApiUserAdminUsersByIdResponses, GetApiUserAdminUsersData, GetApiUserAdminUsersResponses, GetApiUserMeData, GetApiUserMeResponses, GetApiViewHistoryData, GetApiViewHistoryResponses, PostApiAuthLoginData, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRefreshData, PostApiAuthRefreshResponses, PostApiAuthRegisterData, PostApiAuthRegisterResponses, PostApiCarsByCarIdCommentsData, PostApiCarsByCarIdCommentsResponses, PostApiCarsByIdImagesData, PostApiCarsByIdImagesResponses, PostApiCarsData, PostApiCarsResponses, PostApiFavouritesByCarIdData, PostApiFavouritesByCarIdResponses, PostApiFavouritesByCarIdToggleData, PostApiFavouritesByCarIdToggleResponses, PostApiUserAdminUsersByIdImpersonateData, PostApiUserAdminUsersByIdImpersonateResponses, PutApiCarsByIdData, PutApiCarsByIdImagesByImageIdSetMainData, PutApiCarsByIdImagesByImageIdSetMainResponses, PutApiCarsByIdResponses, PutApiCommentsByIdData, PutApiCommentsByIdResponses, PutApiUserAdminUsersByIdAvatarData, PutApiUserAdminUsersByIdAvatarResponses, PutApiUserAdminUsersByIdProfileData, PutApiUserAdminUsersByIdProfileResponses, PutApiUserAdminUsersByIdRoleData, PutApiUserAdminUsersByIdRoleResponses, PutApiUserAvatarData, PutApiUserAvatarResponses, PutApiUserPasswordData, PutApiUserPasswordResponses, PutApiUserProfileData, PutApiUserProfileResponses } from './types.gen';
+import type { DeleteApiCarsByIdData, DeleteApiCarsByIdImagesByImageIdData, DeleteApiCarsByIdImagesByImageIdResponses, DeleteApiCarsByIdResponses, DeleteApiCommentsByIdData, DeleteApiCommentsByIdResponses, DeleteApiFavouritesByCarIdData, DeleteApiFavouritesByCarIdResponses, DeleteApiFriendsByFriendIdData, DeleteApiFriendsByFriendIdResponses, DeleteApiFriendsRequestByIdData, DeleteApiFriendsRequestByIdResponses, DeleteApiUserAdminUsersByIdData, DeleteApiUserAdminUsersByIdResponses, GetApiCarCatalogMakesByMakeIdModelsData, GetApiCarCatalogMakesByMakeIdModelsResponses, GetApiCarCatalogMakesData, GetApiCarCatalogMakesResponses, GetApiCarCatalogMakesSearchData, GetApiCarCatalogMakesSearchResponses, GetApiCarsByCarIdCommentsData, GetApiCarsByCarIdCommentsResponses, GetApiCarsByIdData, GetApiCarsByIdResponses, GetApiCarsData, GetApiCarsResponses, GetApiFavouritesByCarIdCheckData, GetApiFavouritesByCarIdCheckResponses, GetApiFavouritesData, GetApiFavouritesResponses, GetApiFriendsData, GetApiFriendsRequestsPendingData, GetApiFriendsRequestsPendingResponses, GetApiFriendsResponses, GetApiUserAdminUsersByIdData, GetApiUserAdminUsersByIdResponses, GetApiUserAdminUsersData, GetApiUserAdminUsersResponses, GetApiUserMeData, GetApiUserMeResponses, GetApiViewHistoryData, GetApiViewHistoryResponses, PostApiAuthForgotPasswordData, PostApiAuthForgotPasswordResponses, PostApiAuthLoginData, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRefreshData, PostApiAuthRefreshResponses, PostApiAuthRegisterData, PostApiAuthRegisterResponses, PostApiAuthResetPasswordData, PostApiAuthResetPasswordResponses, PostApiCarsByCarIdCommentsData, PostApiCarsByCarIdCommentsResponses, PostApiCarsByIdImagesData, PostApiCarsByIdImagesResponses, PostApiCarsData, PostApiCarsResponses, PostApiFavouritesByCarIdData, PostApiFavouritesByCarIdResponses, PostApiFavouritesByCarIdToggleData, PostApiFavouritesByCarIdToggleResponses, PostApiFriendsRequestByIdAcceptData, PostApiFriendsRequestByIdAcceptResponses, PostApiFriendsRequestByIdRejectData, PostApiFriendsRequestByIdRejectResponses, PostApiFriendsRequestData, PostApiFriendsRequestResponses, PostApiUserAdminUsersByIdImpersonateData, PostApiUserAdminUsersByIdImpersonateResponses, PutApiCarsByIdData, PutApiCarsByIdImagesByImageIdSetMainData, PutApiCarsByIdImagesByImageIdSetMainResponses, PutApiCarsByIdResponses, PutApiCommentsByIdData, PutApiCommentsByIdResponses, PutApiUserAdminUsersByIdAvatarData, PutApiUserAdminUsersByIdAvatarResponses, PutApiUserAdminUsersByIdProfileData, PutApiUserAdminUsersByIdProfileResponses, PutApiUserAdminUsersByIdRoleData, PutApiUserAdminUsersByIdRoleResponses, PutApiUserAvatarData, PutApiUserAvatarResponses, PutApiUserPasswordData, PutApiUserPasswordResponses, PutApiUserProfileData, PutApiUserProfileResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -40,6 +40,24 @@ export const postApiAuthLogout = <ThrowOnError extends boolean = false>(options?
 
 export const postApiAuthRefresh = <ThrowOnError extends boolean = false>(options?: Options<PostApiAuthRefreshData, ThrowOnError>) => (options?.client ?? client).post<PostApiAuthRefreshResponses, unknown, ThrowOnError>({
     url: '/api/auth/refresh',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+export const postApiAuthForgotPassword = <ThrowOnError extends boolean = false>(options?: Options<PostApiAuthForgotPasswordData, ThrowOnError>) => (options?.client ?? client).post<PostApiAuthForgotPasswordResponses, unknown, ThrowOnError>({
+    url: '/api/auth/forgot-password',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+export const postApiAuthResetPassword = <ThrowOnError extends boolean = false>(options?: Options<PostApiAuthResetPasswordData, ThrowOnError>) => (options?.client ?? client).post<PostApiAuthResetPasswordResponses, unknown, ThrowOnError>({
+    url: '/api/auth/reset-password',
     ...options,
     headers: {
         'Content-Type': 'application/json',
@@ -122,6 +140,27 @@ export const postApiFavouritesByCarId = <ThrowOnError extends boolean = false>(o
 export const getApiFavouritesByCarIdCheck = <ThrowOnError extends boolean = false>(options: Options<GetApiFavouritesByCarIdCheckData, ThrowOnError>) => (options.client ?? client).get<GetApiFavouritesByCarIdCheckResponses, unknown, ThrowOnError>({ url: '/api/favourites/{carId}/check', ...options });
 
 export const postApiFavouritesByCarIdToggle = <ThrowOnError extends boolean = false>(options: Options<PostApiFavouritesByCarIdToggleData, ThrowOnError>) => (options.client ?? client).post<PostApiFavouritesByCarIdToggleResponses, unknown, ThrowOnError>({ url: '/api/favourites/{carId}/toggle', ...options });
+
+export const postApiFriendsRequest = <ThrowOnError extends boolean = false>(options?: Options<PostApiFriendsRequestData, ThrowOnError>) => (options?.client ?? client).post<PostApiFriendsRequestResponses, unknown, ThrowOnError>({
+    url: '/api/friends/request',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+export const postApiFriendsRequestByIdAccept = <ThrowOnError extends boolean = false>(options: Options<PostApiFriendsRequestByIdAcceptData, ThrowOnError>) => (options.client ?? client).post<PostApiFriendsRequestByIdAcceptResponses, unknown, ThrowOnError>({ url: '/api/friends/request/{id}/accept', ...options });
+
+export const postApiFriendsRequestByIdReject = <ThrowOnError extends boolean = false>(options: Options<PostApiFriendsRequestByIdRejectData, ThrowOnError>) => (options.client ?? client).post<PostApiFriendsRequestByIdRejectResponses, unknown, ThrowOnError>({ url: '/api/friends/request/{id}/reject', ...options });
+
+export const deleteApiFriendsRequestById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiFriendsRequestByIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiFriendsRequestByIdResponses, unknown, ThrowOnError>({ url: '/api/friends/request/{id}', ...options });
+
+export const getApiFriends = <ThrowOnError extends boolean = false>(options?: Options<GetApiFriendsData, ThrowOnError>) => (options?.client ?? client).get<GetApiFriendsResponses, unknown, ThrowOnError>({ url: '/api/friends', ...options });
+
+export const getApiFriendsRequestsPending = <ThrowOnError extends boolean = false>(options?: Options<GetApiFriendsRequestsPendingData, ThrowOnError>) => (options?.client ?? client).get<GetApiFriendsRequestsPendingResponses, unknown, ThrowOnError>({ url: '/api/friends/requests/pending', ...options });
+
+export const deleteApiFriendsByFriendId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiFriendsByFriendIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiFriendsByFriendIdResponses, unknown, ThrowOnError>({ url: '/api/friends/{friendId}', ...options });
 
 export const getApiUserMe = <ThrowOnError extends boolean = false>(options?: Options<GetApiUserMeData, ThrowOnError>) => (options?.client ?? client).get<GetApiUserMeResponses, unknown, ThrowOnError>({ url: '/api/user/me', ...options });
 

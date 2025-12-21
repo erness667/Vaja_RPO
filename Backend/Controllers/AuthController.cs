@@ -268,6 +268,119 @@ namespace Backend.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Request password reset (sends reset link via email - for testing, outputs to console)
+        /// </summary>
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Normalize email
+            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+
+            // Find user by email
+            var user = await _dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
+
+            // Always return success to prevent email enumeration attacks
+            // But only send email if user exists
+            if (user != null)
+            {
+                // Generate reset token
+                var resetToken = Guid.NewGuid().ToString();
+                var expiresAt = DateTime.UtcNow.AddHours(1); // Token valid for 1 hour
+
+                // Invalidate any existing unused tokens for this user
+                var existingTokens = await _dbContext.PasswordResetTokens
+                    .Where(prt => prt.UserId == user.Id && !prt.IsUsed && prt.ExpiresAt > DateTime.UtcNow)
+                    .ToListAsync();
+
+                foreach (var token in existingTokens)
+                {
+                    token.IsUsed = true;
+                    token.UsedAt = DateTime.UtcNow;
+                }
+
+                // Save reset token
+                var passwordResetToken = new PasswordResetToken
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    Token = resetToken,
+                    ExpiresAt = expiresAt,
+                    CreatedAt = DateTime.UtcNow,
+                    IsUsed = false
+                };
+
+                _dbContext.PasswordResetTokens.Add(passwordResetToken);
+                await _dbContext.SaveChangesAsync();
+
+                // Generate reset link (using frontend URL for reset page)
+                var frontendUrl = "http://localhost:3000"; // Frontend URL
+                var resetLink = $"{frontendUrl}/reset-password?token={resetToken}";
+
+                // For testing: output to console instead of sending email
+                Console.WriteLine("=== PASSWORD RESET LINK ===");
+                Console.WriteLine($"User: {user.Email} ({user.Username})");
+                Console.WriteLine($"Reset Link: {resetLink}");
+                Console.WriteLine($"Token: {resetToken}");
+                Console.WriteLine($"Expires At: {expiresAt:yyyy-MM-dd HH:mm:ss} UTC");
+                Console.WriteLine("===========================");
+            }
+
+            // Always return success message
+            return Ok(new { message = "If an account with that email exists, a password reset link has been sent." });
+        }
+
+        /// <summary>
+        /// Reset password using the token from email
+        /// </summary>
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Find the reset token
+            var resetToken = await _dbContext.PasswordResetTokens
+                .Include(prt => prt.User)
+                .FirstOrDefaultAsync(prt => prt.Token == request.Token);
+
+            if (resetToken == null)
+            {
+                return BadRequest(new { message = "Invalid or expired reset token." });
+            }
+
+            // Check if token is used
+            if (resetToken.IsUsed)
+            {
+                return BadRequest(new { message = "This reset token has already been used." });
+            }
+
+            // Check if token is expired
+            if (resetToken.ExpiresAt < DateTime.UtcNow)
+            {
+                return BadRequest(new { message = "This reset token has expired. Please request a new one." });
+            }
+
+            // Update password
+            resetToken.User.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+            // Mark token as used
+            resetToken.IsUsed = true;
+            resetToken.UsedAt = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Password has been reset successfully." });
+        }
+
         private (string token, DateTime expiresAt) GenerateJwtToken(User user)
         {
             var expires = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenMinutes);

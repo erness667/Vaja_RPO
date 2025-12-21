@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon } from "react-icons/hi";
-import { LuHeart, LuHistory, LuUser, LuLogOut, LuSearch, LuX, LuImage } from "react-icons/lu";
+import { LuHeart, LuHistory, LuUser, LuLogOut, LuSearch, LuX, LuImage, LuShield } from "react-icons/lu";
 import { Trans, t } from "@lingui/macro";
 import { 
   Box, 
@@ -38,6 +38,7 @@ export function Navbar() {
   const [authenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState<StoredUser | null>(null);
   const { logout, isLoading: isLoggingOut } = useLogout();
+  const isAdmin = user?.role === 1; // 1 = Admin
   
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -611,6 +612,21 @@ export function Navbar() {
                         <Trans>Profile</Trans>
                       </HStack>
                     </MenuItem>
+                    {isAdmin && (
+                      <MenuItem
+                        value="admin-users"
+                        onClick={() => router.push("/admin/users")}
+                        color={{ base: "#374151", _dark: "#f3f4f6" }}
+                        _hover={{
+                          bg: { base: "#f3f4f6", _dark: "#374151" },
+                        }}
+                      >
+                        <HStack gap={2}>
+                          <Icon as={LuShield} boxSize={4} />
+                          <Trans>Upravljanje uporabnikov</Trans>
+                        </HStack>
+                      </MenuItem>
+                    )}
                     <MenuItem
                       value="logout"
                       onClick={handleLogout}

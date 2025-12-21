@@ -21,6 +21,14 @@ export function useUpdateCar() {
       });
 
       if (response.error || (response.response && !response.response.ok)) {
+        // Check for 403 Forbidden first - this usually means permission denied
+        if (response.response?.status === 403) {
+          const errorMessage = "You don't have permission to perform this action. If you recently became an admin, please log out and log back in to refresh your session.";
+          setError(errorMessage);
+          setIsLoading(false);
+          return { success: false, error: errorMessage };
+        }
+
         let errorData: unknown = response.error;
         
         if (!errorData && response.data && typeof response.data === 'object') {
@@ -28,9 +36,17 @@ export function useUpdateCar() {
         } else if (!errorData && response.response) {
           try {
             const text = await response.response.text();
-            errorData = JSON.parse(text);
+            if (text) {
+              try {
+                errorData = JSON.parse(text);
+              } catch {
+                errorData = { message: text || "Request failed" };
+              }
+            } else {
+              errorData = { message: `Request failed with status ${response.response.status}` };
+            }
           } catch {
-            errorData = { message: "Request failed" };
+            errorData = { message: `Request failed with status ${response.response.status}` };
           }
         }
         

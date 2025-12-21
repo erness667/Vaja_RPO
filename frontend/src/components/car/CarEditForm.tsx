@@ -215,6 +215,11 @@ export function CarEditForm({ carId }: CarEditFormProps) {
       });
 
       if (response.error || (response.response && !response.response.ok)) {
+        // Check for 403 Forbidden first
+        if (response.response?.status === 403) {
+          throw new Error("You don't have permission to delete images. If you recently became an admin, please log out and log back in to refresh your session.");
+        }
+        
         let errorMessage = "Failed to delete image";
         if (response.error) {
           errorMessage = typeof response.error === 'string' ? response.error : "Failed to delete image";
@@ -308,6 +313,11 @@ export function CarEditForm({ carId }: CarEditFormProps) {
       });
 
       if (response.error || (response.response && !response.response.ok)) {
+        // Check for 403 Forbidden first
+        if (response.response?.status === 403) {
+          throw new Error("You don't have permission to upload images. If you recently became an admin, please log out and log back in to refresh your session.");
+        }
+        
         let errorMessage = "Failed to upload images";
         if (response.error) {
           errorMessage = typeof response.error === 'string' ? response.error : "Failed to upload images";
@@ -398,6 +408,9 @@ export function CarEditForm({ carId }: CarEditFormProps) {
           });
 
           if (response.error || (response.response && !response.response.ok)) {
+            if (response.response?.status === 403) {
+              throw new Error("You don't have permission to perform this action. If you recently became an admin, please log out and log back in to refresh your session.");
+            }
             throw new Error("Failed to set main image");
           }
         } catch (err) {

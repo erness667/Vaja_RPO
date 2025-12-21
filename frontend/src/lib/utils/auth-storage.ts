@@ -14,6 +14,7 @@ export interface StoredUser {
   surname?: string;
   phoneNumber?: string;
   avatarImageUrl?: string;
+  role?: 0 | 1; // 0 = User, 1 = Admin
 }
 
 export interface AuthTokens {

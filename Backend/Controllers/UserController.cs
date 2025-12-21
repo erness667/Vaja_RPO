@@ -470,6 +470,102 @@ namespace Backend.Controllers
 
             return Ok(userDto);
         }
+
+        /// <summary>
+        /// Update any user's avatar (Admin only)
+        /// </summary>
+        [HttpPut("admin/users/{id}/avatar")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUserAvatar(Guid id, IFormFile file)
+        {
+            if (!AuthorizationHelper.IsAdmin(User))
+            {
+                return Forbid();
+            }
+
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { message = "No file uploaded." });
+            }
+
+            // Validate file type
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return BadRequest(new { message = "Invalid file type. Allowed types: JPG, JPEG, PNG, GIF, WEBP." });
+            }
+
+            // Validate file size (max 5MB)
+            const long maxFileSize = 5 * 1024 * 1024; // 5MB
+            if (file.Length > maxFileSize)
+            {
+                return BadRequest(new { message = "File size exceeds 5MB limit." });
+            }
+
+            var user = await _dbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            // Create uploads directory if it doesn't exist
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            // Generate unique filename
+            var uniqueFileName = $"{id}_{Guid.NewGuid()}{fileExtension}";
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            // Delete old avatar if it exists and is in our uploads folder
+            if (!string.IsNullOrEmpty(user.AvatarImageUrl))
+            {
+                var oldFileName = Path.GetFileName(user.AvatarImageUrl);
+                if (!string.IsNullOrEmpty(oldFileName))
+                {
+                    var oldFilePath = Path.Combine(uploadsFolder, oldFileName);
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        try
+                        {
+                            System.IO.File.Delete(oldFilePath);
+                        }
+                        catch
+                        {
+                            // Ignore errors when deleting old file
+                        }
+                    }
+                }
+            }
+
+            // Save the new file
+            using (var stream = new System.IO.FileStream(filePath, System.IO.FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // Update avatar image URL (relative path that will be served by static files)
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            user.AvatarImageUrl = $"{baseUrl}/uploads/avatars/{uniqueFileName}";
+            await _dbContext.SaveChangesAsync();
+
+            var userDto = new UserDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name,
+                Surname = user.Surname,
+                Username = user.Username,
+                PhoneNumber = user.PhoneNumber,
+                AvatarImageUrl = user.AvatarImageUrl,
+                Role = user.Role
+            };
+
+            return Ok(userDto);
+        }
     }
 }
 

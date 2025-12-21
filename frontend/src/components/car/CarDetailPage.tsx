@@ -45,6 +45,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { useCar } from "@/lib/hooks/useCar";
 import { useComments } from "@/lib/hooks/useComments";
 import { useFavourite } from "@/lib/hooks/useFavourite";
+import { useDeleteCar } from "@/lib/hooks/useDeleteCar";
 import { getStoredUser, isAuthenticated } from "@/lib/utils/auth-storage";
 import type { Comment } from "@/lib/types/car";
 
@@ -71,9 +72,16 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
     toggleFavourite,
   } = useFavourite(carId);
 
+  const {
+    deleteCar,
+    isLoading: isDeletingCar,
+    error: deleteCarError,
+  } = useDeleteCar();
+
   const [newComment, setNewComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   // Lightbox state
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -83,20 +91,36 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
   const currentUser = useMemo(() => getStoredUser(), []);
   const isLoggedIn = useMemo(() => isAuthenticated(), []);
 
+  // Helper to check if user is admin
+  const isAdmin = useMemo(() => {
+    if (!currentUser || !isLoggedIn) return false;
+    return currentUser.role === 1; // 1 = Admin
+  }, [currentUser, isLoggedIn]);
+
   // Helper to check if user is the car owner
   const isCarOwner = useMemo(() => {
     if (!currentUser || !isLoggedIn || !car) return false;
     const userId = currentUser.id?.toLowerCase();
     return userId === car.sellerId?.toLowerCase();
-  }, [currentUser, isLoggedIn, car?.sellerId]);
+  }, [currentUser, isLoggedIn, car]);
 
   // Helper to check if user can edit/delete a comment
+  // Admins can edit/delete any comment, or if user is comment author or car seller
   const canModifyComment = useCallback((commentUserId: string) => {
     if (!currentUser || !isLoggedIn) return false;
+    if (isAdmin) return true; // Admins can modify any comment
     const userId = currentUser.id?.toLowerCase();
     // User can modify if they are the comment author or the car seller
     return userId === commentUserId?.toLowerCase() || userId === car?.sellerId?.toLowerCase();
-  }, [currentUser, isLoggedIn, car?.sellerId]);
+  }, [currentUser, isLoggedIn, isAdmin, car?.sellerId]);
+
+  // Helper to check if user can edit/delete a car
+  // Admins can edit/delete any car, or if user is the car owner
+  const canModifyCar = useMemo(() => {
+    if (!currentUser || !isLoggedIn || !car) return false;
+    if (isAdmin) return true; // Admins can modify any car
+    return isCarOwner; // Otherwise, only car owner can modify
+  }, [currentUser, isLoggedIn, isAdmin, isCarOwner, car]);
 
   const handleSubmitComment = useCallback(async () => {
     if (!newComment.trim()) return;
@@ -128,6 +152,14 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
   const handleDeleteComment = useCallback(async (commentId: number) => {
     await deleteComment(commentId);
   }, [deleteComment]);
+
+  const handleDeleteCar = useCallback(async () => {
+    if (!carId) return;
+    const success = await deleteCar(carId);
+    if (success) {
+      router.push('/');
+    }
+  }, [carId, deleteCar, router]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -362,22 +394,39 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                   </Badge>
                 </VStack>
                 <HStack gap={2}>
-                  {/* Edit Button - Only visible to owner */}
-                  {isCarOwner && carId && (
-                    <Button
-                      variant="outline"
-                      colorPalette="blue"
-                      size="lg"
-                      borderRadius="full"
-                      onClick={() => router.push(`/cars/${carId}/edit`)}
-                      aria-label={t`Uredi oglas`}
-                      _hover={{
-                        bg: { base: "blue.50", _dark: "blue.900" },
-                      }}
-                    >
-                      <Icon as={LuPencil} mr={2} />
-                      <Trans>Uredi</Trans>
-                    </Button>
+                  {/* Edit Button - Visible to owner or admin */}
+                  {canModifyCar && carId && (
+                    <>
+                      <Button
+                        variant="outline"
+                        colorPalette="blue"
+                        size="lg"
+                        borderRadius="full"
+                        onClick={() => router.push(`/cars/${carId}/edit`)}
+                        aria-label={t`Uredi oglas`}
+                        _hover={{
+                          bg: { base: "blue.50", _dark: "blue.900" },
+                        }}
+                      >
+                        <Icon as={LuPencil} mr={2} />
+                        <Trans>Uredi</Trans>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        colorPalette="red"
+                        size="lg"
+                        borderRadius="full"
+                        onClick={() => setShowDeleteConfirm(true)}
+                        aria-label={t`Izbriši oglas`}
+                        loading={isDeletingCar}
+                        _hover={{
+                          bg: { base: "red.50", _dark: "red.900" },
+                        }}
+                      >
+                        <Icon as={LuTrash2} mr={2} />
+                        <Trans>Izbriši</Trans>
+                      </Button>
+                    </>
                   )}
                   {/* Favourite Button */}
                   {isLoggedIn && (
@@ -752,22 +801,18 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                   textAlign="center"
                 >
                   <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-                    <Trans
-                      components={{
-                        a: (
-                          <Text
-                            as="span"
-                            color={{ base: "blue.600", _dark: "blue.400" }}
-                            fontWeight="semibold"
-                            cursor="pointer"
-                            _hover={{ textDecoration: "underline" }}
-                            onClick={() => router.push("/login")}
-                          />
-                        ),
-                      }}
+                    <Trans>Za komentiranje se morate </Trans>
+                    <Text
+                      as="span"
+                      color={{ base: "blue.600", _dark: "blue.400" }}
+                      fontWeight="semibold"
+                      cursor="pointer"
+                      _hover={{ textDecoration: "underline" }}
+                      onClick={() => router.push("/login")}
                     >
-                      Za komentiranje se morate <a>prijaviti</a>.
-                    </Trans>
+                      <Trans>prijaviti</Trans>
+                    </Text>
+                    <Trans>.</Trans>
                   </Text>
                 </Box>
               )}
@@ -1107,6 +1152,70 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                 ))}
               </HStack>
             )}
+          </Box>
+        </Portal>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <Portal>
+          <Box
+            position="fixed"
+            inset={0}
+            zIndex={10000}
+            bg="blackAlpha.600"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <Card.Root
+              maxW="md"
+              w="full"
+              mx={4}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <CardBody p={6}>
+                <VStack align="stretch" gap={4}>
+                  <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
+                    <Trans>Potrditev brisanja</Trans>
+                  </Heading>
+                  <Text color={{ base: "gray.600", _dark: "gray.400" }}>
+                    <Trans>Ali ste prepričani, da želite izbrisati ta oglas? To dejanje ni mogoče razveljaviti.</Trans>
+                  </Text>
+                  {deleteCarError && (
+                    <Box
+                      p={3}
+                      borderRadius="lg"
+                      bg={{ base: "red.50", _dark: "red.900" }}
+                      borderWidth="1px"
+                      borderColor={{ base: "red.200", _dark: "red.700" }}
+                    >
+                      <Text color={{ base: "red.800", _dark: "red.200" }} fontSize="sm">
+                        {deleteCarError}
+                      </Text>
+                    </Box>
+                  )}
+                  <HStack justify="flex-end" gap={3}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowDeleteConfirm(false)}
+                      disabled={isDeletingCar}
+                    >
+                      <Trans>Prekliči</Trans>
+                    </Button>
+                    <Button
+                      colorPalette="red"
+                      onClick={handleDeleteCar}
+                      loading={isDeletingCar}
+                    >
+                      <Icon as={LuTrash2} mr={2} />
+                      <Trans>Izbriši</Trans>
+                    </Button>
+                  </HStack>
+                </VStack>
+              </CardBody>
+            </Card.Root>
           </Box>
         </Portal>
       )}

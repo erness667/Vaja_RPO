@@ -54,6 +54,7 @@ export function useLogin() {
             surname?: string;
             phoneNumber?: string;
             avatarImageUrl?: string;
+            role?: 0 | 1; // 0 = User, 1 = Admin
           };
         };
 
@@ -72,6 +73,7 @@ export function useLogin() {
               surname: authData.user.surname,
               phoneNumber: authData.user.phoneNumber,
               avatarImageUrl: authData.user.avatarImageUrl,
+              role: authData.user.role,
             },
           });
 

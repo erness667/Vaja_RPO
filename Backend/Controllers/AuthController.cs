@@ -259,7 +259,9 @@ namespace Backend.Controllers
                     Name = refreshToken.User.Name,
                     Surname = refreshToken.User.Surname,
                     Username = refreshToken.User.Username,
-                    PhoneNumber = refreshToken.User.PhoneNumber
+                    PhoneNumber = refreshToken.User.PhoneNumber,
+                    AvatarImageUrl = refreshToken.User.AvatarImageUrl,
+                    Role = refreshToken.User.Role
                 }
             };
 

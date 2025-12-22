@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HiUser, HiUserAdd, HiPlus, HiSun, HiMoon } from "react-icons/hi";
-import { LuHeart, LuHistory, LuUser, LuLogOut, LuSearch, LuX, LuImage, LuShield, LuFileText } from "react-icons/lu";
+import { LuHeart, LuHistory, LuUser, LuLogOut, LuSearch, LuX, LuImage, LuShield, LuFileText, LuGitCompare } from "react-icons/lu";
 import { Trans, t } from "@lingui/macro";
 import { 
   Box, 
@@ -518,6 +518,21 @@ export function Navbar() {
 
         {/* Navigation Links */}
         <HStack gap={3} alignItems="center">
+          {/* Comparison Link */}
+          <Link href="/compare">
+            <Button
+              variant="ghost"
+              size="sm"
+              color={{ base: "#374151", _dark: "#f3f4f6" }}
+              _hover={{
+                bg: { base: "#f3f4f6", _dark: "#374151" },
+              }}
+            >
+              <LuGitCompare style={{ width: "20px", height: "20px", marginRight: "8px" }} />
+              <Trans>Primerjava</Trans>
+            </Button>
+          </Link>
+
           {/* Show "Objavi oglas" button only if user is authenticated */}
           {authenticated && (
             <Link href="/create">

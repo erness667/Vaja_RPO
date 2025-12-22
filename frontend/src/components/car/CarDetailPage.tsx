@@ -40,6 +40,7 @@ import {
   LuChevronRight,
   LuHeart,
   LuEye,
+  LuGitCompare,
 } from "react-icons/lu";
 import { PageShell } from "@/components/layout/PageShell";
 import { useCar } from "@/lib/hooks/useCar";
@@ -275,17 +276,50 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
   return (
     <PageShell maxWidthClass="max-w-6xl">
       <VStack gap={6} align="stretch">
-        {/* Back Button */}
-        <Button
-          variant="ghost"
-          onClick={() => router.back()}
-          alignSelf="flex-start"
-          color={{ base: "gray.600", _dark: "gray.400" }}
-          _hover={{ color: { base: "blue.600", _dark: "blue.400" } }}
-        >
-          <Icon as={LuArrowLeft} mr={2} />
-          <Trans>Nazaj</Trans>
-        </Button>
+        {/* Back Button and Edit/Delete Buttons */}
+        <HStack justify="space-between" align="center" width="100%">
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            color={{ base: "gray.600", _dark: "gray.400" }}
+            _hover={{ color: { base: "blue.600", _dark: "blue.400" } }}
+          >
+            <Icon as={LuArrowLeft} mr={2} />
+            <Trans>Nazaj</Trans>
+          </Button>
+          {/* Edit/Delete Buttons */}
+          {canModifyCar && carId && (
+            <HStack gap={2}>
+              <Button
+                variant="ghost"
+                colorPalette="blue"
+                size="md"
+                borderRadius="full"
+                onClick={() => router.push(`/cars/${carId}/edit`)}
+                aria-label={t`Uredi oglas`}
+                _hover={{
+                  bg: { base: "blue.50", _dark: "blue.900" },
+                }}
+              >
+                <Icon as={LuPencil} boxSize={5} />
+              </Button>
+              <Button
+                variant="ghost"
+                colorPalette="red"
+                size="md"
+                borderRadius="full"
+                onClick={() => setShowDeleteConfirm(true)}
+                aria-label={t`Izbriši oglas`}
+                loading={isDeletingCar}
+                _hover={{
+                  bg: { base: "red.50", _dark: "red.900" },
+                }}
+              >
+                <Icon as={LuTrash2} boxSize={5} />
+              </Button>
+            </HStack>
+          )}
+        </HStack>
 
         {/* Main Content */}
         <SimpleGrid columns={{ base: 1, lg: 2 }} gap={8}>
@@ -374,95 +408,78 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
 
           {/* Details Section */}
           <VStack gap={6} align="stretch">
-            {/* Title and Price */}
-            <VStack align="stretch" gap={3}>
-              <HStack justify="space-between" align="flex-start" gap={4}>
-                <VStack align="start" gap={2} flex={1}>
-                  <Heading size="xl" color={{ base: "gray.900", _dark: "gray.100" }}>
-                    {title}
-                  </Heading>
-                  <Badge
-                    colorPalette="blue"
-                    variant="solid"
-                    fontSize="md"
-                    fontWeight="bold"
-                    px={3}
-                    py={1}
-                    borderRadius="full"
-                  >
-                    {car.year}
-                  </Badge>
-                </VStack>
-                <HStack gap={2}>
-                  {/* Edit Button - Visible to owner or admin */}
-                  {canModifyCar && carId && (
-                    <>
+              {/* Title and Price */}
+              <VStack align="stretch" gap={3}>
+                <HStack justify="space-between" align="flex-start" gap={4}>
+                  <VStack align="start" gap={2} flex={1}>
+                    <Heading size="xl" color={{ base: "gray.900", _dark: "gray.100" }}>
+                      {title}
+                    </Heading>
+                    <Badge
+                      colorPalette="blue"
+                      variant="solid"
+                      fontSize="md"
+                      fontWeight="bold"
+                      px={3}
+                      py={1}
+                      borderRadius="full"
+                    >
+                      {car.year}
+                    </Badge>
+                  </VStack>
+                  <HStack gap={2}>
+                    {/* Compare Button */}
+                    {car && (
                       <Button
                         variant="outline"
                         colorPalette="blue"
                         size="lg"
                         borderRadius="full"
-                        onClick={() => router.push(`/cars/${carId}/edit`)}
-                        aria-label={t`Uredi oglas`}
+                        onClick={() => router.push(`/compare?cars=${car.id}`)}
+                        aria-label={t`Dodaj v primerjavo`}
                         _hover={{
                           bg: { base: "blue.50", _dark: "blue.900" },
                         }}
                       >
-                        <Icon as={LuPencil} mr={2} />
-                        <Trans>Uredi</Trans>
+                        <Icon as={LuGitCompare} mr={2} />
+                        <Trans>Primerjaj</Trans>
                       </Button>
+                    )}
+                    {/* Favourite Button */}
+                    {isLoggedIn && (
                       <Button
-                        variant="outline"
-                        colorPalette="red"
+                        variant="ghost"
                         size="lg"
                         borderRadius="full"
-                        onClick={() => setShowDeleteConfirm(true)}
-                        aria-label={t`Izbriši oglas`}
-                        loading={isDeletingCar}
+                        p={2}
+                        onClick={toggleFavourite}
+                        loading={isFavouriteLoading}
+                        aria-label={
+                          isFavourite
+                            ? t`Odstrani iz priljubljenih`
+                            : t`Dodaj med priljubljene`
+                        }
+                        aria-pressed={isFavourite}
                         _hover={{
-                          bg: { base: "red.50", _dark: "red.900" },
+                          bg: isFavourite
+                            ? { base: "red.100", _dark: "red.900" }
+                            : { base: "gray.100", _dark: "gray.700" },
                         }}
                       >
-                        <Icon as={LuTrash2} mr={2} />
-                        <Trans>Izbriši</Trans>
+                        <Icon
+                          as={LuHeart}
+                          boxSize={7}
+                          color={isFavourite ? "red.500" : { base: "gray.400", _dark: "gray.500" }}
+                          transition="all 0.2s"
+                          style={{ fill: isFavourite ? "currentColor" : "none" }}
+                          _hover={{
+                            transform: "scale(1.1)",
+                          }}
+                        />
                       </Button>
-                    </>
-                  )}
-                  {/* Favourite Button */}
-                  {isLoggedIn && (
-                    <Button
-                      variant="ghost"
-                      size="lg"
-                      borderRadius="full"
-                      p={2}
-                      onClick={toggleFavourite}
-                      loading={isFavouriteLoading}
-                      aria-label={
-                        isFavourite
-                          ? t`Odstrani iz priljubljenih`
-                          : t`Dodaj med priljubljene`
-                      }
-                      aria-pressed={isFavourite}
-                      _hover={{
-                        bg: isFavourite
-                          ? { base: "red.100", _dark: "red.900" }
-                          : { base: "gray.100", _dark: "gray.700" },
-                      }}
-                    >
-                      <Icon
-                        as={LuHeart}
-                        boxSize={7}
-                        color={isFavourite ? "red.500" : { base: "gray.400", _dark: "gray.500" }}
-                        transition="all 0.2s"
-                        style={{ fill: isFavourite ? "currentColor" : "none" }}
-                        _hover={{
-                          transform: "scale(1.1)",
-                        }}
-                      />
-                    </Button>
-                  )}
+                    )}
+                  </HStack>
                 </HStack>
-              </HStack>
               <VStack align="start" gap={1}>
                 {car.originalPrice && car.originalPrice > car.price ? (
                   <HStack gap={3} align="baseline" flexWrap="wrap">
@@ -509,9 +526,9 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                   {(car.viewCount ?? 0).toLocaleString("sl-SI")} <Trans>ogledov</Trans>
                 </Text>
               </HStack>
-            </VStack>
+              </VStack>
 
-            {/* Seller Info */}
+              {/* Seller Info */}
             {car.seller && (
               <Card.Root
                 borderRadius="xl"
@@ -743,7 +760,6 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                 </CardBody>
               </Card.Root>
             )}
-
           </VStack>
         </SimpleGrid>
 

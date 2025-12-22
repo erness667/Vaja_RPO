@@ -10,78 +10,146 @@ A modern web application for buying and selling used cars, similar to avto.net a
 
 ## 🚗 Features
 
-- **User Authentication & Profiles**: Secure user registration and login system
-- **Car Listings**: Create, edit, and manage car listings with detailed information
-- **Advanced Search & Filtering**: Search cars by make, model, price range, year, mileage, and more
-- **Image Gallery**: Upload and manage multiple photos for each listing
-- **Messaging System**: Direct communication between buyers and sellers
-- **Favorites/Watchlist**: Save favorite listings for later viewing
+- **User Authentication & Profiles**: Secure user registration, login, and JWT-based authentication with refresh tokens
+- **Car Listings**: Create, edit, delete, and manage car listings with detailed information
+- **Advanced Search & Filtering**: Search cars by make, model, price range, year, mileage, fuel type, and seller
+- **Image Gallery**: Upload, manage, and delete multiple photos for each listing with main image selection
+- **Comments System**: Add, edit, and delete comments on car listings
+- **Favorites/Watchlist**: Save favorite listings for later viewing with toggle functionality
+- **View History**: Track recently viewed cars (last 10 per user)
+- **View Count Tracking**: Automatically track how many times each car has been viewed
+- **Admin Panel**: User management, role assignment, and content moderation
+- **User Roles**: Support for Admin and User roles with role-based authorization
+- **Price History**: Track original listing price vs current price
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 
 ## 🛠️ Tech Stack
 
 ### Backend
 - **C#** - Primary programming language
-- **ASP.NET Web API** - RESTful API framework
+- **ASP.NET Core 8.0** - Web API framework
 - **Entity Framework Core** - ORM for database operations
-- **SQL Server** - Database management system
+- **SQL Server 2022** - Database management system
+- **JWT (JSON Web Tokens)** - Authentication mechanism
+- **BCrypt** - Password hashing
+- **Swagger/OpenAPI** - API documentation
 
 ### Frontend
 - **Next.js** - React framework for server-side rendering and static site generation
 - **TypeScript** - Type-safe JavaScript
 - **React** - UI library
-- **Tailwind CSS** (recommended) - Utility-first CSS framework
+- **Lingui** - Internationalization (i18n) support (English/Slovenian)
+- **Chakra UI** - Components framework
+
+### DevOps & Infrastructure
+- **Docker** - Containerization for SQL Server
+- **Docker Compose** - Multi-container orchestration
 
 ## 📁 Project Structure
 
 ```
 Vaja_RPO/
-├── Backend/                     # ASP.NET Web API backend
-│   ├── Controllers/             # API controllers (Auth, Car, User, CarApi)
-│   ├── Models/                  # Domain models (User, Car, CarImage, etc.)
-│   ├── DTOs/                    # Data Transfer Objects
-│   │   ├── Auth/               # Authentication DTOs
-│   │   ├── Car/                # Car-related DTOs
-│   │   ├── CarApi/             # External API DTOs
-│   │   └── User/               # User-related DTOs
-│   ├── Services/                # Business logic services
-│   ├── Migrations/              # Entity Framework migrations
-│   ├── Options/                 # Configuration options
-│   ├── wwwroot/                 # Static files and uploads
+├── Backend/                           # ASP.NET Web API backend
+│   ├── Controllers/                   # API controllers
+│   │   ├── AuthController.cs         # Authentication endpoints
+│   │   ├── CarController.cs          # Car listing endpoints
+│   │   ├── CarApiController.cs       # Car catalog endpoints (makes/models)
+│   │   ├── UserController.cs         # User profile & admin endpoints
+│   │   ├── CommentController.cs      # Comment endpoints
+│   │   ├── FavouriteController.cs    # Favourite/wishlist endpoints
+│   │   └── ViewHistoryController.cs  # View history endpoints
+│   ├── Models/                        # Domain models
+│   │   ├── User.cs                   # User entity
+│   │   ├── Car.cs                    # Car listing entity
+│   │   ├── CarImage.cs               # Car image entity
+│   │   ├── Comment.cs                # Comment entity
+│   │   ├── Favourite.cs              # Favourite entity
+│   │   ├── ViewHistory.cs            # View history entity
+│   │   ├── RefreshToken.cs           # Refresh token entity
+│   │   ├── BlacklistedToken.cs       # Blacklisted JWT tokens
+│   │   └── Role.cs                   # User role enumeration
+│   ├── DTOs/                         # Data Transfer Objects
+│   │   ├── Auth/                    # Authentication DTOs
+│   │   │   ├── RegisterRequest.cs
+│   │   │   ├── LoginRequest.cs
+│   │   │   ├── RefreshRequest.cs
+│   │   │   ├── AuthResponse.cs
+│   │   │   └── UserDto.cs
+│   │   ├── Car/                     # Car-related DTOs
+│   │   │   ├── CarDto.cs
+│   │   │   ├── CreateCarRequest.cs
+│   │   │   └── UpdateCarRequest.cs
+│   │   ├── CarApi/                  # External API DTOs (makes/models)
+│   │   │   ├── MakeDto.cs
+│   │   │   └── ModelDto.cs
+│   │   ├── User/                    # User-related DTOs
+│   │   │   ├── ChangePasswordRequest.cs
+│   │   │   ├── UpdateProfileRequest.cs
+│   │   │   ├── UpdateAvatarRequest.cs
+│   │   │   └── UpdateUserRoleRequest.cs
+│   │   ├── Comment/                 # Comment DTOs
+│   │   │   ├── CommentDto.cs
+│   │   │   ├── CreateCommentRequest.cs
+│   │   │   └── UpdateCommentRequest.cs
+│   │   ├── Favourite/               # Favourite DTOs
+│   │   │   └── FavouriteDto.cs
+│   │   └── ViewHistory/             # View history DTOs
+│   │       └── ViewHistoryDto.cs
+│   ├── Services/                     # Business logic services
+│   │   ├── CarDataService.cs        # Car make/model data service
+│   │   ├── AutoDevApiService.cs     # External API integration
+│   │   └── CarCatalogService.cs     # Car catalog service
+│   ├── Helpers/                      # Helper utilities
+│   │   └── AuthorizationHelper.cs   # Authorization helper methods
+│   ├── Options/                      # Configuration options
+│   │   ├── JwtSettings.cs           # JWT configuration
+│   │   └── AutoDevSettings.cs       # External API settings
+│   ├── Migrations/                   # Entity Framework migrations
+│   │   └── [multiple migration files]
+│   ├── wwwroot/                      # Static files and uploads
 │   │   └── uploads/
-│   │       └── avatars/         # User avatar images
-│   ├── ApplicationDbContext.cs  # Database context
-│   ├── Program.cs               # Application entry point
-│   ├── appsettings.json         # Configuration file
-│   ├── swagger.json             # OpenAPI specification
-│   └── Backend.csproj          # Project file
-├── frontend/                    # Next.js frontend
+│   │       ├── avatars/              # User avatar images
+│   │       └── cars/                 # Car listing images
+│   ├── ApplicationDbContext.cs       # Database context
+│   ├── Program.cs                    # Application entry point & configuration
+│   ├── appsettings.json              # Configuration file
+│   ├── appsettings.Development.json  # Development configuration
+│   ├── swagger.json                  # OpenAPI specification
+│   └── Backend.csproj                # Project file
+├── frontend/                         # Next.js frontend
 │   ├── src/
-│   │   ├── app/                # Next.js app directory (pages)
-│   │   │   ├── page.tsx        # Home page
-│   │   │   ├── login/          # Login page
-│   │   │   ├── register/       # Registration page
-│   │   │   ├── create/         # Create car listing page
-│   │   │   └── profile/        # User profile page
-│   │   ├── components/         # React components
-│   │   │   ├── auth/          # Authentication components
-│   │   │   ├── car/           # Car-related components
-│   │   │   ├── layout/        # Layout components
-│   │   │   ├── profile/       # Profile components
-│   │   │   └── ui/            # UI components
-│   │   ├── lib/               # Utilities and helpers
-│   │   │   ├── hooks/         # Custom React hooks
-│   │   │   ├── types/         # TypeScript type definitions
-│   │   │   └── utils/         # Utility functions
-│   │   └── client/            # API client (generated)
-│   ├── public/                 # Static assets (logos, images)
-│   ├── package.json           # Node.js dependencies
-│   └── README.md              # Frontend README
-├── docs/                       # Documentation
-│   └── Sprint3.md             # Sprint documentation
-├── docker-compose.yml          # Docker Compose configuration
-├── DATABASE_SETUP.md          # Database setup instructions
-└── README.md                   # Main project README
+│   │   ├── app/                     # Next.js app directory (pages)
+│   │   │   ├── page.tsx             # Home page
+│   │   │   ├── login/               # Login page
+│   │   │   ├── register/            # Registration page
+│   │   │   ├── create/              # Create car listing page
+│   │   │   └── profile/             # User profile page
+│   │   ├── components/              # React components
+│   │   │   ├── auth/               # Authentication components
+│   │   │   ├── car/                # Car-related components
+│   │   │   ├── layout/             # Layout components
+│   │   │   ├── profile/            # Profile components
+│   │   │   └── ui/                 # UI components
+│   │   ├── lib/                    # Utilities and helpers
+│   │   │   ├── hooks/              # Custom React hooks
+│   │   │   ├── types/              # TypeScript type definitions
+│   │   │   └── utils/              # Utility functions
+│   │   └── client/                 # API client (generated)
+│   ├── public/                      # Static assets (logos, images)
+│   ├── locales/                     # i18n translation files
+│   │   ├── en.po / en.ts           # English translations
+│   │   └── sl.po / sl.ts           # Slovenian translations
+│   ├── package.json                 # Node.js dependencies
+│   ├── next.config.ts               # Next.js configuration
+│   ├── tsconfig.json                # TypeScript configuration
+│   └── README.md                    # Frontend README
+├── docs/                            # Documentation
+│   ├── images/                      # Documentation images
+│   │   └── screenshot.png
+│   └── Sprint3.md                   # Sprint documentation
+├── docker-compose.yml               # Docker Compose configuration
+├── DATABASE_SETUP.md                # Database setup instructions
+└── README.md                        # Main project README
 ```
 
 ## 🚀 Getting Started
@@ -186,7 +254,46 @@ For detailed database setup, troubleshooting, and alternative configurations, se
    The API will be available at:
    - **HTTP**: `http://localhost:5121`
    - **HTTPS**: `https://localhost:7091`
-   - **Swagger UI**: `http://localhost:5121/swagger`
+   - **Swagger UI**: `http://localhost:5121/swagger` (interactive API documentation)
+
+### Authentication & Authorization
+
+The API uses JWT (JSON Web Token) for authentication:
+
+1. **Register/Login**: Users receive:
+   - Access token (short-lived, typically 15-30 minutes)
+   - Refresh token (long-lived, typically 7-30 days)
+
+2. **Using the API**: Include the access token in the Authorization header:
+   ```
+   Authorization: Bearer <access_token>
+   ```
+
+3. **Token Refresh**: When the access token expires, use the refresh token to get a new access token via `/api/auth/refresh`
+
+4. **Roles**: The system supports two roles:
+   - **User**: Default role for all registered users
+   - **Admin**: Administrative role with access to user management endpoints
+
+5. **Authorization**: 
+   - Some endpoints require authentication (marked with `[Authorize]`)
+   - Owner-only endpoints require the user to be the resource owner
+   - Admin-only endpoints require the Admin role
+
+### Database Models
+
+The application uses the following main database entities:
+
+- **Users**: User accounts with authentication information, profile data, and roles
+- **Cars**: Car listings with detailed specifications (make, model, year, price, mileage, etc.)
+- **CarImages**: Images associated with car listings (with main image flag)
+- **Comments**: User comments on car listings
+- **Favourites**: User's favourite car listings
+- **ViewHistory**: Tracks recently viewed cars per user (keeps last 10 entries)
+- **RefreshTokens**: JWT refresh tokens for token rotation
+- **BlacklistedTokens**: Blacklisted JWT access tokens (for logout)
+
+All database schema changes are managed through Entity Framework Core migrations. Run `dotnet ef database update` to apply migrations.
 
 #### Frontend Setup
 
@@ -267,77 +374,212 @@ All endpoints are served from the backend API base URL (for local development th
 
 - **POST** `/api/auth/register`  
   - **Body**: `RegisterRequest` (name, surname, email, phoneNumber, username, password)
-  - **Description**: Register a new user account.
+  - **Auth**: None
+  - **Description**: Register a new user account. Returns JWT access token and refresh token.
 
 - **POST** `/api/auth/login`  
   - **Body**: `LoginRequest` (username, password)  
-  - **Description**: Authenticate user and return tokens.
+  - **Auth**: None (username can be email or username)
+  - **Description**: Authenticate user and return JWT access token and refresh token.
 
 - **POST** `/api/auth/logout`  
-  - **Description**: Logout the current user and invalidate refresh token.
+  - **Auth**: Required (Bearer token)
+  - **Description**: Logout the current user, blacklist the access token, and revoke all refresh tokens.
 
 - **POST** `/api/auth/refresh`  
-  - **Body**: `RefreshRequest` (refreshToken)  
-  - **Description**: Get a new access token using a valid refresh token.
+  - **Body**: `RefreshRequest` (refreshToken)
+  - **Auth**: None
+  - **Description**: Get a new access token using a valid refresh token. Rotates the refresh token.
 
 ### 🚘 Cars (`/api/cars`)
 
 - **POST** `/api/cars`  
-  - **Body**: `CreateCarRequest` (makeId, modelId, year, mileage, price, fuelType, etc.)  
-  - **Description**: Create a new car listing.
+  - **Body**: `CreateCarRequest` (makeId, modelId, year, firstRegistrationDate, mileage, previousOwners, fuelType, enginePower, transmission, color, equipmentAndDetails, price)
+  - **Auth**: Required (Bearer token)
+  - **Description**: Create a new car listing. Sets originalPrice equal to initial price.
 
 - **GET** `/api/cars`  
   - **Query params** (optional):  
-    - `page` (default: 1), `pageSize` (default: 20)  
-    - `makeId`, `modelId`  
-    - `yearFrom`, `yearTo`  
-    - `priceFrom`, `priceTo`  
-    - `mileageTo`  
-    - `fuelType`  
-  - **Description**: Get a paginated list of cars with optional filters.
+    - `page` (int, default: 1)
+    - `pageSize` (int, default: 20)
+    - `makeId` (string)
+    - `modelId` (string)
+    - `yearFrom` (int)
+    - `yearTo` (int)
+    - `priceFrom` (decimal)
+    - `priceTo` (decimal)
+    - `mileageTo` (int)
+    - `fuelType` (string)
+    - `search` (string) - search by brand/model name
+    - `sellerId` (Guid) - filter by seller
+  - **Auth**: None
+  - **Description**: Get a paginated list of cars with optional filters. Returns total count and pagination info.
 
 - **GET** `/api/cars/{id}`  
-  - **Path params**: `id` (int)  
-  - **Description**: Get details of a specific car.
+  - **Path params**: `id` (int)
+  - **Auth**: None (but authenticated users get view history tracked)
+  - **Description**: Get details of a specific car. Increments view count. Tracks view history for authenticated users (keeps last 10).
+
+- **PUT** `/api/cars/{id}`  
+  - **Path params**: `id` (int)
+  - **Body**: `UpdateCarRequest` (same as CreateCarRequest)
+  - **Auth**: Required (Bearer token, owner or admin only)
+  - **Description**: Update an existing car listing. OriginalPrice is never changed.
+
+- **DELETE** `/api/cars/{id}`  
+  - **Path params**: `id` (int)
+  - **Auth**: Required (Bearer token, owner or admin only)
+  - **Description**: Delete a car listing and all associated images.
 
 - **POST** `/api/cars/{id}/images`  
-  - **Path params**: `id` (int)  
-  - **Body**: `multipart/form-data` with `files` (array of image files)  
-  - **Description**: Upload one or more images for a car.
+  - **Path params**: `id` (int)
+  - **Body**: `multipart/form-data` with `files` (array of image files, max 10MB each)
+  - **Auth**: Required (Bearer token, owner or admin only)
+  - **Description**: Upload one or more images for a car. Supported formats: JPG, JPEG, PNG, GIF, WEBP. First image becomes main if none exists.
+
+- **DELETE** `/api/cars/{id}/images/{imageId}`  
+  - **Path params**: `id` (int), `imageId` (int)
+  - **Auth**: Required (Bearer token, owner or admin only)
+  - **Description**: Delete a specific car image (both file and database record).
 
 - **PUT** `/api/cars/{id}/images/{imageId}/set-main`  
-  - **Path params**: `id` (int), `imageId` (int)  
+  - **Path params**: `id` (int), `imageId` (int)
+  - **Auth**: Required (Bearer token, owner or admin only)
   - **Description**: Mark a specific image as the main image for a car.
 
 ### 📚 Car Catalog (`/api/car-catalog`)
 
 - **GET** `/api/car-catalog/makes`  
-  - **Description**: Get all car makes.
+  - **Auth**: None
+  - **Description**: Get all available car makes.
 
 - **GET** `/api/car-catalog/makes/search`  
-  - **Query params**: `query` (string)  
+  - **Query params**: `query` (string, required)
+  - **Auth**: None
   - **Description**: Search car makes by name.
 
 - **GET** `/api/car-catalog/makes/{makeId}/models`  
-  - **Path params**: `makeId` (string)  
-  - **Description**: Get models for a specific make.
+  - **Path params**: `makeId` (string)
+  - **Auth**: None
+  - **Description**: Get all models for a specific make.
 
 ### 👤 User (`/api/user`)
+
+All endpoints in this section require authentication (Bearer token).
 
 - **GET** `/api/user/me`  
   - **Description**: Get the profile of the currently authenticated user.
 
 - **PUT** `/api/user/password`  
-  - **Body**: `ChangePasswordRequest` (currentPassword, newPassword)  
-  - **Description**: Change the current user's password.
+  - **Body**: `ChangePasswordRequest` (currentPassword, newPassword)
+  - **Description**: Change the current user's password. Requires current password verification.
 
 - **PUT** `/api/user/profile`  
-  - **Body**: `UpdateProfileRequest` (optional name, surname, phoneNumber)  
-  - **Description**: Update the current user's profile details.
+  - **Body**: `UpdateProfileRequest` (optional name, surname, phoneNumber)
+  - **Description**: Update the current user's profile details. Only provided fields are updated.
 
 - **PUT** `/api/user/avatar`  
-  - **Body**: `multipart/form-data` with `file` (image)  
-  - **Description**: Update the current user's avatar image.
+  - **Body**: `multipart/form-data` with `file` (image file, max 5MB)
+  - **Description**: Update the current user's avatar image. Supported formats: JPG, JPEG, PNG, GIF, WEBP. Old avatar is deleted.
+
+### 👑 Admin Endpoints (`/api/user/admin/*`)
+
+All admin endpoints require authentication and Admin role.
+
+- **GET** `/api/user/admin/users`  
+  - **Query params** (optional):
+    - `page` (int, default: 1)
+    - `pageSize` (int, default: 20)
+    - `search` (string) - search by name, surname, email, or username
+  - **Auth**: Required (Admin only)
+  - **Description**: Get paginated list of all users with optional search.
+
+- **GET** `/api/user/admin/users/{id}`  
+  - **Path params**: `id` (Guid)
+  - **Auth**: Required (Admin only)
+  - **Description**: Get details of a specific user by ID.
+
+- **PUT** `/api/user/admin/users/{id}/role`  
+  - **Path params**: `id` (Guid)
+  - **Body**: `UpdateUserRoleRequest` (role: "User" or "Admin")
+  - **Auth**: Required (Admin only)
+  - **Description**: Update a user's role. Admins cannot remove their own admin role.
+
+- **PUT** `/api/user/admin/users/{id}/profile`  
+  - **Path params**: `id` (Guid)
+  - **Body**: `UpdateProfileRequest` (optional name, surname, phoneNumber)
+  - **Auth**: Required (Admin only)
+  - **Description**: Update any user's profile details.
+
+- **PUT** `/api/user/admin/users/{id}/avatar`  
+  - **Path params**: `id` (Guid)
+  - **Body**: `multipart/form-data` with `file` (image file)
+  - **Auth**: Required (Admin only)
+  - **Description**: Update any user's avatar image.
+
+- **POST** `/api/user/admin/users/{id}/impersonate`  
+  - **Path params**: `id` (Guid)
+  - **Auth**: Required (Admin only)
+  - **Description**: Generate authentication tokens for a user (admin impersonation). Returns AuthResponse.
+
+- **DELETE** `/api/user/admin/users/{id}`  
+  - **Path params**: `id` (Guid)
+  - **Auth**: Required (Admin only)
+  - **Description**: Delete a user. Admins cannot delete themselves.
+
+### 💬 Comments (`/api/cars/{carId}/comments`)
+
+- **GET** `/api/cars/{carId}/comments`  
+  - **Path params**: `carId` (int)
+  - **Auth**: None
+  - **Description**: Get all comments for a specific car, ordered by most recent first.
+
+- **POST** `/api/cars/{carId}/comments`  
+  - **Path params**: `carId` (int)
+  - **Body**: `CreateCommentRequest` (content: string)
+  - **Auth**: Required (Bearer token)
+  - **Description**: Create a new comment on a car listing.
+
+- **PUT** `/api/comments/{id}`  
+  - **Path params**: `id` (int)
+  - **Body**: `UpdateCommentRequest` (content: string)
+  - **Auth**: Required (Bearer token, owner or admin only)
+  - **Description**: Update a comment. Only the comment owner or admin can update.
+
+- **DELETE** `/api/comments/{id}`  
+  - **Path params**: `id` (int)
+  - **Auth**: Required (Bearer token, owner or admin only)
+  - **Description**: Delete a comment. Only the comment owner or admin can delete.
+
+### ⭐ Favourites (`/api/favourites`)
+
+All endpoints in this section require authentication (Bearer token).
+
+- **GET** `/api/favourites`  
+  - **Description**: Get all favourite cars for the current user, ordered by most recent first.
+
+- **POST** `/api/favourites/{carId}`  
+  - **Path params**: `carId` (int)
+  - **Description**: Add a car to favourites. Returns error if already favourited.
+
+- **POST** `/api/favourites/{carId}/toggle`  
+  - **Path params**: `carId` (int)
+  - **Description**: Toggle favourite status (add if not exists, remove if exists). Returns current status.
+
+- **GET** `/api/favourites/{carId}/check`  
+  - **Path params**: `carId` (int)
+  - **Description**: Check if a car is in the user's favourites. Returns `{ isFavourite: boolean }`.
+
+- **DELETE** `/api/favourites/{carId}`  
+  - **Path params**: `carId` (int)
+  - **Description**: Remove a car from favourites.
+
+### 📖 View History (`/api/view-history`)
+
+All endpoints in this section require authentication (Bearer token).
+
+- **GET** `/api/view-history`  
+  - **Description**: Get the last 10 cars the authenticated user viewed, ordered by most recent first. Includes full car details and seller information.
 
 ## 🧪 Testing
 

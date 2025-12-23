@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
-import { HiCamera, HiX } from "react-icons/hi";
+import { HiCamera, HiX, HiSun, HiMoon } from "react-icons/hi";
 import { LuUser, LuLock, LuMail, LuPhone, LuPencil } from "react-icons/lu";
 import {
   Box,
@@ -31,6 +31,7 @@ import { useUpdateProfile } from "@/lib/hooks/useUpdateProfile";
 import { useChangePassword } from "@/lib/hooks/useChangePassword";
 import { useUpdateAvatar } from "@/lib/hooks/useUpdateAvatar";
 import { useAppLocale } from "@/components/i18n/LinguiProvider";
+import { useColorMode } from "@/components/ui/color-mode";
 import "@/lib/api-client";
 import { Trans, t } from "@lingui/macro";
 
@@ -53,6 +54,8 @@ export function ProfilePage() {
   const { changePassword, isLoading: isChangingPassword, error: passwordError, setError: setPasswordError } = useChangePassword();
   const { updateAvatar, isLoading: isUpdatingAvatar, error: avatarError, setError: setAvatarError } = useUpdateAvatar();
   const { locale, setLocale } = useAppLocale();
+  const { colorMode, setColorMode } = useColorMode();
+  const isDark = colorMode === "dark";
 
   const [profileData, setProfileData] = useState({
     name: user?.name || "",
@@ -309,6 +312,61 @@ export function ProfilePage() {
                         <LanguageFlag variant="en" />
                         <Text fontWeight={locale === "en" ? "semibold" : "normal"}>
                           <Trans>English</Trans>
+                        </Text>
+                      </HStack>
+                    </MenuItem>
+                  </MenuContent>
+                </MenuPositioner>
+              </MenuRoot>
+            </HStack>
+          </CardBody>
+        </Card.Root>
+
+        {/* Theme Settings Section */}
+        <Card.Root
+          borderRadius="xl"
+          borderWidth="1px"
+          borderColor={{ base: "gray.200", _dark: "gray.700" }}
+          bg={{ base: "white", _dark: "gray.800" }}
+          boxShadow="sm"
+        >
+          <CardBody p={6}>
+            <HStack justify="space-between" align="flex-start">
+              <VStack align="start" gap={1} flex={1}>
+                <Heading size="md" fontWeight="semibold">
+                  <Trans>Tema</Trans>
+                </Heading>
+                <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
+                  <Trans>Izberite temno ali svetlo temo</Trans>
+                </Text>
+              </VStack>
+
+              <MenuRoot positioning={{ placement: "bottom-end", offset: { mainAxis: 6 } }}>
+                <MenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <HStack gap={2}>
+                      <Icon as={isDark ? HiMoon : HiSun} boxSize={4} />
+                      <Text>
+                        {isDark ? <Trans>Temen način</Trans> : <Trans>Svetel način</Trans>}
+                      </Text>
+                    </HStack>
+                  </Button>
+                </MenuTrigger>
+                <MenuPositioner>
+                  <MenuContent>
+                    <MenuItem value="light" onClick={() => setColorMode("light")}>
+                      <HStack gap={2}>
+                        <Icon as={HiSun} boxSize={4} />
+                        <Text fontWeight={!isDark ? "semibold" : "normal"}>
+                          <Trans>Svetel način</Trans>
+                        </Text>
+                      </HStack>
+                    </MenuItem>
+                    <MenuItem value="dark" onClick={() => setColorMode("dark")}>
+                      <HStack gap={2}>
+                        <Icon as={HiMoon} boxSize={4} />
+                        <Text fontWeight={isDark ? "semibold" : "normal"}>
+                          <Trans>Temen način</Trans>
                         </Text>
                       </HStack>
                     </MenuItem>

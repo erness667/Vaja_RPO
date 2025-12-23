@@ -60,6 +60,45 @@ namespace Backend.Controllers
             return Ok(userDto);
         }
 
+        /// <summary>
+        /// Search users by username (for friend requests)
+        /// </summary>
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchUsers([FromQuery] string? username, [FromQuery] int limit = 10)
+        {
+            if (string.IsNullOrWhiteSpace(username) || username.Length < 2)
+            {
+                return Ok(new List<UserDto>());
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var currentUserId))
+            {
+                return Unauthorized(new { message = "Invalid token." });
+            }
+
+            var searchLower = username.Trim().ToLowerInvariant();
+
+            var users = await _dbContext.Users
+                .Where(u => u.Username.ToLower().Contains(searchLower) && u.Id != currentUserId)
+                .OrderBy(u => u.Username)
+                .Take(limit)
+                .Select(u => new UserDto
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    Name = u.Name,
+                    Surname = u.Surname,
+                    Username = u.Username,
+                    PhoneNumber = u.PhoneNumber,
+                    AvatarImageUrl = u.AvatarImageUrl,
+                    Role = u.Role
+                })
+                .ToListAsync();
+
+            return Ok(users);
+        }
+
         [HttpPut("password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {

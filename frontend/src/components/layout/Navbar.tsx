@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { HiUser, HiUserAdd, HiPlus } from "react-icons/hi";
-import { LuHeart, LuHistory, LuUser, LuLogOut, LuSearch, LuX, LuImage, LuShield, LuFileText } from "react-icons/lu";
+import { HiUser, HiUserAdd } from "react-icons/hi";
+import { LuHeart, LuHistory, LuUser, LuLogOut, LuSearch, LuX, LuImage, LuShield, LuFileText, LuUsers } from "react-icons/lu";
 import { Trans, t } from "@lingui/macro";
 import { 
   Box, 
@@ -518,16 +518,20 @@ export function Navbar() {
 
         {/* Navigation Links */}
         <HStack gap={3} alignItems="center">
-          {/* Show "Objavi oglas" button only if user is authenticated */}
+          {/* Friends icon - only if user is authenticated */}
           {authenticated && (
-            <Link href="/create">
-              <Button
-                colorPalette="blue"
+            <Link href="/friends">
+              <IconButton
+                variant="ghost"
                 size="sm"
+                aria-label={t`Prijatelji`}
+                borderRadius="full"
+                _hover={{
+                  bg: { base: "#f3f4f6", _dark: "#374151" },
+                }}
               >
-                <HiPlus style={{ width: "20px", height: "20px", marginRight: "8px" }} />
-                <Trans>Objavi oglas</Trans>
-              </Button>
+                <Icon as={LuUsers} boxSize={5} />
+              </IconButton>
             </Link>
           )}
 

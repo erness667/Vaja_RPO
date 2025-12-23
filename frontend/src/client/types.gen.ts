@@ -623,6 +623,23 @@ export type GetApiUserMeResponses = {
     200: unknown;
 };
 
+export type GetApiUserSearchData = {
+    body?: never;
+    path?: never;
+    query?: {
+        username?: string;
+        limit?: number;
+    };
+    url: '/api/user/search';
+};
+
+export type GetApiUserSearchResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
 export type PutApiUserPasswordData = {
     body?: ChangePasswordRequest;
     path?: never;

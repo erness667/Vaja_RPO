@@ -3,6 +3,7 @@
 import { Box } from "@chakra-ui/react";
 import { Navbar } from "./Navbar";
 import { ImpersonationBanner } from "./ImpersonationBanner";
+import { FloatingSettingsMenu } from "./FloatingSettingsMenu";
 
 export function AppWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -18,6 +19,7 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
       <Box as="main" width="100%" position="relative">
         {children}
       </Box>
+      <FloatingSettingsMenu />
     </Box>
   );
 }

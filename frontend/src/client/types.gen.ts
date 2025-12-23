@@ -37,6 +37,10 @@ export type LoginRequest = {
     password: string;
 };
 
+export type MarkMessagesReadRequest = {
+    senderId: string;
+};
+
 export type RefreshRequest = {
     refreshToken: string;
 };
@@ -355,6 +359,53 @@ export type GetApiCarCatalogMakesByMakeIdModelsData = {
 };
 
 export type GetApiCarCatalogMakesByMakeIdModelsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiChatConversationByUserIdData = {
+    body?: never;
+    path: {
+        userId: string;
+    };
+    query?: {
+        skip?: number;
+        take?: number;
+    };
+    url: '/api/chat/conversation/{userId}';
+};
+
+export type GetApiChatConversationByUserIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiChatConversationsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/chat/conversations';
+};
+
+export type GetApiChatConversationsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiChatMarkReadData = {
+    body?: MarkMessagesReadRequest;
+    path?: never;
+    query?: never;
+    url: '/api/chat/mark-read';
+};
+
+export type PostApiChatMarkReadResponses = {
     /**
      * Success
      */

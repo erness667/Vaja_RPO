@@ -21,6 +21,7 @@ import {
   MenuPositioner,
   MenuContent,
   MenuItem,
+  Portal,
 } from "@chakra-ui/react";
 import { LuUsers, LuChevronRight, LuChevronLeft, LuUserPlus, LuMail, LuHeart, LuGitCompare, LuLanguages } from "react-icons/lu";
 import { HiSun, HiMoon } from "react-icons/hi";
@@ -154,7 +155,7 @@ export function FriendsSidebar() {
                         <Trans>Zahteve</Trans>
                       </Text>
                     </HStack>
-                    <Link href="/friends/requests">
+                    <Link href="/messages">
                       <Button size="xs" variant="ghost" colorPalette="orange">
                         <Trans>Vse</Trans>
                       </Button>
@@ -166,18 +167,13 @@ export function FriendsSidebar() {
                       if (!requester) return null;
                       const fullName = `${requester.name} ${requester.surname}`;
                       return (
-                        <Link key={request.id} href="/friends/requests">
+                        <Link key={request.id} href="/messages">
                           <Card.Root
                             size="sm"
                             variant="outline"
                             borderRadius="md"
                             borderColor={{ base: "orange.200", _dark: "orange.800" }}
                             bg={{ base: "orange.50", _dark: "orange.950" }}
-                            _hover={{
-                              borderColor: { base: "orange.300", _dark: "orange.700" },
-                              transform: "translateX(4px)",
-                            }}
-                            transition="all 0.2s"
                             cursor="pointer"
                           >
                             <CardBody p={2}>
@@ -296,12 +292,6 @@ export function FriendsSidebar() {
                             size="sm"
                             variant="outline"
                             borderRadius="md"
-                            _hover={{
-                              borderColor: { base: "blue.300", _dark: "blue.700" },
-                              transform: "translateX(4px)",
-                              boxShadow: "sm",
-                            }}
-                            transition="all 0.2s"
                             cursor="pointer"
                           >
                             <CardBody p={2}>
@@ -494,7 +484,7 @@ export function FriendsSidebar() {
                   <Icon as={LuUsers} />
                 </IconButton>
               </Link>
-              <Link href="/friends/requests">
+              <Link href="/messages">
                 <Box position="relative">
                   <IconButton
                     variant="ghost"
@@ -532,7 +522,7 @@ export function FriendsSidebar() {
               >
                 <Icon as={isDark ? HiSun : HiMoon} />
               </IconButton>
-              <MenuRoot>
+              <MenuRoot positioning={{ placement: "right-start", offset: { mainAxis: 12 } }}>
                 <MenuTrigger asChild>
                   <IconButton
                     variant="ghost"
@@ -543,37 +533,40 @@ export function FriendsSidebar() {
                     <Icon as={LuLanguages} />
                   </IconButton>
                 </MenuTrigger>
-                <MenuPositioner>
-                  <MenuContent
-                    bg={{ base: "white", _dark: "gray.800" }}
-                    borderWidth="1px"
-                    borderColor={{ base: "gray.200", _dark: "gray.700" }}
-                    minW="180px"
-                  >
-                    <MenuItem
-                      value="sl"
-                      onClick={() => setLocale("sl")}
+                <Portal>
+                  <MenuPositioner zIndex={110}>
+                    <MenuContent
+                      bg={{ base: "white", _dark: "gray.800" }}
+                      borderWidth="1px"
+                      borderColor={{ base: "gray.200", _dark: "gray.700" }}
+                      minW="180px"
+                      boxShadow="xl"
                     >
-                      <HStack gap={2} w="full">
-                        <LanguageFlag variant="sl" />
-                        <Text fontWeight={locale === "sl" ? "semibold" : "normal"}>
-                          <Trans>Slovenščina</Trans>
-                        </Text>
-                      </HStack>
-                    </MenuItem>
-                    <MenuItem
-                      value="en"
-                      onClick={() => setLocale("en")}
-                    >
-                      <HStack gap={2} w="full">
-                        <LanguageFlag variant="en" />
-                        <Text fontWeight={locale === "en" ? "semibold" : "normal"}>
-                          <Trans>English</Trans>
-                        </Text>
-                      </HStack>
-                    </MenuItem>
-                  </MenuContent>
-                </MenuPositioner>
+                      <MenuItem
+                        value="sl"
+                        onClick={() => setLocale("sl")}
+                      >
+                        <HStack gap={2} w="full">
+                          <LanguageFlag variant="sl" />
+                          <Text fontWeight={locale === "sl" ? "semibold" : "normal"}>
+                            <Trans>Slovenščina</Trans>
+                          </Text>
+                        </HStack>
+                      </MenuItem>
+                      <MenuItem
+                        value="en"
+                        onClick={() => setLocale("en")}
+                      >
+                        <HStack gap={2} w="full">
+                          <LanguageFlag variant="en" />
+                          <Text fontWeight={locale === "en" ? "semibold" : "normal"}>
+                            <Trans>English</Trans>
+                          </Text>
+                        </HStack>
+                      </MenuItem>
+                    </MenuContent>
+                  </MenuPositioner>
+                </Portal>
               </MenuRoot>
               {authenticated && (
                 <IconButton

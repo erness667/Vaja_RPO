@@ -16,6 +16,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ViewHistory> ViewHistories { get; set; }
     public DbSet<FriendRequest> FriendRequests { get; set; }
     public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -130,6 +131,23 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(prt => prt.UserId)
                 .OnDelete(DeleteBehavior.Cascade); // Delete tokens when user is deleted
+        });
+
+        modelBuilder.Entity<Message>(entity =>
+        {
+            entity.HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if user has sent messages
+
+            entity.HasOne(m => m.Receiver)
+                .WithMany()
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if user has received messages
+
+            // Index for faster queries on conversations
+            entity.HasIndex(m => new { m.SenderId, m.ReceiverId, m.SentAt });
+            entity.HasIndex(m => new { m.ReceiverId, m.IsRead });
         });
     }
 }

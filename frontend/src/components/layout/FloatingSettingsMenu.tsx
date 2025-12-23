@@ -161,7 +161,7 @@ export function FloatingSettingsMenu() {
         <Box 
           position="fixed" 
           bottom={4} 
-          left={4} 
+          right={4} 
           zIndex={1000}
         >
           <VStack gap={3} align="center">
@@ -177,7 +177,7 @@ export function FloatingSettingsMenu() {
                 >
                   {item.isMenu ? (
                     <MenuRoot
-                      positioning={{ placement: "right-start", offset: { mainAxis: 12 } }}
+                      positioning={{ placement: "left-start", offset: { mainAxis: 12 } }}
                     >
                       <MenuTrigger asChild>
                         <IconButton
@@ -256,7 +256,7 @@ export function FloatingSettingsMenu() {
                   ) : (
                     <Tooltip
                       content={item.label}
-                      positioning={{ placement: "right" }}
+                      positioning={{ placement: "left" }}
                     >
                       <IconButton
                         aria-label={item.label}

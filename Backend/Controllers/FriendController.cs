@@ -66,7 +66,12 @@ namespace Backend.Controllers
                 {
                     return BadRequest(new { message = "You are already friends with this user." });
                 }
-                // If rejected, allow sending a new request
+                // If rejected, delete the old request to allow sending a new one
+                else if (existingRequest.Status == FriendRequestStatus.Rejected)
+                {
+                    _dbContext.FriendRequests.Remove(existingRequest);
+                    await _dbContext.SaveChangesAsync();
+                }
             }
 
             // Create new friend request

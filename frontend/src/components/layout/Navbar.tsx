@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { HiUser, HiUserAdd } from "react-icons/hi";
+import { HiUser, HiUserAdd, HiPlus } from "react-icons/hi";
 import { LuHeart, LuHistory, LuUser, LuLogOut, LuSearch, LuX, LuImage, LuShield, LuFileText, LuUsers } from "react-icons/lu";
 import { Trans, t } from "@lingui/macro";
 import { 
@@ -518,23 +518,20 @@ export function Navbar() {
 
         {/* Navigation Links */}
         <HStack gap={3} alignItems="center">
-          {/* Friends icon - only if user is authenticated */}
+          {/* Post Ad button - only if user is authenticated */}
           {authenticated && (
-            <Link href="/friends">
-              <IconButton
-                variant="ghost"
+            <Link href="/create">
+              <Button
                 size="sm"
-                aria-label={t`Prijatelji`}
-                borderRadius="full"
-                _hover={{
-                  bg: { base: "#f3f4f6", _dark: "#374151" },
-                }}
+                colorPalette="blue"
               >
-                <Icon as={LuUsers} boxSize={5} />
-              </IconButton>
+                <HStack gap={2}>
+                  <Icon as={HiPlus} />
+                  <Text><Trans>Objavi oglas</Trans></Text>
+                </HStack>
+              </Button>
             </Link>
           )}
-
           {/* User Menu or Login/Register Buttons */}
           <ClientOnly fallback={<Skeleton boxSize="9" />}>
             {authenticated ? (

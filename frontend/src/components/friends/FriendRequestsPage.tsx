@@ -89,20 +89,34 @@ function FriendRequestCard({
         <HStack gap={4} align="start">
           {/* Avatar */}
           <Box
-            width="60px"
-            height="60px"
+            width="64px"
+            height="64px"
             borderRadius="full"
             overflow="hidden"
             bg={{ base: "gray.200", _dark: "gray.700" }}
             flexShrink={0}
             position="relative"
+            borderWidth="2px"
+            borderColor={{ base: "gray.300", _dark: "gray.600" }}
+            boxShadow="sm"
           >
             {otherUser?.avatarImageUrl ? (
               <Image
                 src={otherUser.avatarImageUrl}
                 alt={fullName}
-                fill
-                style={{ objectFit: "cover" }}
+                width={64}
+                height={64}
+                unoptimized
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+                onError={(e) => {
+                  // Fallback to placeholder if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = "none";
+                }}
               />
             ) : (
               <Box
@@ -113,7 +127,7 @@ function FriendRequestCard({
                 justifyContent="center"
                 bg={{ base: "gray.300", _dark: "gray.600" }}
               >
-                <Icon as={LuUserX} boxSize={6} color={{ base: "gray.500", _dark: "gray.400" }} />
+                <Icon as={LuUserX} boxSize={7} color={{ base: "gray.500", _dark: "gray.400" }} />
               </Box>
             )}
           </Box>

@@ -17,388 +17,50 @@ import {
   Badge,
 } from "@chakra-ui/react";
 import { LuArrowLeft, LuUserX, LuUserPlus, LuUserMinus, LuX, LuMail, LuSend } from "react-icons/lu";
-import { useFriendRequests } from "@/lib/hooks/useFriendRequests";
-import { useAcceptFriendRequest } from "@/lib/hooks/useAcceptFriendRequest";
-import { useRejectFriendRequest } from "@/lib/hooks/useRejectFriendRequest";
-import { useCancelFriendRequest } from "@/lib/hooks/useCancelFriendRequest";
+import { useConversations } from "@/lib/hooks/useConversations";
+import { useFriends } from "@/lib/hooks/useFriends";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
-import type { FriendRequest } from "@/lib/types/friend";
+import { ChatView } from "./ChatView";
+import type { Conversation } from "@/lib/types/chat";
+import type { Friend } from "@/lib/types/friend";
 import { Trans } from "@lingui/macro";
-
-function ChatListItem({
-  request,
-  currentUserId,
-  isSelected,
-  onClick,
-}: {
-  request: FriendRequest;
-  currentUserId: string;
-  isSelected: boolean;
-  onClick: () => void;
-}) {
-  const isReceived = request.addresseeId === currentUserId;
-  const otherUser = isReceived ? request.requester : request.addressee;
-  const fullName = otherUser ? `${otherUser.name} ${otherUser.surname}` : "Unknown User";
-  const username = otherUser?.username || "unknown";
-
-  return (
-    <Card.Root
-      variant={isSelected ? "outline" : "subtle"}
-      borderRadius="md"
-      borderColor={isSelected ? { base: "blue.300", _dark: "blue.700" } : undefined}
-      bg={isSelected ? { base: "blue.50", _dark: "blue.950" } : undefined}
-      cursor="pointer"
-      onClick={onClick}
-    >
-      <CardBody p={3}>
-        <HStack gap={3}>
-          <Box
-            width="48px"
-            height="48px"
-            borderRadius="full"
-            overflow="hidden"
-            bg={{ base: "gray.200", _dark: "gray.700" }}
-            flexShrink={0}
-            position="relative"
-            borderWidth="2px"
-            borderColor={isReceived ? { base: "orange.300", _dark: "orange.700" } : { base: "gray.300", _dark: "gray.600" }}
-          >
-            {otherUser?.avatarImageUrl ? (
-              <Image
-                src={otherUser.avatarImageUrl}
-                alt={fullName}
-                width={48}
-                height={48}
-                unoptimized
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = "none";
-                }}
-              />
-            ) : (
-              <Box
-                width="100%"
-                height="100%"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                bg={{ base: "gray.300", _dark: "gray.600" }}
-              >
-                <Icon as={LuUserX} boxSize={5} color={{ base: "gray.500", _dark: "gray.400" }} />
-              </Box>
-            )}
-          </Box>
-          <VStack align="start" gap={0} flex={1} minWidth={0}>
-            <HStack gap={2} align="center" width="100%">
-              <Text
-                fontSize="sm"
-                fontWeight="semibold"
-                color={{ base: "gray.800", _dark: "gray.100" }}
-                lineClamp={1}
-              >
-                {fullName}
-              </Text>
-              {isReceived && (
-                <Badge colorPalette="orange" size="xs">
-                  <Trans>Prejeto</Trans>
-                </Badge>
-              )}
-            </HStack>
-            <Text
-              fontSize="xs"
-              color={{ base: "gray.600", _dark: "gray.400" }}
-              lineClamp={1}
-            >
-              @{username}
-            </Text>
-          </VStack>
-        </HStack>
-      </CardBody>
-    </Card.Root>
-  );
-}
-
-function ChatView({
-  request,
-  currentUserId,
-  onAction,
-}: {
-  request: FriendRequest | null;
-  currentUserId: string;
-  onAction: () => void;
-}) {
-  const { acceptFriendRequest, isLoading: isAccepting } = useAcceptFriendRequest();
-  const { rejectFriendRequest, isLoading: isRejecting } = useRejectFriendRequest();
-  const { cancelFriendRequest, isLoading: isCanceling } = useCancelFriendRequest();
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  if (!request) {
-    return (
-      <Box
-        height="100%"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        p={8}
-        textAlign="center"
-      >
-        <Icon as={LuMail} boxSize={16} color={{ base: "gray.300", _dark: "gray.600" }} mb={4} />
-        <Heading size="lg" color={{ base: "gray.600", _dark: "gray.400" }} mb={2}>
-          <Trans>Vaša sporočila</Trans>
-        </Heading>
-        <Text color={{ base: "gray.500", _dark: "gray.500" }} mb={6}>
-          <Trans>Izberite zahtevo za prijateljstvo za ogled podrobnosti</Trans>
-        </Text>
-        <Button colorPalette="blue" size="lg">
-          <HStack gap={2}>
-            <Icon as={LuSend} />
-            <Text><Trans>Pošlji sporočilo</Trans></Text>
-          </HStack>
-        </Button>
-      </Box>
-    );
-  }
-
-  const isReceived = request.addresseeId === currentUserId;
-  const otherUser = isReceived ? request.requester : request.addressee;
-  const fullName = otherUser ? `${otherUser.name} ${otherUser.surname}` : "Unknown User";
-  const username = otherUser?.username || "unknown";
-
-  const handleAccept = async () => {
-    setIsProcessing(true);
-    const success = await acceptFriendRequest(request.id);
-    if (success) {
-      onAction();
-    }
-    setIsProcessing(false);
-  };
-
-  const handleReject = async () => {
-    setIsProcessing(true);
-    const success = await rejectFriendRequest(request.id);
-    if (success) {
-      onAction();
-    }
-    setIsProcessing(false);
-  };
-
-  const handleCancel = async () => {
-    setIsProcessing(true);
-    const success = await cancelFriendRequest(request.id);
-    if (success) {
-      onAction();
-    }
-    setIsProcessing(false);
-  };
-
-  const isLoading = isProcessing || isAccepting || isRejecting || isCanceling;
-
-  return (
-    <VStack height="100%" align="stretch" gap={0}>
-      {/* Chat Header */}
-      <Box
-        p={4}
-        borderBottomWidth="1px"
-        borderColor={{ base: "gray.200", _dark: "gray.700" }}
-        bg={{ base: "white", _dark: "gray.800" }}
-      >
-        <HStack gap={4}>
-          <Box
-            width="56px"
-            height="56px"
-            borderRadius="full"
-            overflow="hidden"
-            bg={{ base: "gray.200", _dark: "gray.700" }}
-            flexShrink={0}
-            position="relative"
-            borderWidth="2px"
-            borderColor={{ base: "blue.300", _dark: "blue.700" }}
-          >
-            {otherUser?.avatarImageUrl ? (
-              <Image
-                src={otherUser.avatarImageUrl}
-                alt={fullName}
-                width={56}
-                height={56}
-                unoptimized
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = "none";
-                }}
-              />
-            ) : (
-              <Box
-                width="100%"
-                height="100%"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                bg={{ base: "gray.300", _dark: "gray.600" }}
-              >
-                <Icon as={LuUserX} boxSize={6} color={{ base: "gray.500", _dark: "gray.400" }} />
-              </Box>
-            )}
-          </Box>
-          <VStack align="start" gap={0} flex={1} minWidth={0}>
-            <Text
-              fontWeight="semibold"
-              fontSize="lg"
-              color={{ base: "gray.800", _dark: "gray.100" }}
-              lineClamp={1}
-            >
-              {fullName}
-            </Text>
-            <Text
-              fontSize="sm"
-              color={{ base: "gray.600", _dark: "gray.400" }}
-              lineClamp={1}
-            >
-              @{username}
-            </Text>
-          </VStack>
-          <Badge
-            colorPalette={isReceived ? "orange" : "gray"}
-            size="md"
-          >
-            {isReceived ? <Trans>Prejeto</Trans> : <Trans>Poslano</Trans>}
-          </Badge>
-        </HStack>
-      </Box>
-
-      {/* Chat Content */}
-      <Box flex={1} p={6} overflowY="auto">
-        <VStack gap={4} align="stretch">
-          <Card.Root variant="outline" borderRadius="lg">
-            <CardBody p={4}>
-              <VStack gap={3} align="stretch">
-                <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                  <Trans>Zahteva za prijateljstvo</Trans>
-                </Text>
-                <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.500" }}>
-                  {new Date(request.createdAt).toLocaleDateString("sl-SI", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </Text>
-              </VStack>
-            </CardBody>
-          </Card.Root>
-        </VStack>
-      </Box>
-
-      {/* Chat Actions */}
-      <Box
-        p={4}
-        borderTopWidth="1px"
-        borderColor={{ base: "gray.200", _dark: "gray.700" }}
-        bg={{ base: "white", _dark: "gray.800" }}
-      >
-        {isReceived ? (
-          <HStack gap={2} justify="flex-end">
-            <Button
-              size="md"
-              colorPalette="blue"
-              onClick={handleAccept}
-              loading={isLoading}
-              disabled={isLoading}
-            >
-              <HStack gap={2}>
-                <Icon as={LuUserPlus} />
-                <Text><Trans>Sprejmi</Trans></Text>
-              </HStack>
-            </Button>
-            <Button
-              size="md"
-              variant="outline"
-              colorPalette="red"
-              onClick={handleReject}
-              loading={isLoading}
-              disabled={isLoading}
-            >
-              <HStack gap={2}>
-                <Icon as={LuX} />
-                <Text><Trans>Zavrni</Trans></Text>
-              </HStack>
-            </Button>
-          </HStack>
-        ) : (
-          <HStack gap={2} justify="flex-end">
-            <Button
-              size="md"
-              variant="outline"
-              colorPalette="red"
-              onClick={handleCancel}
-              loading={isLoading}
-              disabled={isLoading}
-            >
-              <HStack gap={2}>
-                <Icon as={LuUserMinus} />
-                <Text><Trans>Prekliči</Trans></Text>
-              </HStack>
-            </Button>
-          </HStack>
-        )}
-      </Box>
-    </VStack>
-  );
-}
 
 export function MessagesPage() {
   const { user } = useUserProfile();
-  const { requests, isLoading, error, refetch } = useFriendRequests();
+  const { conversations, isLoading: isLoadingConversations } = useConversations();
+  const { friends, isLoading: isLoadingFriends } = useFriends();
   
-  // Auto-select first received request if available
-  const initialRequest = useMemo(() => {
-    if (requests && user) {
-      return requests.find((r) => r.addresseeId === user.id && r.status === 0) || null;
-    }
-    return null;
-  }, [requests, user]);
-  
-  const [selectedRequest, setSelectedRequest] = useState<FriendRequest | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<{ id: string; user: import("@/lib/types/friend").UserInfo } | null>(null);
 
-  // Update selected request when initial request changes
-  useEffect(() => {
-    if (initialRequest && !selectedRequest) {
-      // Use setTimeout to defer state update
-      const timer = setTimeout(() => {
-        setSelectedRequest(initialRequest);
-      }, 0);
-      return () => clearTimeout(timer);
+  // Compute items to show: conversations first, then friends if no conversations
+  const displayItems = useMemo(() => {
+    if (conversations && conversations.length > 0) {
+      return {
+        type: 'conversations' as const,
+        items: conversations.sort((a, b) => 
+          new Date(b.lastMessage.sentAt).getTime() - new Date(a.lastMessage.sentAt).getTime()
+        )
+      };
     }
-  }, [initialRequest, selectedRequest]);
+    if (friends && friends.length > 0) {
+      return {
+        type: 'friends' as const,
+        items: friends
+      };
+    }
+    return {
+      type: 'empty' as const,
+      items: []
+    };
+  }, [conversations, friends]);
 
-  const handleAction = () => {
-    setTimeout(() => {
-      refetch();
-      setSelectedRequest(null);
-    }, 500);
+  const isLoading = isLoadingConversations || isLoadingFriends;
+
+  const handleUserSelect = (userId: string, userInfo: import("@/lib/types/friend").UserInfo) => {
+    setSelectedUserId(userId);
+    setSelectedUser({ id: userId, user: userInfo });
   };
-
-  const allRequests = (requests || [])
-    .filter((r) => r.status === 0)
-    .sort((a, b) => {
-      // Sort: received requests first, then by date
-      const aIsReceived = a.addresseeId === user?.id;
-      const bIsReceived = b.addresseeId === user?.id;
-      if (aIsReceived && !bIsReceived) return -1;
-      if (!aIsReceived && bIsReceived) return 1;
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
 
   return (
     <Box
@@ -432,16 +94,6 @@ export function MessagesPage() {
             <Box display="flex" justifyContent="center" py={20}>
               <Spinner size="lg" color="blue.500" />
             </Box>
-          ) : error ? (
-            <Box
-              p={4}
-              borderRadius="lg"
-              bg={{ base: "red.50", _dark: "red.900" }}
-              borderWidth="1px"
-              borderColor={{ base: "red.200", _dark: "red.700" }}
-            >
-              <Text color={{ base: "red.800", _dark: "red.200" }}>{error}</Text>
-            </Box>
           ) : (
             <Card.Root
               borderRadius="xl"
@@ -455,9 +107,9 @@ export function MessagesPage() {
                 {/* Left: Chat View */}
                 <Box flex={1} borderRightWidth="1px" borderColor={{ base: "gray.200", _dark: "gray.700" }}>
                   <ChatView
-                    request={selectedRequest}
+                    otherUser={selectedUser?.user || null}
+                    otherUserId={selectedUserId}
                     currentUserId={user?.id || ""}
-                    onAction={handleAction}
                   />
                 </Box>
 
@@ -469,23 +121,194 @@ export function MessagesPage() {
                     </Heading>
                   </Box>
                   <VStack gap={2} p={4} align="stretch">
-                    {allRequests.length === 0 ? (
+                    {isLoading ? (
+                      <Box display="flex" justifyContent="center" py={8}>
+                        <Spinner size="md" color="blue.500" />
+                      </Box>
+                    ) : displayItems.items.length === 0 ? (
                       <Box textAlign="center" py={8}>
                         <Icon as={LuMail} boxSize={8} color={{ base: "gray.400", _dark: "gray.500" }} mb={2} />
                         <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-                          <Trans>Nimate zahtev</Trans>
+                          <Trans>Nimate pogovorov</Trans>
                         </Text>
                       </Box>
+                    ) : displayItems.type === 'conversations' ? (
+                      (displayItems.items as Conversation[]).map((conversation) => {
+                        const otherUser = conversation.user;
+                        const fullName = `${otherUser.name} ${otherUser.surname}`;
+                        const isSelected = selectedUserId === conversation.userId;
+                        return (
+                          <Card.Root
+                            key={conversation.userId}
+                            variant={isSelected ? "outline" : "subtle"}
+                            borderRadius="md"
+                            borderColor={isSelected ? { base: "blue.300", _dark: "blue.700" } : undefined}
+                            bg={isSelected ? { base: "blue.50", _dark: "blue.950" } : undefined}
+                            cursor="pointer"
+                            onClick={() => handleUserSelect(conversation.userId, conversation.user)}
+                          >
+                            <CardBody p={3}>
+                              <HStack gap={3}>
+                                <Box
+                                  width="48px"
+                                  height="48px"
+                                  borderRadius="full"
+                                  overflow="hidden"
+                                  bg={{ base: "gray.200", _dark: "gray.700" }}
+                                  flexShrink={0}
+                                  position="relative"
+                                  borderWidth="2px"
+                                  borderColor={{ base: "blue.300", _dark: "blue.700" }}
+                                >
+                                  {otherUser.avatarImageUrl ? (
+                                    <Image
+                                      src={otherUser.avatarImageUrl}
+                                      alt={fullName}
+                                      width={48}
+                                      height={48}
+                                      unoptimized
+                                      style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                      }}
+                                      onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = "none";
+                                      }}
+                                    />
+                                  ) : (
+                                    <Box
+                                      width="100%"
+                                      height="100%"
+                                      display="flex"
+                                      alignItems="center"
+                                      justifyContent="center"
+                                      bg={{ base: "gray.300", _dark: "gray.600" }}
+                                    >
+                                      <Icon as={LuUserX} boxSize={5} color={{ base: "gray.500", _dark: "gray.400" }} />
+                                    </Box>
+                                  )}
+                                </Box>
+                                <VStack align="start" gap={0} flex={1} minWidth={0}>
+                                  <HStack gap={2} align="center" width="100%">
+                                    <Text
+                                      fontSize="sm"
+                                      fontWeight="semibold"
+                                      color={{ base: "gray.800", _dark: "gray.100" }}
+                                      lineClamp={1}
+                                    >
+                                      {fullName}
+                                    </Text>
+                                    {conversation.unreadCount > 0 && (
+                                      <Badge colorPalette="red" size="xs">
+                                        {conversation.unreadCount}
+                                      </Badge>
+                                    )}
+                                  </HStack>
+                                  <Text
+                                    fontSize="xs"
+                                    color={{ base: "gray.600", _dark: "gray.400" }}
+                                    lineClamp={1}
+                                  >
+                                    {conversation.lastMessage.content}
+                                  </Text>
+                                  <Text
+                                    fontSize="2xs"
+                                    color={{ base: "gray.500", _dark: "gray.500" }}
+                                  >
+                                    {new Date(conversation.lastMessage.sentAt).toLocaleDateString("sl-SI", {
+                                      month: "short",
+                                      day: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </Text>
+                                </VStack>
+                              </HStack>
+                            </CardBody>
+                          </Card.Root>
+                        );
+                      })
                     ) : (
-                      allRequests.map((request) => (
-                        <ChatListItem
-                          key={request.id}
-                          request={request}
-                          currentUserId={user?.id || ""}
-                          isSelected={selectedRequest?.id === request.id}
-                          onClick={() => setSelectedRequest(request)}
-                        />
-                      ))
+                      (displayItems.items as Friend[]).map((friend) => {
+                        const fullName = `${friend.user.name} ${friend.user.surname}`;
+                        const isSelected = selectedUserId === friend.userId;
+                        return (
+                          <Card.Root
+                            key={friend.userId}
+                            variant={isSelected ? "outline" : "subtle"}
+                            borderRadius="md"
+                            borderColor={isSelected ? { base: "blue.300", _dark: "blue.700" } : { base: "orange.200", _dark: "orange.800" }}
+                            bg={isSelected ? { base: "blue.50", _dark: "blue.950" } : { base: "orange.50", _dark: "orange.950" }}
+                            cursor="pointer"
+                            onClick={() => handleUserSelect(friend.userId, friend.user)}
+                          >
+                            <CardBody p={3}>
+                              <HStack gap={3}>
+                                <Box
+                                  width="48px"
+                                  height="48px"
+                                  borderRadius="full"
+                                  overflow="hidden"
+                                  bg={{ base: "gray.200", _dark: "gray.700" }}
+                                  flexShrink={0}
+                                  position="relative"
+                                  borderWidth="2px"
+                                  borderColor={{ base: "blue.300", _dark: "blue.700" }}
+                                >
+                                  {friend.user.avatarImageUrl ? (
+                                    <Image
+                                      src={friend.user.avatarImageUrl}
+                                      alt={fullName}
+                                      width={48}
+                                      height={48}
+                                      unoptimized
+                                      style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        objectFit: "cover",
+                                      }}
+                                      onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = "none";
+                                      }}
+                                    />
+                                  ) : (
+                                    <Box
+                                      width="100%"
+                                      height="100%"
+                                      display="flex"
+                                      alignItems="center"
+                                      justifyContent="center"
+                                      bg={{ base: "gray.300", _dark: "gray.600" }}
+                                    >
+                                      <Icon as={LuUserX} boxSize={5} color={{ base: "gray.500", _dark: "gray.400" }} />
+                                    </Box>
+                                  )}
+                                </Box>
+                                <VStack align="start" gap={0} flex={1} minWidth={0}>
+                                  <Text
+                                    fontSize="sm"
+                                    fontWeight="semibold"
+                                    color={{ base: "gray.800", _dark: "gray.100" }}
+                                    lineClamp={1}
+                                  >
+                                    {fullName}
+                                  </Text>
+                                  <Text
+                                    fontSize="xs"
+                                    color={{ base: "gray.600", _dark: "gray.400" }}
+                                    lineClamp={1}
+                                  >
+                                    @{friend.user.username}
+                                  </Text>
+                                </VStack>
+                              </HStack>
+                            </CardBody>
+                          </Card.Root>
+                        );
+                      })
                     )}
                   </VStack>
                 </Box>

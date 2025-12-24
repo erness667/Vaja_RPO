@@ -72,6 +72,17 @@ export function useChatMessages(userId: string | null) {
     );
   }, []);
 
+  const markMessagesFromSenderAsRead = useCallback((senderId: string, readAt?: string) => {
+    const readAtTime = readAt || new Date().toISOString();
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.senderId === senderId && !msg.isRead
+          ? { ...msg, isRead: true, readAt: readAtTime }
+          : msg
+      )
+    );
+  }, []);
+
   return {
     messages,
     isLoading,
@@ -79,6 +90,7 @@ export function useChatMessages(userId: string | null) {
     refetch: fetchMessages,
     addMessage,
     updateMessageReadStatus,
+    markMessagesFromSenderAsRead,
     setError,
   };
 }

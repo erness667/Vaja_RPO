@@ -24,7 +24,8 @@ import { useAcceptFriendRequest } from "@/lib/hooks/useAcceptFriendRequest";
 import { useRejectFriendRequest } from "@/lib/hooks/useRejectFriendRequest";
 import { useCancelFriendRequest } from "@/lib/hooks/useCancelFriendRequest";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
-import type { FriendRequest } from "@/lib/types/friend";
+import { useFriendHub } from "@/lib/hooks/useFriendHub";
+import type { FriendRequest, Friend } from "@/lib/types/friend";
 import { Trans, t } from "@lingui/macro";
 
 function FriendRequestCard({
@@ -215,6 +216,28 @@ export function FriendRequestsPage() {
   const { user } = useUserProfile();
   const { requests, isLoading, error, refetch } = useFriendRequests();
   const [requestsList, setRequestsList] = useState<FriendRequest[]>(requests);
+
+  // Set up real-time friend updates
+  useFriendHub(
+    // Friend request received
+    (request: FriendRequest) => {
+      refetch();
+    },
+    // Friend request accepted
+    () => {
+      refetch();
+    },
+    // Friend request rejected
+    () => {
+      refetch();
+    },
+    // Friend request cancelled
+    () => {
+      refetch();
+    },
+    // Friend removed (not relevant for requests page)
+    undefined
+  );
 
   useEffect(() => {
     setRequestsList(requests);

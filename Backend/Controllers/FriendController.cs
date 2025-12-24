@@ -1,8 +1,10 @@
 using System.Security.Claims;
 using Backend.DTOs.Friend;
 using Backend.DTOs.Auth;
+using Backend.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using SuperCarsApi.Models;
 
@@ -14,10 +16,12 @@ namespace Backend.Controllers
     public class FriendController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IHubContext<ChatHub> _hubContext;
 
-        public FriendController(ApplicationDbContext dbContext)
+        public FriendController(ApplicationDbContext dbContext, IHubContext<ChatHub> hubContext)
         {
             _dbContext = dbContext;
+            _hubContext = hubContext;
         }
 
         /// <summary>
@@ -126,6 +130,10 @@ namespace Backend.Controllers
                 }
             };
 
+            // Notify the addressee about the new friend request
+            await _hubContext.Clients.Group(friendRequest.AddresseeId.ToString())
+                .SendAsync("FriendRequestReceived", response);
+
             return Ok(response);
         }
 
@@ -198,6 +206,47 @@ namespace Backend.Controllers
                 }
             };
 
+            // Create FriendDto for both users
+            var friendForRequester = new FriendDto
+            {
+                UserId = friendRequest.AddresseeId,
+                User = new UserDto
+                {
+                    Id = friendRequest.Addressee.Id,
+                    Email = friendRequest.Addressee.Email,
+                    Name = friendRequest.Addressee.Name,
+                    Surname = friendRequest.Addressee.Surname,
+                    Username = friendRequest.Addressee.Username,
+                    PhoneNumber = friendRequest.Addressee.PhoneNumber,
+                    AvatarImageUrl = friendRequest.Addressee.AvatarImageUrl,
+                    Role = friendRequest.Addressee.Role
+                },
+                FriendsSince = friendRequest.UpdatedAt ?? friendRequest.CreatedAt
+            };
+
+            var friendForAddressee = new FriendDto
+            {
+                UserId = friendRequest.RequesterId,
+                User = new UserDto
+                {
+                    Id = friendRequest.Requester.Id,
+                    Email = friendRequest.Requester.Email,
+                    Name = friendRequest.Requester.Name,
+                    Surname = friendRequest.Requester.Surname,
+                    Username = friendRequest.Requester.Username,
+                    PhoneNumber = friendRequest.Requester.PhoneNumber,
+                    AvatarImageUrl = friendRequest.Requester.AvatarImageUrl,
+                    Role = friendRequest.Requester.Role
+                },
+                FriendsSince = friendRequest.UpdatedAt ?? friendRequest.CreatedAt
+            };
+
+            // Notify both users about the accepted friend request
+            await _hubContext.Clients.Group(friendRequest.RequesterId.ToString())
+                .SendAsync("FriendRequestAccepted", friendForRequester);
+            await _hubContext.Clients.Group(friendRequest.AddresseeId.ToString())
+                .SendAsync("FriendRequestAccepted", friendForAddressee);
+
             return Ok(response);
         }
 
@@ -236,6 +285,50 @@ namespace Backend.Controllers
             friendRequest.UpdatedAt = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
 
+            // Load related data for notification
+            await _dbContext.Entry(friendRequest)
+                .Reference(fr => fr.Requester)
+                .LoadAsync();
+            await _dbContext.Entry(friendRequest)
+                .Reference(fr => fr.Addressee)
+                .LoadAsync();
+
+            var response = new FriendRequestDto
+            {
+                Id = friendRequest.Id,
+                RequesterId = friendRequest.RequesterId,
+                AddresseeId = friendRequest.AddresseeId,
+                Status = (int)friendRequest.Status,
+                CreatedAt = friendRequest.CreatedAt,
+                UpdatedAt = friendRequest.UpdatedAt,
+                Requester = new UserDto
+                {
+                    Id = friendRequest.Requester.Id,
+                    Email = friendRequest.Requester.Email,
+                    Name = friendRequest.Requester.Name,
+                    Surname = friendRequest.Requester.Surname,
+                    Username = friendRequest.Requester.Username,
+                    PhoneNumber = friendRequest.Requester.PhoneNumber,
+                    AvatarImageUrl = friendRequest.Requester.AvatarImageUrl,
+                    Role = friendRequest.Requester.Role
+                },
+                Addressee = new UserDto
+                {
+                    Id = friendRequest.Addressee.Id,
+                    Email = friendRequest.Addressee.Email,
+                    Name = friendRequest.Addressee.Name,
+                    Surname = friendRequest.Addressee.Surname,
+                    Username = friendRequest.Addressee.Username,
+                    PhoneNumber = friendRequest.Addressee.PhoneNumber,
+                    AvatarImageUrl = friendRequest.Addressee.AvatarImageUrl,
+                    Role = friendRequest.Addressee.Role
+                }
+            };
+
+            // Notify the requester about the rejected friend request
+            await _hubContext.Clients.Group(friendRequest.RequesterId.ToString())
+                .SendAsync("FriendRequestRejected", response);
+
             return Ok(new { message = "Friend request rejected." });
         }
 
@@ -265,8 +358,54 @@ namespace Backend.Controllers
                 return Forbid();
             }
 
+            var addresseeId = friendRequest.AddresseeId;
+            
+            // Load related data for notification before deletion
+            await _dbContext.Entry(friendRequest)
+                .Reference(fr => fr.Requester)
+                .LoadAsync();
+            await _dbContext.Entry(friendRequest)
+                .Reference(fr => fr.Addressee)
+                .LoadAsync();
+
+            var response = new FriendRequestDto
+            {
+                Id = friendRequest.Id,
+                RequesterId = friendRequest.RequesterId,
+                AddresseeId = friendRequest.AddresseeId,
+                Status = (int)friendRequest.Status,
+                CreatedAt = friendRequest.CreatedAt,
+                UpdatedAt = friendRequest.UpdatedAt,
+                Requester = new UserDto
+                {
+                    Id = friendRequest.Requester.Id,
+                    Email = friendRequest.Requester.Email,
+                    Name = friendRequest.Requester.Name,
+                    Surname = friendRequest.Requester.Surname,
+                    Username = friendRequest.Requester.Username,
+                    PhoneNumber = friendRequest.Requester.PhoneNumber,
+                    AvatarImageUrl = friendRequest.Requester.AvatarImageUrl,
+                    Role = friendRequest.Requester.Role
+                },
+                Addressee = new UserDto
+                {
+                    Id = friendRequest.Addressee.Id,
+                    Email = friendRequest.Addressee.Email,
+                    Name = friendRequest.Addressee.Name,
+                    Surname = friendRequest.Addressee.Surname,
+                    Username = friendRequest.Addressee.Username,
+                    PhoneNumber = friendRequest.Addressee.PhoneNumber,
+                    AvatarImageUrl = friendRequest.Addressee.AvatarImageUrl,
+                    Role = friendRequest.Addressee.Role
+                }
+            };
+
             _dbContext.FriendRequests.Remove(friendRequest);
             await _dbContext.SaveChangesAsync();
+
+            // Notify the addressee about the cancelled friend request
+            await _hubContext.Clients.Group(addresseeId.ToString())
+                .SendAsync("FriendRequestCancelled", response);
 
             return NoContent();
         }
@@ -400,8 +539,14 @@ namespace Backend.Controllers
                 return NotFound(new { message = "Friendship not found." });
             }
 
+            var otherUserId = friendRequest.RequesterId == userId ? friendRequest.AddresseeId : friendRequest.RequesterId;
+
             _dbContext.FriendRequests.Remove(friendRequest);
             await _dbContext.SaveChangesAsync();
+
+            // Notify the other user about the removed friendship
+            await _hubContext.Clients.Group(otherUserId.ToString())
+                .SendAsync("FriendRemoved", friendId);
 
             return NoContent();
         }

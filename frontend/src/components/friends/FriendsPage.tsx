@@ -32,6 +32,7 @@ import { useRemoveFriend } from "@/lib/hooks/useRemoveFriend";
 import { useSendFriendRequest } from "@/lib/hooks/useSendFriendRequest";
 import { useFriendRequests } from "@/lib/hooks/useFriendRequests";
 import { useSearchUsers } from "@/lib/hooks/useSearchUsers";
+import { useFriendHub } from "@/lib/hooks/useFriendHub";
 import type { Friend, UserInfo } from "@/lib/types/friend";
 import { Trans, t } from "@lingui/macro";
 
@@ -175,8 +176,34 @@ export function FriendsPage() {
   const [friendsList, setFriendsList] = useState<Friend[]>(friends);
   const [usernameInput, setUsernameInput] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
+  const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
   const [showSendRequestModal, setShowSendRequestModal] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Set up real-time friend updates
+  useFriendHub(
+    // Friend request received
+    () => {
+      refetchRequests();
+    },
+    // Friend request accepted
+    () => {
+      refetch();
+      refetchRequests();
+    },
+    // Friend request rejected
+    () => {
+      refetchRequests();
+    },
+    // Friend request cancelled
+    () => {
+      refetchRequests();
+    },
+    // Friend removed
+    () => {
+      refetch();
+    }
+  );
 
   // Update local list when friends change
   useEffect(() => {
@@ -188,6 +215,11 @@ export function FriendsPage() {
 
   // Debounced search
   useEffect(() => {
+    // Skip search if a user is already selected and input matches their username
+    if (selectedUsername && usernameInput.trim() === selectedUsername) {
+      return;
+    }
+
     if (usernameInput.trim().length >= 2) {
       const timer = setTimeout(() => {
         searchUsers(usernameInput.trim());
@@ -198,8 +230,9 @@ export function FriendsPage() {
       clearResults();
       setShowSuggestions(false);
       setSelectedUser(null);
+      setSelectedUsername(null);
     }
-  }, [usernameInput, searchUsers, clearResults]);
+  }, [usernameInput, selectedUsername, searchUsers, clearResults]);
 
   const handleRemove = (friendId: string) => {
     setFriendsList((prev) => prev.filter((f) => f.userId !== friendId));
@@ -209,6 +242,7 @@ export function FriendsPage() {
 
   const handleSelectUser = (user: UserInfo) => {
     setSelectedUser(user);
+    setSelectedUsername(user.username);
     setUsernameInput(user.username);
     setShowSuggestions(false);
     clearResults();
@@ -233,6 +267,7 @@ export function FriendsPage() {
       if (result !== null) {
         setUsernameInput("");
         setSelectedUser(null);
+        setSelectedUsername(null);
         setShowSendRequestModal(false);
         clearResults();
         // Refetch friends and requests to update the UI
@@ -248,6 +283,7 @@ export function FriendsPage() {
     if (result !== null) {
       setUsernameInput("");
       setSelectedUser(null);
+      setSelectedUsername(null);
       setShowSendRequestModal(false);
       clearResults();
       // Refetch friends and requests to update the UI
@@ -373,6 +409,7 @@ export function FriendsPage() {
                 setShowSendRequestModal(false);
                 setUsernameInput("");
                 setSelectedUser(null);
+                setSelectedUsername(null);
                 setSendError(null);
                 clearResults();
               }}
@@ -396,6 +433,7 @@ export function FriendsPage() {
                           setShowSendRequestModal(false);
                           setUsernameInput("");
                           setSelectedUser(null);
+                          setSelectedUsername(null);
                           setSendError(null);
                           clearResults();
                         }}
@@ -420,6 +458,7 @@ export function FriendsPage() {
                               setUsernameInput(e.target.value);
                               setSendError(null);
                               setSelectedUser(null);
+                              setSelectedUsername(null);
                             }}
                             onFocus={() => {
                               if (searchResults.length > 0) {
@@ -543,6 +582,7 @@ export function FriendsPage() {
                               setShowSendRequestModal(false);
                               setUsernameInput("");
                               setSelectedUser(null);
+                              setSelectedUsername(null);
                               setSendError(null);
                               clearResults();
                             }}

@@ -5,8 +5,12 @@ import { Navbar } from "./Navbar";
 import { ImpersonationBanner } from "./ImpersonationBanner";
 import { FloatingSettingsMenu } from "./FloatingSettingsMenu";
 import { FriendsSidebar } from "./FriendsSidebar";
+import { useGlobalChatListener } from "@/lib/hooks/useGlobalChatListener";
 
 export function AppWrapper({ children }: { children: React.ReactNode }) {
+  // Set up global chat listener to receive messages on all pages
+  useGlobalChatListener();
+
   return (
     <Box 
       suppressHydrationWarning

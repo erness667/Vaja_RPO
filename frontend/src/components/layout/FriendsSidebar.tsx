@@ -27,10 +27,11 @@ import { LuUsers, LuChevronRight, LuChevronLeft, LuUserPlus, LuMail, LuHeart, Lu
 import { HiSun, HiMoon } from "react-icons/hi";
 import { useFriends } from "@/lib/hooks/useFriends";
 import { useFriendRequests } from "@/lib/hooks/useFriendRequests";
+import { useConversations } from "@/lib/hooks/useConversations";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
+import { useFriendHub } from "@/lib/hooks/useFriendHub";
 import { useColorMode } from "@/components/ui/color-mode";
 import { useAppLocale } from "@/components/i18n/LinguiProvider";
-import { isAuthenticated } from "@/lib/utils/auth-storage";
 import { Trans, t } from "@lingui/macro";
 
 const LanguageFlag = ({ variant }: { variant: "sl" | "en" }) => {
@@ -54,8 +55,34 @@ export function FriendsSidebar() {
   const { locale, setLocale } = useAppLocale();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { user, isLoading: isLoadingUser } = useUserProfile();
-  const { friends, isLoading: isLoadingFriends } = useFriends();
-  const { requests } = useFriendRequests();
+  const { friends, isLoading: isLoadingFriends, refetch: refetchFriends } = useFriends();
+  const { requests, refetch: refetchRequests } = useFriendRequests();
+  const { conversations } = useConversations();
+
+  // Set up real-time friend updates
+  useFriendHub(
+    // Friend request received
+    () => {
+      refetchRequests();
+    },
+    // Friend request accepted
+    () => {
+      refetchFriends();
+      refetchRequests();
+    },
+    // Friend request rejected
+    () => {
+      refetchRequests();
+    },
+    // Friend request cancelled
+    () => {
+      refetchRequests();
+    },
+    // Friend removed
+    () => {
+      refetchFriends();
+    }
+  );
 
   // Compute recent requests from props
   const recentRequests = useMemo(() => {
@@ -65,6 +92,18 @@ export function FriendsSidebar() {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 2);
   }, [requests, user]);
+
+  // Calculate pending friend requests count
+  const pendingFriendRequestsCount = useMemo(() => {
+    if (!requests || !user) return 0;
+    return requests.filter((r) => r.addresseeId === user.id && r.status === 0).length;
+  }, [requests, user]);
+
+  // Calculate total unread messages count
+  const totalUnreadCount = useMemo(() => {
+    if (!conversations) return 0;
+    return conversations.reduce((total, conv) => total + conv.unreadCount, 0);
+  }, [conversations]);
 
   // Use friends directly
   const friendsList = friends || [];
@@ -479,26 +518,16 @@ export function FriendsSidebar() {
           {isCollapsed && (
             <VStack gap={6} p={2} align="center" height="100%" justify="center">
               <Link href="/friends">
-                <IconButton
-                  variant="ghost"
-                  colorPalette="blue"
-                  aria-label="Friends"
-                  title="Prijatelji"
-                >
-                  <Icon as={LuUsers} />
-                </IconButton>
-              </Link>
-              <Link href="/messages">
                 <Box position="relative">
                   <IconButton
                     variant="ghost"
-                    colorPalette="orange"
-                    aria-label="Friend Requests"
-                    title="Zahteve"
+                    colorPalette="blue"
+                    aria-label="Friends"
+                    title="Prijatelji"
                   >
-                    <Icon as={LuMail} />
+                    <Icon as={LuUsers} />
                   </IconButton>
-                  {recentRequests.length > 0 && (
+                  {pendingFriendRequestsCount > 0 && (
                     <Badge
                       position="absolute"
                       top="-1"
@@ -512,7 +541,36 @@ export function FriendsSidebar() {
                       justifyContent="center"
                       fontSize="2xs"
                     >
-                      {recentRequests.length}
+                      {pendingFriendRequestsCount > 99 ? "99+" : pendingFriendRequestsCount}
+                    </Badge>
+                  )}
+                </Box>
+              </Link>
+              <Link href="/messages">
+                <Box position="relative">
+                  <IconButton
+                    variant="ghost"
+                    colorPalette="orange"
+                    aria-label="Messages"
+                    title="Sporočila"
+                  >
+                    <Icon as={LuMail} />
+                  </IconButton>
+                  {totalUnreadCount > 0 && (
+                    <Badge
+                      position="absolute"
+                      top="-1"
+                      right="-1"
+                      colorPalette="red"
+                      borderRadius="full"
+                      minW="18px"
+                      h="18px"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      fontSize="2xs"
+                    >
+                      {totalUnreadCount > 99 ? "99+" : totalUnreadCount}
                     </Badge>
                   )}
                 </Box>

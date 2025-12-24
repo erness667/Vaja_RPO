@@ -1,8 +1,10 @@
 using System.Security.Claims;
 using Backend.DTOs.Chat;
 using Backend.DTOs.Auth;
+using Backend.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using SuperCarsApi.Models;
 
@@ -14,14 +16,17 @@ namespace Backend.Controllers
     public class ChatController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IHubContext<ChatHub> _hubContext;
 
-        public ChatController(ApplicationDbContext dbContext)
+        public ChatController(ApplicationDbContext dbContext, IHubContext<ChatHub> hubContext)
         {
             _dbContext = dbContext;
+            _hubContext = hubContext;
         }
 
         /// <summary>
         /// Get chat history with a specific user
+        /// Users can view their chat history even if they are no longer friends
         /// </summary>
         [HttpGet("conversation/{userId}")]
         public async Task<IActionResult> GetConversation(Guid userId, [FromQuery] int skip = 0, [FromQuery] int take = 50)
@@ -32,18 +37,8 @@ namespace Backend.Controllers
                 return Unauthorized(new { message = "Invalid token." });
             }
 
-            // Validate that users are friends
-            var areFriends = await _dbContext.FriendRequests
-                .AnyAsync(fr =>
-                    fr.Status == FriendRequestStatus.Accepted &&
-                    ((fr.RequesterId == currentUserId && fr.AddresseeId == userId) ||
-                     (fr.RequesterId == userId && fr.AddresseeId == currentUserId)));
-
-            if (!areFriends)
-            {
-                return Forbid();
-            }
-
+            // Allow users to view their chat history regardless of friend status
+            // This allows viewing messages even after unfriending someone
             var messages = await _dbContext.Messages
                 .Where(m =>
                     (m.SenderId == currentUserId && m.ReceiverId == userId) ||
@@ -180,17 +175,26 @@ namespace Backend.Controllers
                            !m.IsRead)
                 .ToListAsync();
 
+            var messageIds = new List<int>();
             foreach (var message in messages)
             {
                 message.IsRead = true;
                 message.ReadAt = DateTime.UtcNow;
+                messageIds.Add(message.Id);
             }
 
             await _dbContext.SaveChangesAsync();
+
+            // Notify sender via SignalR that messages were read
+            foreach (var messageId in messageIds)
+            {
+                await _hubContext.Clients.Group(request.SenderId.ToString()).SendAsync("MessageRead", messageId);
+            }
 
             return Ok(new { message = "Messages marked as read." });
         }
     }
 }
+
 
 

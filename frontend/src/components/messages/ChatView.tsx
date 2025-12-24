@@ -13,7 +13,7 @@ import {
   Textarea,
   Spinner,
 } from "@chakra-ui/react";
-import { LuSend, LuUserX } from "react-icons/lu";
+import { LuSend, LuUserX, LuCheck, LuCheckCheck } from "react-icons/lu";
 import { useChatMessages } from "@/lib/hooks/useChatMessages";
 import { useChatHub } from "@/lib/hooks/useChatHub";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
@@ -33,41 +33,162 @@ export function ChatView({ otherUser, otherUserId, currentUserId }: ChatViewProp
   const [messageText, setMessageText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const markedAsReadRef = useRef<string | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const lastMessageCountRef = useRef<number>(0);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasScrolledToBottomRef = useRef<boolean>(false);
+  const isUserNearBottomRef = useRef<boolean>(true); // Track if user is near bottom
   const { user } = useUserProfile();
 
-  const { messages, isLoading, error, addMessage, updateMessageReadStatus, refetch } = useChatMessages(otherUserId);
+  const { messages, isLoading, error, addMessage, updateMessageReadStatus, markMessagesFromSenderAsRead } = useChatMessages(otherUserId);
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom only when new messages are added (not when read status changes)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    // Skip if no messages
+    if (messages.length === 0) {
+      return;
+    }
+
+    // Scroll on initial load (instant) or when new messages are added (only if user was near bottom)
+    const isNewMessage = messages.length > lastMessageCountRef.current;
+    const shouldScrollOnInitialLoad = !hasScrolledToBottomRef.current;
+    const shouldScrollOnNewMessage = isNewMessage && isUserNearBottomRef.current;
+    
+    if (shouldScrollOnInitialLoad) {
+      // Initial load - scroll instantly without animation
+      messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+      hasScrolledToBottomRef.current = true;
+      isUserNearBottomRef.current = true;
+    } else if (shouldScrollOnNewMessage) {
+      // New message - scroll smoothly only if user was near bottom
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      scrollTimeoutRef.current = setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        scrollTimeoutRef.current = null;
+      }, 50);
+    }
+    lastMessageCountRef.current = messages.length;
+  }, [messages.length]);
+
+  // Reset marked ref and scroll tracking when switching conversations
+  useEffect(() => {
+    markedAsReadRef.current = null;
+    lastMessageCountRef.current = 0;
+    hasScrolledToBottomRef.current = false;
+    isUserNearBottomRef.current = true; // Reset to true when switching conversations
+  }, [otherUserId]);
+
+  // Track scroll position to determine if user is near bottom
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      // Consider user "near bottom" if within 100px of bottom
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      isUserNearBottomRef.current = distanceFromBottom < 100;
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [otherUserId]); // Re-attach when conversation changes
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    const scrollTimeout = scrollTimeoutRef.current;
+    return () => {
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+    };
+  }, []);
 
   // Mark messages as read when chat opens
   useEffect(() => {
-    if (otherUserId && messages.length > 0) {
-      const unreadMessages = messages.filter(
-        (m) => m.receiverId === currentUserId && !m.isRead
-      );
-      if (unreadMessages.length > 0) {
-        postApiChatMarkRead({
-          body: { senderId: otherUserId },
-        }).catch((err) => console.error("Error marking messages as read:", err));
-      }
+    // Don't run if no user selected or still loading
+    if (!otherUserId || isLoading) {
+      return;
     }
-  }, [otherUserId, messages, currentUserId]);
+
+    // Only mark once per conversation
+    if (markedAsReadRef.current === otherUserId) {
+      return;
+    }
+
+    // Wait for messages to load
+    if (messages.length === 0) {
+      return;
+    }
+
+    const unreadMessages = messages.filter(
+      (m) => m.receiverId === currentUserId && !m.isRead
+    );
+    
+    if (unreadMessages.length > 0) {
+      // Mark as processed to prevent duplicate calls
+      markedAsReadRef.current = otherUserId;
+      
+      // Update UI optimistically first (no refetch needed for messages)
+      markMessagesFromSenderAsRead(otherUserId);
+      
+      // Mark as read on backend
+      postApiChatMarkRead({
+        body: { senderId: otherUserId },
+      })
+        .then(() => {
+          // Dispatch global event to update conversations everywhere (sidebar, etc.)
+          // This will trigger refetch in sidebar, but not in chat messages
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("messagesMarkedAsRead"));
+          }
+        })
+        .catch((err) => {
+          console.error("Error marking messages as read:", err);
+          markedAsReadRef.current = null;
+        });
+    } else {
+      markedAsReadRef.current = otherUserId;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [otherUserId, isLoading, currentUserId, messages.length]);
 
   const handleMessageReceived = (message: Message) => {
-    // Only add if it's for the current conversation
+    // Only handle if it's for the current conversation
     if (
       message.senderId === otherUserId ||
       message.receiverId === otherUserId
     ) {
       addMessage(message);
-      // Mark as read if we're the receiver
-      if (message.receiverId === currentUserId) {
+      
+      // Dispatch global event ONLY for messages in current conversation
+      // (Global listener will handle other messages for sidebar updates)
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("newMessageReceived"));
+      }
+      
+      // Mark as read if we're the receiver and chat is open
+      if (message.receiverId === currentUserId && otherUserId) {
+        // Mark this specific message as read optimistically
+        updateMessageReadStatus(message.id, new Date().toISOString());
+        
+        // Update backend
         postApiChatMarkRead({
           body: { senderId: message.senderId },
-        }).catch((err) => console.error("Error marking messages as read:", err));
+        })
+          .then(() => {
+            // Dispatch global event to update conversations everywhere (sidebar, etc.)
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("messagesMarkedAsRead"));
+            }
+          })
+          .catch((err) => console.error("Error marking messages as read:", err));
       }
     }
   };
@@ -78,7 +199,14 @@ export function ChatView({ otherUser, otherUserId, currentUserId }: ChatViewProp
       message.senderId === otherUserId ||
       message.receiverId === otherUserId
     ) {
+      // When user sends a message, they want to see it - always scroll
+      isUserNearBottomRef.current = true;
       addMessage(message);
+      // Dispatch global event ONLY if message is for current conversation
+      // This prevents unnecessary refetches when user is not in this chat
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("newMessageReceived"));
+      }
     }
   };
 
@@ -97,8 +225,8 @@ export function ChatView({ otherUser, otherUserId, currentUserId }: ChatViewProp
     try {
       await sendMessage(otherUserId, messageText.trim());
       setMessageText("");
-      // Refetch to get the latest messages
-      setTimeout(() => refetch(), 500);
+      // The message will be added via SignalR's MessageSent event
+      // Don't refetch conversations immediately to avoid flickering
     } catch (err) {
       console.error("Error sending message:", err);
     } finally {
@@ -137,8 +265,8 @@ export function ChatView({ otherUser, otherUserId, currentUserId }: ChatViewProp
 
   const fullName = `${otherUser.name} ${otherUser.surname}`;
 
-  return (
-    <VStack height="100%" align="stretch" gap={0}>
+    return (
+      <VStack ref={chatContainerRef} height="100%" align="stretch" gap={0}>
       {/* Chat Header */}
       <Box
         p={4}
@@ -210,6 +338,7 @@ export function ChatView({ otherUser, otherUserId, currentUserId }: ChatViewProp
 
       {/* Messages */}
       <Box
+        ref={messagesContainerRef}
         flex={1}
         p={4}
         overflowY="auto"
@@ -310,17 +439,27 @@ export function ChatView({ otherUser, otherUserId, currentUserId }: ChatViewProp
                         {message.content}
                       </Text>
                     </Box>
-                    <Text
-                      fontSize="2xs"
-                      color={{ base: "gray.500", _dark: "gray.400" }}
-                      mt={1}
-                      px={1}
-                    >
-                      {new Date(message.sentAt).toLocaleTimeString("sl-SI", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </Text>
+                    <HStack gap={1} align="center" mt={1} px={1}>
+                      <Text
+                        fontSize="2xs"
+                        color={{ base: "gray.500", _dark: "gray.400" }}
+                      >
+                        {new Date(message.sentAt).toLocaleTimeString("sl-SI", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </Text>
+                      {isOwn && (
+                        <Icon
+                          as={message.isRead ? LuCheckCheck : LuCheck}
+                          boxSize={3}
+                          color={message.isRead 
+                            ? { base: "blue.500", _dark: "blue.400" }
+                            : { base: "gray.400", _dark: "gray.500" }
+                          }
+                        />
+                      )}
+                    </HStack>
                   </VStack>
                   {isOwn && (
                     <Box

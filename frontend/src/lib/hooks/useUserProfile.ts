@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { getApiUserMe } from "@/client";
 import { extractValidationErrors } from "@/lib/utils/error-utils";
-import { storeUserData } from "@/lib/utils/auth-storage";
+import { storeUserData, isAuthenticated } from "@/lib/utils/auth-storage";
 import type { StoredUser } from "@/lib/utils/auth-storage";
 import "@/lib/api-client";
 
@@ -20,9 +20,35 @@ export function useUserProfile() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isFetchingRef = useRef(false);
+  const isInitialMountRef = useRef(true);
 
   const fetchUser = useCallback(async () => {
-    setIsLoading(true);
+    // Prevent concurrent fetches
+    if (isFetchingRef.current) {
+      return null;
+    }
+
+    const wasInitialMount = isInitialMountRef.current;
+    isFetchingRef.current = true;
+
+    // Check if user is authenticated before fetching
+    if (!isAuthenticated()) {
+      setUser(null);
+      setError(null);
+      // Only set loading to false on initial mount, not on refetches
+      if (wasInitialMount) {
+        setIsLoading(false);
+        isInitialMountRef.current = false;
+      }
+      isFetchingRef.current = false;
+      return null;
+    }
+
+    // Only show loading state on initial mount to prevent flickering
+    if (wasInitialMount) {
+      setIsLoading(true);
+    }
     setError(null);
 
     try {
@@ -40,7 +66,12 @@ export function useUserProfile() {
         }
         const errorMessage = extractValidationErrors(errorData);
         setError(errorMessage);
-        setIsLoading(false);
+        setUser(null);
+        if (isInitialMountRef.current) {
+          setIsLoading(false);
+          isInitialMountRef.current = false;
+        }
+        isFetchingRef.current = false;
         return null;
       }
 
@@ -49,22 +80,56 @@ export function useUserProfile() {
         setUser(userData);
         // Update stored user data
         storeUserData(userData);
-        setIsLoading(false);
+        if (isInitialMountRef.current) {
+          setIsLoading(false);
+          isInitialMountRef.current = false;
+        }
+        isFetchingRef.current = false;
         return userData;
       }
 
-      setIsLoading(false);
+      setUser(null);
+      if (isInitialMountRef.current) {
+        setIsLoading(false);
+        isInitialMountRef.current = false;
+      }
+      isFetchingRef.current = false;
       return null;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";
       setError(errorMessage);
-      setIsLoading(false);
+      setUser(null);
+      if (isInitialMountRef.current) {
+        setIsLoading(false);
+        isInitialMountRef.current = false;
+      }
+      isFetchingRef.current = false;
       return null;
     }
   }, []);
 
   useEffect(() => {
     fetchUser();
+
+    // Listen for authentication state changes (login/logout)
+    const handleAuthStateChange = () => {
+      fetchUser();
+    };
+
+    // Listen for user data updates
+    const handleUserDataUpdate = () => {
+      fetchUser();
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("authStateChanged", handleAuthStateChange);
+      window.addEventListener("userDataUpdated", handleUserDataUpdate);
+
+      return () => {
+        window.removeEventListener("authStateChanged", handleAuthStateChange);
+        window.removeEventListener("userDataUpdated", handleUserDataUpdate);
+      };
+    }
   }, [fetchUser]);
 
   return {

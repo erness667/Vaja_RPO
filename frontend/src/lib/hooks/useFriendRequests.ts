@@ -42,10 +42,20 @@ export function useFriendRequests() {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    fetchRequests();
+
+    // Listen for authentication state changes (login/logout)
+    const handleAuthStateChange = () => {
       fetchRequests();
-    }, 0);
-    return () => clearTimeout(timer);
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("authStateChanged", handleAuthStateChange);
+
+      return () => {
+        window.removeEventListener("authStateChanged", handleAuthStateChange);
+      };
+    }
   }, [fetchRequests]);
 
   return {

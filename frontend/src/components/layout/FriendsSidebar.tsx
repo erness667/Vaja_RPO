@@ -53,10 +53,9 @@ export function FriendsSidebar() {
   const isDark = colorMode === "dark";
   const { locale, setLocale } = useAppLocale();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { user } = useUserProfile();
+  const { user, isLoading: isLoadingUser } = useUserProfile();
   const { friends, isLoading: isLoadingFriends } = useFriends();
   const { requests } = useFriendRequests();
-  const authenticated = typeof window !== "undefined" ? isAuthenticated() : false;
 
   // Compute recent requests from props
   const recentRequests = useMemo(() => {
@@ -72,7 +71,12 @@ export function FriendsSidebar() {
   const displayedFriends = friendsList.slice(0, 8); // Show max 8 friends
   const hasMoreFriends = friendsList.length > 8;
 
-  // Only render if user exists (client-side check)
+  // Only render if user exists and loading is complete (prevents flickering)
+  // Wait for initial load to complete before hiding/showing
+  if (isLoadingUser) {
+    return null;
+  }
+
   if (!user) {
     return null;
   }
@@ -440,7 +444,7 @@ export function FriendsSidebar() {
                       </MenuContent>
                     </MenuPositioner>
                   </MenuRoot>
-                  {authenticated && (
+                  {user && (
                     <Button
                       size="sm"
                       variant="outline"
@@ -568,7 +572,7 @@ export function FriendsSidebar() {
                   </MenuPositioner>
                 </Portal>
               </MenuRoot>
-              {authenticated && (
+              {user && (
                 <IconButton
                   variant="ghost"
                   colorPalette="pink"

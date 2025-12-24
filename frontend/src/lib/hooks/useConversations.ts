@@ -42,10 +42,20 @@ export function useConversations() {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    fetchConversations();
+
+    // Listen for authentication state changes (login/logout)
+    const handleAuthStateChange = () => {
       fetchConversations();
-    }, 0);
-    return () => clearTimeout(timer);
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("authStateChanged", handleAuthStateChange);
+
+      return () => {
+        window.removeEventListener("authStateChanged", handleAuthStateChange);
+      };
+    }
   }, [fetchConversations]);
 
   return {

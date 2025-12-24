@@ -42,10 +42,20 @@ export function useFriends() {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    fetchFriends();
+
+    // Listen for authentication state changes (login/logout)
+    const handleAuthStateChange = () => {
       fetchFriends();
-    }, 0);
-    return () => clearTimeout(timer);
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("authStateChanged", handleAuthStateChange);
+
+      return () => {
+        window.removeEventListener("authStateChanged", handleAuthStateChange);
+      };
+    }
   }, [fetchFriends]);
 
   return {

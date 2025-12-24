@@ -329,57 +329,69 @@ export function FriendsSidebar() {
                   <VStack gap={2} align="stretch">
                     {displayedFriends.map((friend) => {
                       const fullName = `${friend.user.name} ${friend.user.surname}`;
+                      // Find conversation for this friend to get unread count
+                      const conversation = conversations?.find(
+                        (c) => c.userId === friend.userId
+                      );
+                      const unreadCount = conversation?.unreadCount || 0;
                       return (
-                        <Link key={friend.userId} href="/friends">
-                          <Card.Root
-                            size="sm"
-                            variant="outline"
-                            borderRadius="md"
-                            cursor="pointer"
-                          >
-                            <CardBody p={2}>
-                              <HStack gap={2}>
-                                <Box
-                                  width="40px"
-                                  height="40px"
-                                  borderRadius="full"
-                                  overflow="hidden"
-                                  bg={{ base: "gray.200", _dark: "gray.700" }}
-                                  flexShrink={0}
-                                  position="relative"
-                                  borderWidth="2px"
-                                  borderColor={{ base: "blue.300", _dark: "blue.700" }}
-                                >
-                                  {friend.user.avatarImageUrl ? (
-                                    <Image
-                                      src={friend.user.avatarImageUrl}
-                                      alt={fullName}
-                                      width={40}
-                                      height={40}
-                                      unoptimized
-                                      style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover",
-                                      }}
-                                    />
-                                  ) : (
-                                    <Box
-                                      width="100%"
-                                      height="100%"
-                                      display="flex"
-                                      alignItems="center"
-                                      justifyContent="center"
-                                      bg={{ base: "gray.300", _dark: "gray.600" }}
-                                    >
-                                      <Icon as={LuUsers} boxSize={4} color={{ base: "gray.500", _dark: "gray.400" }} />
-                                    </Box>
-                                  )}
-                                </Box>
+                        <Link key={friend.userId} href={`/messages?userId=${friend.userId}`}>
+                          <Box position="relative">
+                            <Card.Root
+                              size="sm"
+                              variant="outline"
+                              borderRadius="md"
+                              cursor="pointer"
+                              borderWidth={unreadCount > 0 ? "2px" : "1px"}
+                              borderColor={unreadCount > 0 ? { base: "blue.400", _dark: "blue.500" } : { base: "gray.200", _dark: "gray.700" }}
+                              bg={unreadCount > 0 ? { base: "blue.50", _dark: "blue.950" } : undefined}
+                              _hover={{
+                                borderColor: unreadCount > 0 ? { base: "blue.500", _dark: "blue.400" } : { base: "gray.300", _dark: "gray.600" },
+                                boxShadow: unreadCount > 0 ? "md" : "sm",
+                              }}
+                            >
+                              <CardBody p={2}>
+                                <HStack gap={2}>
+                                  <Box
+                                    width="40px"
+                                    height="40px"
+                                    borderRadius="full"
+                                    overflow="hidden"
+                                    bg={{ base: "gray.200", _dark: "gray.700" }}
+                                    flexShrink={0}
+                                    borderWidth="2px"
+                                    borderColor={{ base: "blue.300", _dark: "blue.700" }}
+                                  >
+                                    {friend.user.avatarImageUrl ? (
+                                      <Image
+                                        src={friend.user.avatarImageUrl}
+                                        alt={fullName}
+                                        width={40}
+                                        height={40}
+                                        unoptimized
+                                        style={{
+                                          width: "100%",
+                                          height: "100%",
+                                          objectFit: "cover",
+                                        }}
+                                      />
+                                    ) : (
+                                      <Box
+                                        width="100%"
+                                        height="100%"
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        bg={{ base: "gray.300", _dark: "gray.600" }}
+                                      >
+                                        <Icon as={LuUsers} boxSize={4} color={{ base: "gray.500", _dark: "gray.400" }} />
+                                      </Box>
+                                    )}
+                                  </Box>
                                 <VStack align="start" gap={0} flex={1} minWidth={0}>
                                   <Text
                                     fontSize="xs"
-                                    fontWeight="semibold"
+                                    fontWeight={unreadCount > 0 ? "bold" : "semibold"}
                                     color={{ base: "gray.800", _dark: "gray.100" }}
                                     lineClamp={1}
                                   >
@@ -387,6 +399,7 @@ export function FriendsSidebar() {
                                   </Text>
                                   <Text
                                     fontSize="2xs"
+                                    fontWeight={unreadCount > 0 ? "semibold" : "normal"}
                                     color={{ base: "gray.600", _dark: "gray.400" }}
                                     lineClamp={1}
                                   >
@@ -396,6 +409,25 @@ export function FriendsSidebar() {
                               </HStack>
                             </CardBody>
                           </Card.Root>
+                          {unreadCount > 0 && (
+                            <Badge
+                              position="absolute"
+                              top="-1"
+                              right="-1"
+                              colorPalette="blue"
+                              borderRadius="full"
+                              minW="22px"
+                              h="22px"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                              fontSize="xs"
+                              fontWeight="bold"
+                            >
+                              {unreadCount > 99 ? "99+" : unreadCount}
+                            </Badge>
+                          )}
+                          </Box>
                         </Link>
                       );
                     })}

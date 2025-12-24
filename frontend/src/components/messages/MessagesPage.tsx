@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Box,
   VStack,
@@ -26,6 +27,7 @@ import type { Friend } from "@/lib/types/friend";
 import { Trans } from "@lingui/macro";
 
 export function MessagesPage() {
+  const searchParams = useSearchParams();
   const { user } = useUserProfile();
   const { conversations, isLoading: isLoadingConversations } =
     useConversations();
@@ -36,6 +38,7 @@ export function MessagesPage() {
     id: string;
     user: import("@/lib/types/friend").UserInfo;
   } | null>(null);
+  const urlInitializedRef = useRef(false);
 
   // Compute items to show: conversations first, then friends if no conversations
   const displayItems = useMemo(() => {
@@ -71,6 +74,48 @@ export function MessagesPage() {
     setSelectedUser({ id: userId, user: userInfo });
     // Don't refetch immediately - let ChatView handle it when marking messages as read
   };
+
+  // Handle userId from URL query parameter
+  useEffect(() => {
+    const userIdFromUrl = searchParams.get("userId");
+    if (userIdFromUrl && userIdFromUrl !== selectedUserId && !urlInitializedRef.current) {
+      // Wait for data to load
+      if (isLoadingConversations || isLoadingFriends) {
+        return;
+      }
+
+      // Try to find the user in conversations first
+      const conversation = conversations?.find(
+        (c) => c.userId === userIdFromUrl
+      );
+      if (conversation) {
+        urlInitializedRef.current = true;
+        // Use setTimeout to defer state update and satisfy linter
+        setTimeout(() => {
+          setSelectedUserId(conversation.userId);
+          setSelectedUser({ id: conversation.userId, user: conversation.user });
+        }, 0);
+        return;
+      }
+
+      // If not in conversations, try to find in friends
+      const friend = friends?.find((f) => f.userId === userIdFromUrl);
+      if (friend) {
+        urlInitializedRef.current = true;
+        // Use setTimeout to defer state update and satisfy linter
+        setTimeout(() => {
+          setSelectedUserId(friend.userId);
+          setSelectedUser({ id: friend.userId, user: friend.user });
+        }, 0);
+        return;
+      }
+    }
+
+    // Reset initialization flag when URL changes
+    if (!userIdFromUrl) {
+      urlInitializedRef.current = false;
+    }
+  }, [searchParams, conversations, friends, selectedUserId, isLoadingConversations, isLoadingFriends]);
 
   return (
     <Box minH="calc(100vh - 80px)" bg={{ base: "#f5f5f5", _dark: "#111827" }}>

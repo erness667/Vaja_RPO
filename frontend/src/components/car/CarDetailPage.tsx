@@ -428,8 +428,8 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                     </Badge>
                   </VStack>
                   <HStack gap={2}>
-                    {/* Compare Button */}
-                    {car && (
+                    {/* Compare Button - Only show if authenticated */}
+                    {car && isLoggedIn && (
                       <Button
                         variant="outline"
                         colorPalette="blue"

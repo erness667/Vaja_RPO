@@ -1,8 +1,13 @@
 "use client";
 
 import { CarComparisonPage } from "@/components/car/CarComparisonPage";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 export default function ComparePage() {
-  return <CarComparisonPage />;
+  return (
+    <ProtectedRoute>
+      <CarComparisonPage />
+    </ProtectedRoute>
+  );
 }
 

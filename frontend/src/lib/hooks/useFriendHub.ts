@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import * as signalR from "@microsoft/signalr";
-import { getAccessToken } from "@/lib/utils/auth-storage";
+import { getAccessToken, isAuthenticated } from "@/lib/utils/auth-storage";
 import type { FriendRequest, Friend } from "@/lib/types/friend";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5121';
@@ -141,9 +141,14 @@ export function useFriendHub(
       connectionRef.current = connection;
       console.log('SignalR connected for friend events');
     } catch (error) {
-      console.error('SignalR connection error:', error);
-      if (onErrorRef.current) {
-        onErrorRef.current(error instanceof Error ? error.message : 'Connection error');
+      // Only log error if it's not an authentication error (401)
+      const errorMessage = error instanceof Error ? error.message : 'Connection error';
+      if (!errorMessage.includes('401') && !errorMessage.includes('Unauthorized')) {
+        console.error('SignalR connection error:', error);
+      }
+      // Don't call onError for auth errors as they're expected when not logged in
+      if (onErrorRef.current && !errorMessage.includes('401') && !errorMessage.includes('Unauthorized')) {
+        onErrorRef.current(errorMessage);
       }
     } finally {
       isConnectingRef.current = false;
@@ -158,11 +163,11 @@ export function useFriendHub(
   }, []);
 
   useEffect(() => {
-    // Only connect if we have a token
-    const token = getAccessToken();
-    if (token) {
-      connect();
+    if (!isAuthenticated()) {
+      return;
     }
+
+    connect();
 
     return () => {
       disconnect();

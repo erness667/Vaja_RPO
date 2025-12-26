@@ -179,11 +179,10 @@ export function Navbar() {
     window.addEventListener('userDataUpdated', handleUserUpdate);
     window.addEventListener('authStateChanged', handleAuthStateChange);
     
-    // Check periodically (e.g., every 5 seconds) to catch token expiration
-    const interval = setInterval(checkAuth, 5000);
+    // Note: No need for periodic polling - event listeners handle auth state changes
+    // Token expiration will be caught when API calls return 401, which triggers logout
     
     return () => {
-      clearInterval(interval);
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('userDataUpdated', handleUserUpdate);
       window.removeEventListener('authStateChanged', handleAuthStateChange);

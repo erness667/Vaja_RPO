@@ -35,6 +35,12 @@ export function useRemoveFriend() {
       }
 
       setIsLoading(false);
+      
+      // Dispatch custom event to notify components about friend removal
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("friendRemoved", { detail: { friendId } }));
+      }
+      
       return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";

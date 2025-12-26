@@ -49,11 +49,18 @@ export function useFriends() {
       fetchFriends();
     };
 
+    // Listen for friend removal events to refetch friends list
+    const handleFriendRemoved = () => {
+      fetchFriends();
+    };
+
     if (typeof window !== "undefined") {
       window.addEventListener("authStateChanged", handleAuthStateChange);
+      window.addEventListener("friendRemoved", handleFriendRemoved);
 
       return () => {
         window.removeEventListener("authStateChanged", handleAuthStateChange);
+        window.removeEventListener("friendRemoved", handleFriendRemoved);
       };
     }
   }, [fetchFriends]);

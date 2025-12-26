@@ -78,7 +78,7 @@ export function useUserProfile() {
       if (response.data) {
         const userData = response.data as UserProfile;
         setUser(userData);
-        // Update stored user data
+        // Update stored user data (we removed the userDataUpdated listener to prevent infinite loops)
         storeUserData(userData);
         if (isInitialMountRef.current) {
           setIsLoading(false);
@@ -112,22 +112,17 @@ export function useUserProfile() {
     fetchUser();
 
     // Listen for authentication state changes (login/logout)
+    // Note: We don't listen to 'userDataUpdated' to avoid infinite loops
+    // (when we fetch and store user data, it would trigger this listener)
     const handleAuthStateChange = () => {
-      fetchUser();
-    };
-
-    // Listen for user data updates
-    const handleUserDataUpdate = () => {
       fetchUser();
     };
 
     if (typeof window !== "undefined") {
       window.addEventListener("authStateChanged", handleAuthStateChange);
-      window.addEventListener("userDataUpdated", handleUserDataUpdate);
 
       return () => {
         window.removeEventListener("authStateChanged", handleAuthStateChange);
-        window.removeEventListener("userDataUpdated", handleUserDataUpdate);
       };
     }
   }, [fetchUser]);

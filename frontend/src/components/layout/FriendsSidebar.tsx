@@ -157,7 +157,7 @@ export function FriendsSidebar() {
         borderColor={{ base: "gray.200", _dark: "gray.700" }}
         boxShadow="lg"
         transition="width 0.3s ease"
-        overflow="hidden"
+        overflow={isCollapsed ? "visible" : "hidden"}
         position="relative"
         borderTopRightRadius="lg"
         borderBottomRightRadius="lg"
@@ -548,9 +548,9 @@ export function FriendsSidebar() {
 
           {/* Collapsed State - Just Icons */}
           {isCollapsed && (
-            <VStack gap={6} p={2} align="center" height="100%" justify="center">
+            <VStack gap={6} p={2} align="center" height="100%" justify="center" overflow="visible">
               <Link href="/friends">
-                <Box position="relative">
+                <Box position="relative" overflow="visible">
                   <IconButton
                     variant="ghost"
                     colorPalette="blue"
@@ -562,16 +562,20 @@ export function FriendsSidebar() {
                   {pendingFriendRequestsCount > 0 && (
                     <Badge
                       position="absolute"
-                      top="-1"
-                      right="-1"
+                      top="-2"
+                      right="-2"
                       colorPalette="red"
+                      variant="solid"
                       borderRadius="full"
-                      minW="18px"
-                      h="18px"
+                      minW="20px"
+                      h="20px"
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
                       fontSize="2xs"
+                      fontWeight="bold"
+                      zIndex={10}
+                      boxShadow="md"
                     >
                       {pendingFriendRequestsCount > 99 ? "99+" : pendingFriendRequestsCount}
                     </Badge>
@@ -579,7 +583,7 @@ export function FriendsSidebar() {
                 </Box>
               </Link>
               <Link href="/messages">
-                <Box position="relative">
+                <Box position="relative" overflow="visible">
                   <IconButton
                     variant="ghost"
                     colorPalette="orange"
@@ -591,16 +595,20 @@ export function FriendsSidebar() {
                   {totalUnreadCount > 0 && (
                     <Badge
                       position="absolute"
-                      top="-1"
-                      right="-1"
+                      top="-2"
+                      right="-2"
                       colorPalette="red"
+                      variant="solid"
                       borderRadius="full"
-                      minW="18px"
-                      h="18px"
+                      minW="20px"
+                      h="20px"
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
                       fontSize="2xs"
+                      fontWeight="bold"
+                      zIndex={10}
+                      boxShadow="md"
                     >
                       {totalUnreadCount > 99 ? "99+" : totalUnreadCount}
                     </Badge>

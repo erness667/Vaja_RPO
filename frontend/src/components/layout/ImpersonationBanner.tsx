@@ -58,15 +58,12 @@ export function ImpersonationBanner() {
       checkImpersonation();
     };
     
-    // Check periodically to catch changes
-    const interval = setInterval(checkImpersonation, 1000);
-    
+    // No need for periodic polling - event listeners handle all state changes
     window.addEventListener('authStateChanged', handleAuthChange);
     window.addEventListener('userDataUpdated', handleAuthChange);
     window.addEventListener('impersonationStopped', handleImpersonationStop);
     
     return () => {
-      clearInterval(interval);
       window.removeEventListener('authStateChanged', handleAuthChange);
       window.removeEventListener('userDataUpdated', handleAuthChange);
       window.removeEventListener('impersonationStopped', handleImpersonationStop);

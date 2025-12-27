@@ -11,6 +11,7 @@ namespace Backend.DTOs.Chat
         public DateTime SentAt { get; set; }
         public bool IsRead { get; set; }
         public DateTime? ReadAt { get; set; }
+        public bool IsMessageRequest { get; set; }
         public UserDto? Sender { get; set; }
         public UserDto? Receiver { get; set; }
     }

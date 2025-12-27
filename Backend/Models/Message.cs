@@ -27,6 +27,10 @@ namespace SuperCarsApi.Models
         // Whether the message has been read
         public bool IsRead { get; set; } = false;
         public DateTime? ReadAt { get; set; }
+
+        // Whether this is a message request (from non-friend)
+        // Message requests go to a separate "Requests" tab and don't count in unread messages
+        public bool IsMessageRequest { get; set; } = false;
     }
 }
 

@@ -412,6 +412,71 @@ export type PostApiChatMarkReadResponses = {
     200: unknown;
 };
 
+export type GetApiChatRequestsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/chat/requests';
+};
+
+export type GetApiChatRequestsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type DeleteApiChatRequestsByUserIdData = {
+    body?: never;
+    path: {
+        userId: string;
+    };
+    query?: never;
+    url: '/api/chat/requests/{userId}';
+};
+
+export type DeleteApiChatRequestsByUserIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiChatRequestsByUserIdData = {
+    body?: never;
+    path: {
+        userId: string;
+    };
+    query?: {
+        skip?: number;
+        take?: number;
+    };
+    url: '/api/chat/requests/{userId}';
+};
+
+export type GetApiChatRequestsByUserIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiChatRequestsByUserIdAcceptData = {
+    body?: never;
+    path: {
+        userId: string;
+    };
+    query?: never;
+    url: '/api/chat/requests/{userId}/accept';
+};
+
+export type PostApiChatRequestsByUserIdAcceptResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
 export type GetApiCarsByCarIdCommentsData = {
     body?: never;
     path: {

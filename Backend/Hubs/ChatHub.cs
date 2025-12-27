@@ -46,14 +46,6 @@ namespace Backend.Hubs
                 return;
             }
 
-            // Validate that users are friends
-            var areFriends = await AreFriendsAsync(senderId.Value, receiverId);
-            if (!areFriends)
-            {
-                await Clients.Caller.SendAsync("Error", "You can only send messages to friends.");
-                return;
-            }
-
             // Validate receiver exists
             var receiver = await _dbContext.Users.FindAsync(receiverId);
             if (receiver == null)
@@ -62,14 +54,19 @@ namespace Backend.Hubs
                 return;
             }
 
+            // Check if users are friends
+            var areFriends = await AreFriendsAsync(senderId.Value, receiverId);
+            
             // Create and save message
+            // If users are not friends, mark as message request
             var message = new Message
             {
                 SenderId = senderId.Value,
                 ReceiverId = receiverId,
                 Content = content,
                 SentAt = DateTime.UtcNow,
-                IsRead = false
+                IsRead = false,
+                IsMessageRequest = !areFriends
             };
 
             _dbContext.Messages.Add(message);
@@ -90,6 +87,7 @@ namespace Backend.Hubs
                 SentAt = message.SentAt,
                 IsRead = message.IsRead,
                 ReadAt = message.ReadAt,
+                IsMessageRequest = message.IsMessageRequest,
                 Sender = new Backend.DTOs.Auth.UserDto
                 {
                     Id = message.Sender.Id,

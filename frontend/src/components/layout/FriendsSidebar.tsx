@@ -30,6 +30,8 @@ import { useFriendRequests } from "@/lib/hooks/useFriendRequests";
 import { useConversations } from "@/lib/hooks/useConversations";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import { useFriendHub } from "@/lib/hooks/useFriendHub";
+import { useAcceptFriendRequest } from "@/lib/hooks/useAcceptFriendRequest";
+import { useRejectFriendRequest } from "@/lib/hooks/useRejectFriendRequest";
 import { useColorMode } from "@/components/ui/color-mode";
 import { useAppLocale } from "@/components/i18n/LinguiProvider";
 import { Trans, t } from "@lingui/macro";
@@ -47,6 +49,169 @@ const LanguageFlag = ({ variant }: { variant: "sl" | "en" }) => {
     />
   );
 };
+
+function FriendRequestCardSidebar({
+  request,
+  requester,
+  fullName,
+  onAction,
+}: {
+  request: { id: number };
+  requester: { name: string; surname: string; username: string; avatarImageUrl?: string };
+  fullName: string;
+  onAction: () => void;
+}) {
+  const { acceptFriendRequest, isLoading: isAccepting } = useAcceptFriendRequest();
+  const { rejectFriendRequest, isLoading: isRejecting } = useRejectFriendRequest();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleAccept = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsProcessing(true);
+    const success = await acceptFriendRequest(request.id);
+    if (success) {
+      onAction();
+    }
+    setIsProcessing(false);
+  };
+
+  const handleReject = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsProcessing(true);
+    const success = await rejectFriendRequest(request.id);
+    if (success) {
+      onAction();
+    }
+    setIsProcessing(false);
+  };
+
+  const isLoading = isProcessing || isAccepting || isRejecting;
+
+  return (
+    <Link href="/friends/requests">
+      <Card.Root
+        size="sm"
+        variant="outline"
+        borderRadius="md"
+        borderColor={{ base: "orange.200", _dark: "orange.800" }}
+        bg={{ base: "orange.50", _dark: "orange.950" }}
+        cursor="pointer"
+        _hover={{
+          borderColor: { base: "orange.300", _dark: "orange.700" },
+          boxShadow: "sm",
+        }}
+      >
+        <CardBody p={2}>
+          <HStack gap={2}>
+            <Box
+              width="40px"
+              height="40px"
+              borderRadius="full"
+              overflow="hidden"
+              bg={{ base: "gray.200", _dark: "gray.700" }}
+              flexShrink={0}
+              position="relative"
+              borderWidth="2px"
+              borderColor={{ base: "orange.300", _dark: "orange.700" }}
+            >
+              {requester.avatarImageUrl ? (
+                <Image
+                  src={requester.avatarImageUrl}
+                  alt={fullName}
+                  width={40}
+                  height={40}
+                  unoptimized
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <Box
+                  width="100%"
+                  height="100%"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  bg={{ base: "gray.300", _dark: "gray.600" }}
+                >
+                  <Icon as={LuUserPlus} boxSize={4} color={{ base: "gray.500", _dark: "gray.400" }} />
+                </Box>
+              )}
+            </Box>
+            <VStack align="start" gap={0} flex={1} minWidth={0}>
+              <Text
+                fontSize="xs"
+                fontWeight="semibold"
+                color={{ base: "gray.800", _dark: "gray.100" }}
+                lineClamp={1}
+              >
+                {fullName}
+              </Text>
+              <Text
+                fontSize="2xs"
+                color={{ base: "gray.600", _dark: "gray.400" }}
+                lineClamp={1}
+              >
+                @{requester.username}
+              </Text>
+            </VStack>
+          </HStack>
+          <HStack gap={2} mt={2} onClick={(e) => e.stopPropagation()}>
+            <Button
+              size="xs"
+              variant="ghost"
+              colorPalette="blue"
+              onClick={handleAccept}
+              disabled={isLoading}
+              loading={isAccepting && !isRejecting}
+              fontWeight="semibold"
+              fontSize="xs"
+              px={3}
+              py={1.5}
+              borderRadius="md"
+              color={{ base: "blue.600", _dark: "blue.400" }}
+              _hover={{
+                bg: { base: "blue.50", _dark: "blue.900" },
+                color: { base: "blue.700", _dark: "blue.300" },
+              }}
+              _active={{
+                bg: { base: "blue.100", _dark: "blue.800" },
+              }}
+            >
+              <Trans>Sprejmi</Trans>
+            </Button>
+            <Button
+              size="xs"
+              variant="ghost"
+              onClick={handleReject}
+              disabled={isLoading}
+              loading={isRejecting && !isAccepting}
+              fontWeight="semibold"
+              fontSize="xs"
+              px={3}
+              py={1.5}
+              borderRadius="md"
+              color={{ base: "gray.600", _dark: "gray.400" }}
+              _hover={{
+                bg: { base: "gray.100", _dark: "gray.700" },
+                color: { base: "gray.800", _dark: "gray.200" },
+              }}
+              _active={{
+                bg: { base: "gray.200", _dark: "gray.600" },
+              }}
+            >
+              <Trans>Zavrni</Trans>
+            </Button>
+          </HStack>
+        </CardBody>
+      </Card.Root>
+    </Link>
+  );
+}
 
 export function FriendsSidebar() {
   const router = useRouter();
@@ -198,7 +363,7 @@ export function FriendsSidebar() {
                         <Trans>Zahteve</Trans>
                       </Text>
                     </HStack>
-                    <Link href="/messages">
+                    <Link href="/friends/requests">
                       <Button size="xs" variant="ghost" colorPalette="orange">
                         <Trans>Vse</Trans>
                       </Button>
@@ -210,75 +375,16 @@ export function FriendsSidebar() {
                       if (!requester) return null;
                       const fullName = `${requester.name} ${requester.surname}`;
                       return (
-                        <Link key={request.id} href="/messages">
-                          <Card.Root
-                            size="sm"
-                            variant="outline"
-                            borderRadius="md"
-                            borderColor={{ base: "orange.200", _dark: "orange.800" }}
-                            bg={{ base: "orange.50", _dark: "orange.950" }}
-                            cursor="pointer"
-                          >
-                            <CardBody p={2}>
-                              <HStack gap={2}>
-                                <Box
-                                  width="40px"
-                                  height="40px"
-                                  borderRadius="full"
-                                  overflow="hidden"
-                                  bg={{ base: "gray.200", _dark: "gray.700" }}
-                                  flexShrink={0}
-                                  position="relative"
-                                  borderWidth="2px"
-                                  borderColor={{ base: "orange.300", _dark: "orange.700" }}
-                                >
-                                  {requester.avatarImageUrl ? (
-                                    <Image
-                                      src={requester.avatarImageUrl}
-                                      alt={fullName}
-                                      width={40}
-                                      height={40}
-                                      unoptimized
-                                      style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "cover",
-                                      }}
-                                    />
-                                  ) : (
-                                    <Box
-                                      width="100%"
-                                      height="100%"
-                                      display="flex"
-                                      alignItems="center"
-                                      justifyContent="center"
-                                      bg={{ base: "gray.300", _dark: "gray.600" }}
-                                    >
-                                      <Icon as={LuUserPlus} boxSize={4} color={{ base: "gray.500", _dark: "gray.400" }} />
-                                    </Box>
-                                  )}
-                                </Box>
-                                <VStack align="start" gap={0} flex={1} minWidth={0}>
-                                  <Text
-                                    fontSize="xs"
-                                    fontWeight="semibold"
-                                    color={{ base: "gray.800", _dark: "gray.100" }}
-                                    lineClamp={1}
-                                  >
-                                    {fullName}
-                                  </Text>
-                                  <Text
-                                    fontSize="2xs"
-                                    color={{ base: "gray.600", _dark: "gray.400" }}
-                                    lineClamp={1}
-                                  >
-                                    @{requester.username}
-                                  </Text>
-                                </VStack>
-                              </HStack>
-                            </CardBody>
-                          </Card.Root>
-                        </Link>
+                        <FriendRequestCardSidebar
+                          key={request.id}
+                          request={request}
+                          requester={requester}
+                          fullName={fullName}
+                          onAction={() => {
+                            refetchRequests();
+                            refetchFriends();
+                          }}
+                        />
                       );
                     })}
                   </VStack>

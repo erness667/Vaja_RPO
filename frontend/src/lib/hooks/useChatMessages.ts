@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useCallback, useEffect } from "react";
-import { getApiChatConversationByUserId } from "@/client";
+import { getApiChatConversationByUserId, getApiChatRequestsByUserId } from "@/client";
 import "@/lib/api-client";
 import type { Message } from "@/lib/types/chat";
 import { isAuthenticated } from "@/lib/utils/auth-storage";
 
-export function useChatMessages(userId: string | null) {
+export function useChatMessages(userId: string | null, isMessageRequest: boolean = false) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,10 +22,15 @@ export function useChatMessages(userId: string | null) {
     setError(null);
 
     try {
-      const response = await getApiChatConversationByUserId({
-        path: { userId },
-        query: { skip: 0, take: 100 },
-      });
+      const response = isMessageRequest
+        ? await getApiChatRequestsByUserId({
+            path: { userId },
+            query: { skip: 0, take: 100 },
+          })
+        : await getApiChatConversationByUserId({
+            path: { userId },
+            query: { skip: 0, take: 100 },
+          });
 
       if (response.error || (response.response && !response.response.ok)) {
         const errorData = response.error as { message?: string } | undefined;
@@ -42,7 +47,7 @@ export function useChatMessages(userId: string | null) {
       setError(message);
       setIsLoading(false);
     }
-  }, [userId]);
+  }, [userId, isMessageRequest]);
 
   useEffect(() => {
     // Use setTimeout to defer execution and avoid cascading renders

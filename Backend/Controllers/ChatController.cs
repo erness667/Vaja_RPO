@@ -134,6 +134,13 @@ namespace Backend.Controllers
                     var unreadCount = await _dbContext.Messages
                         .CountAsync(m => m.SenderId == partnerId && m.ReceiverId == currentUserId && !m.IsRead && !m.IsMessageRequest);
 
+                    // Check if users are still friends
+                    var areFriends = await _dbContext.FriendRequests
+                        .AnyAsync(fr =>
+                            fr.Status == FriendRequestStatus.Accepted &&
+                            ((fr.RequesterId == currentUserId && fr.AddresseeId == partnerId) ||
+                             (fr.RequesterId == partnerId && fr.AddresseeId == currentUserId)));
+
                     conversations.Add(new
                     {
                         UserId = partnerId,
@@ -154,7 +161,8 @@ namespace Backend.Controllers
                             SentAt = latestMessage.SentAt,
                             IsRead = latestMessage.IsRead
                         },
-                        UnreadCount = unreadCount
+                        UnreadCount = unreadCount,
+                        IsFriend = areFriends
                     });
                 }
             }

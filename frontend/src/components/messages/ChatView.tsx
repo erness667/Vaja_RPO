@@ -27,9 +27,10 @@ interface ChatViewProps {
   otherUser: UserInfo | null;
   otherUserId: string | null;
   currentUserId: string;
+  isMessageRequest?: boolean;
 }
 
-export function ChatView({ otherUser, otherUserId, currentUserId }: ChatViewProps) {
+export function ChatView({ otherUser, otherUserId, currentUserId, isMessageRequest = false }: ChatViewProps) {
   const [messageText, setMessageText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -42,7 +43,7 @@ export function ChatView({ otherUser, otherUserId, currentUserId }: ChatViewProp
   const isUserNearBottomRef = useRef<boolean>(true); // Track if user is near bottom
   const { user } = useUserProfile();
 
-  const { messages, isLoading, error, addMessage, updateMessageReadStatus, markMessagesFromSenderAsRead } = useChatMessages(otherUserId);
+  const { messages, isLoading, error, addMessage, updateMessageReadStatus, markMessagesFromSenderAsRead } = useChatMessages(otherUserId, isMessageRequest);
 
   // Scroll to bottom only when new messages are added (not when read status changes)
   useEffect(() => {
@@ -516,12 +517,27 @@ export function ChatView({ otherUser, otherUserId, currentUserId }: ChatViewProp
         borderColor={{ base: "gray.200", _dark: "gray.700" }}
         bg={{ base: "white", _dark: "gray.800" }}
       >
+        {isMessageRequest && (
+          <Box
+            p={2}
+            mb={2}
+            borderRadius="md"
+            bg={{ base: "orange.50", _dark: "orange.950" }}
+            borderWidth="1px"
+            borderColor={{ base: "orange.200", _dark: "orange.800" }}
+            textAlign="center"
+          >
+            <Text fontSize="xs" color={{ base: "orange.700", _dark: "orange.300" }}>
+              <Trans>To je zahteva za sporočilo. Sprejmite zahtevo, da začnete redni pogovor.</Trans>
+            </Text>
+          </Box>
+        )}
         <HStack gap={2}>
           <Textarea
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Napišite sporočilo..."
+            placeholder={isMessageRequest ? "Odgovorite na zahtevo..." : "Napišite sporočilo..."}
             resize="none"
             rows={3}
             disabled={isSending}

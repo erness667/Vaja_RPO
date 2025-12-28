@@ -180,28 +180,31 @@ export function FriendsPage() {
   const [showSendRequestModal, setShowSendRequestModal] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Set up real-time friend updates
+  // Set up real-time friend updates with throttling
   useFriendHub(
     // Friend request received
     () => {
-      refetchRequests();
+      setTimeout(() => refetchRequests(), 200);
     },
     // Friend request accepted
     () => {
-      refetch();
-      refetchRequests();
+      // Throttle to prevent multiple rapid refetches
+      setTimeout(() => {
+        refetch();
+        refetchRequests();
+      }, 200);
     },
     // Friend request rejected
     () => {
-      refetchRequests();
+      setTimeout(() => refetchRequests(), 200);
     },
     // Friend request cancelled
     () => {
-      refetchRequests();
+      setTimeout(() => refetchRequests(), 200);
     },
     // Friend removed
     () => {
-      refetch();
+      setTimeout(() => refetch(), 200);
     }
   );
 
@@ -235,9 +238,10 @@ export function FriendsPage() {
   }, [usernameInput, selectedUsername, searchUsers, clearResults]);
 
   const handleRemove = (friendId: string) => {
+    // Optimistically update UI
     setFriendsList((prev) => prev.filter((f) => f.userId !== friendId));
-    // Optionally refetch to ensure consistency
-    setTimeout(() => refetch(), 500);
+    // Refetch in background without showing loading
+    setTimeout(() => refetch(), 300);
   };
 
   const handleSelectUser = (user: UserInfo) => {
@@ -270,11 +274,11 @@ export function FriendsPage() {
         setSelectedUsername(null);
         setShowSendRequestModal(false);
         clearResults();
-        // Refetch friends and requests to update the UI
+        // Refetch friends and requests to update the UI (without showing loading)
         setTimeout(() => {
           refetchRequests();
           refetch();
-        }, 500);
+        }, 300);
       }
       return;
     }

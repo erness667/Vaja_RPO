@@ -49,11 +49,27 @@ export function useFriendRequests() {
       fetchRequests();
     };
 
+    // Listen for friend request events (sent via SignalR through useFriendHub)
+    // This is a fallback in case the SignalR events don't trigger refetch
+    const handleFriendRequestEvent = () => {
+      // Small delay to ensure backend has processed
+      setTimeout(() => {
+        fetchRequests();
+      }, 200);
+    };
+
     if (typeof window !== "undefined") {
       window.addEventListener("authStateChanged", handleAuthStateChange);
+      // Listen for custom events that might be dispatched when friend requests are sent/received/rejected
+      window.addEventListener("friendRequestSent", handleFriendRequestEvent);
+      window.addEventListener("friendRequestReceived", handleFriendRequestEvent);
+      window.addEventListener("friendRequestRejected", handleFriendRequestEvent);
 
       return () => {
         window.removeEventListener("authStateChanged", handleAuthStateChange);
+        window.removeEventListener("friendRequestSent", handleFriendRequestEvent);
+        window.removeEventListener("friendRequestReceived", handleFriendRequestEvent);
+        window.removeEventListener("friendRequestRejected", handleFriendRequestEvent);
       };
     }
   }, [fetchRequests]);

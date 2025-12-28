@@ -28,9 +28,10 @@ interface ChatViewProps {
   otherUserId: string | null;
   currentUserId: string;
   isMessageRequest?: boolean;
+  canSendMessages?: boolean; // Whether the user can send messages (false if request is pending)
 }
 
-export function ChatView({ otherUser, otherUserId, currentUserId, isMessageRequest = false }: ChatViewProps) {
+export function ChatView({ otherUser, otherUserId, currentUserId, isMessageRequest = false, canSendMessages = true }: ChatViewProps) {
   const [messageText, setMessageText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -75,13 +76,13 @@ export function ChatView({ otherUser, otherUserId, currentUserId, isMessageReque
     lastMessageCountRef.current = messages.length;
   }, [messages.length]);
 
-  // Reset marked ref and scroll tracking when switching conversations
+  // Reset marked ref and scroll tracking when switching conversations or message request status
   useEffect(() => {
     markedAsReadRef.current = null;
     lastMessageCountRef.current = 0;
     hasScrolledToBottomRef.current = false;
     isUserNearBottomRef.current = true; // Reset to true when switching conversations
-  }, [otherUserId]);
+  }, [otherUserId, isMessageRequest]);
 
   // Track scroll position to determine if user is near bottom
   useEffect(() => {
@@ -161,18 +162,18 @@ export function ChatView({ otherUser, otherUserId, currentUserId, isMessageReque
   }, [otherUserId, isLoading, currentUserId, messages.length]);
 
   const handleMessageReceived = (message: Message) => {
+    // Only dispatch global event if we're the receiver (not the sender)
+    // This updates requests/conversations lists for the receiver
+    if (message.receiverId === currentUserId && typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("newMessageReceived"));
+    }
+    
     // Only handle if it's for the current conversation
     if (
       message.senderId === otherUserId ||
       message.receiverId === otherUserId
     ) {
       addMessage(message);
-      
-      // Dispatch global event ONLY for messages in current conversation
-      // (Global listener will handle other messages for sidebar updates)
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("newMessageReceived"));
-      }
       
       // Mark as read if we're the receiver and chat is open
       if (message.receiverId === currentUserId && otherUserId) {
@@ -203,11 +204,23 @@ export function ChatView({ otherUser, otherUserId, currentUserId, isMessageReque
       // When user sends a message, they want to see it - always scroll
       isUserNearBottomRef.current = true;
       addMessage(message);
-      // Dispatch global event ONLY if message is for current conversation
-      // This prevents unnecessary refetches when user is not in this chat
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("newMessageReceived"));
+      
+      // If this is a message request (sent to non-friend), dispatch event to update requests tab
+      // The backend sets isMessageRequest = true when users are not friends
+      // Always dispatch if message.isMessageRequest is true (regardless of current tab)
+      // This ensures sent message requests appear in the "zahteve" tab
+      if (message.isMessageRequest === true) {
+        if (typeof window !== "undefined") {
+          console.log("Message sent to non-friend, dispatching messageSent event");
+          // Add a delay to ensure backend has processed the message and updated the database
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent("messageSent"));
+          }, 800);
+        }
       }
+      
+      // Don't dispatch newMessageReceived here - message is already added locally
+      // The receiver will get it via handleMessageReceived and dispatch the event there
     }
   };
 
@@ -517,7 +530,7 @@ export function ChatView({ otherUser, otherUserId, currentUserId, isMessageReque
         borderColor={{ base: "gray.200", _dark: "gray.700" }}
         bg={{ base: "white", _dark: "gray.800" }}
       >
-        {isMessageRequest && (
+        {isMessageRequest && !canSendMessages && (
           <Box
             p={2}
             mb={2}
@@ -528,7 +541,7 @@ export function ChatView({ otherUser, otherUserId, currentUserId, isMessageReque
             textAlign="center"
           >
             <Text fontSize="xs" color={{ base: "orange.700", _dark: "orange.300" }}>
-              <Trans>To je zahteva za sporočilo. Sprejmite zahtevo, da začnete redni pogovor.</Trans>
+              <Trans>Sprejmite ali zavrnite zahtevo, da začnete pogovor.</Trans>
             </Text>
           </Box>
         )}
@@ -537,10 +550,10 @@ export function ChatView({ otherUser, otherUserId, currentUserId, isMessageReque
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={isMessageRequest ? "Odgovorite na zahtevo..." : "Napišite sporočilo..."}
+            placeholder={isMessageRequest && !canSendMessages ? "Sprejmite zahtevo za pošiljanje sporočil..." : isMessageRequest ? "Odgovorite na zahtevo..." : "Napišite sporočilo..."}
             resize="none"
             rows={3}
-            disabled={isSending}
+            disabled={isSending || !canSendMessages}
             bg={{ base: "gray.50", _dark: "gray.900" }}
             borderColor={{ base: "gray.200", _dark: "gray.700" }}
           />
@@ -548,7 +561,7 @@ export function ChatView({ otherUser, otherUserId, currentUserId, isMessageReque
             colorPalette="blue"
             onClick={handleSend}
             loading={isSending}
-            disabled={!messageText.trim() || isSending}
+            disabled={!messageText.trim() || isSending || !canSendMessages}
             size="lg"
           >
             <Icon as={LuSend} />

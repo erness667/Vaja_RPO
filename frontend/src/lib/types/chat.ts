@@ -36,5 +36,6 @@ export interface MessageRequest {
   };
   unreadCount: number;
   totalCount: number;
+  isOutgoing?: boolean; // True if current user is the sender (outgoing request)
 }
 

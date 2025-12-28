@@ -88,14 +88,24 @@ export function MessagesPage() {
     const success = await acceptMessageRequest(userId);
     if (success) {
       await refetchRequests();
-      await refetchConversations();
-      // Switch to friends tab and select the user
-      setActiveTab("friends");
-      const request = requests.find(r => r.userId === userId);
-      if (request) {
-        setSelectedUserId(userId);
-        setSelectedUser({ id: userId, user: request.user });
-      }
+      // Add a small delay to ensure backend has processed the acceptance
+      // The event will be dispatched by useAcceptMessageRequest hook
+      setTimeout(async () => {
+        await refetchConversations();
+        // Switch to friends tab and select the user
+        setActiveTab("friends");
+        const request = requests.find(r => r.userId === userId);
+        if (request && request.user) {
+          // Clear selection first to force ChatView to reload
+          setSelectedUserId(null);
+          setSelectedUser(null);
+          // Then set it after a brief delay to ensure ChatView refetches with correct isMessageRequest flag
+          setTimeout(() => {
+            setSelectedUserId(userId);
+            setSelectedUser({ id: userId, user: request.user! });
+          }, 100);
+        }
+      }, 300);
     }
   };
 
@@ -132,8 +142,18 @@ export function MessagesPage() {
     setSearchInput("");
     clearResults();
     setShowSuggestions(false);
-    // Switch to friends tab if not already
-    setActiveTab("friends");
+    
+    // Check if user is a friend
+    const isFriend = friends?.some(f => f.userId === user.id);
+    
+    if (!isFriend) {
+      // If not a friend, switch to requests tab and add to requests list (temporary)
+      setActiveTab("requests");
+      // The card will appear in requests tab when we select them
+    } else {
+      // Switch to friends tab if they are a friend
+      setActiveTab("friends");
+    }
   };
 
   const handleUserSelect = (
@@ -144,6 +164,65 @@ export function MessagesPage() {
     setSelectedUser({ id: userId, user: userInfo });
     // Don't refetch immediately - let ChatView handle it when marking messages as read
   };
+
+  // Track last refetch time to prevent excessive refetches
+  const lastRefetchRef = useRef<{ requests: number; conversations: number }>({
+    requests: 0,
+    conversations: 0,
+  });
+
+  // Listen for new messages to refetch requests and conversations
+  useEffect(() => {
+    const handleNewMessage = () => {
+      const now = Date.now();
+      // Throttle refetches - only refetch if last refetch was more than 1 second ago
+      if (now - lastRefetchRef.current.requests > 1000) {
+        console.log('newMessageReceived event fired, refetching requests...');
+        lastRefetchRef.current.requests = now;
+        // Add a small delay to ensure backend has processed the message
+        setTimeout(() => {
+          // Refetch both requests and conversations when a new message is received
+          refetchRequests();
+          refetchConversations();
+        }, 300);
+      }
+    };
+
+    // Listen for when user sends a message to non-friend (to show in zahteve tab)
+    const handleMessageSent = () => {
+      const now = Date.now();
+      // Throttle refetches - only refetch if last refetch was more than 1 second ago
+      if (now - lastRefetchRef.current.requests > 1000) {
+        lastRefetchRef.current.requests = now;
+        // Add a delay to ensure backend has processed the message and updated the database
+        setTimeout(() => {
+          // Refetch requests to show sent message requests in zahteve tab
+          refetchRequests();
+        }, 800);
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("newMessageReceived", handleNewMessage);
+      window.addEventListener("messageSent", handleMessageSent);
+      return () => {
+        window.removeEventListener("newMessageReceived", handleNewMessage);
+        window.removeEventListener("messageSent", handleMessageSent);
+      };
+    }
+  }, [refetchRequests, refetchConversations]);
+
+  // Refetch requests when switching to requests tab (only if not recently refetched)
+  useEffect(() => {
+    if (activeTab === "requests") {
+      const now = Date.now();
+      // Only refetch if last refetch was more than 2 seconds ago
+      if (now - lastRefetchRef.current.requests > 2000) {
+        lastRefetchRef.current.requests = now;
+        refetchRequests();
+      }
+    }
+  }, [activeTab, refetchRequests]);
 
   // Handle userId from URL query parameter
   useEffect(() => {
@@ -234,6 +313,20 @@ export function MessagesPage() {
                     otherUserId={selectedUserId}
                     currentUserId={user?.id || ""}
                     isMessageRequest={activeTab === "requests"}
+                    canSendMessages={(() => {
+                      // If not in requests tab, always allow sending
+                      if (activeTab !== "requests") return true;
+                      
+                      // If in requests tab, check if this is an outgoing request (sender)
+                      const selectedRequest = requests.find(r => r.userId === selectedUserId);
+                      
+                      // If no request found yet (user just selected from search), allow sending (they're the sender)
+                      if (!selectedRequest) return true;
+                      
+                      // If request is outgoing (current user is sender), allow sending
+                      // If request is incoming (current user is receiver), disable sending until accepted
+                      return selectedRequest.isOutgoing === true;
+                    })()}
                   />
                 </Box>
 
@@ -254,10 +347,13 @@ export function MessagesPage() {
                         variant={activeTab === "friends" ? "solid" : "ghost"}
                         colorPalette={activeTab === "friends" ? "blue" : "gray"}
                         size="sm"
-                        onClick={() => {
-                          setActiveTab("friends");
-                          setSelectedUserId(null);
-                          setSelectedUser(null);
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (activeTab !== "friends") {
+                            setActiveTab("friends");
+                            setSelectedUserId(null);
+                            setSelectedUser(null);
+                          }
                         }}
                         flex={1}
                       >
@@ -267,33 +363,39 @@ export function MessagesPage() {
                         variant={activeTab === "requests" ? "solid" : "ghost"}
                         colorPalette={activeTab === "requests" ? "blue" : "gray"}
                         size="sm"
-                        onClick={() => {
-                          setActiveTab("requests");
-                          setSelectedUserId(null);
-                          setSelectedUser(null);
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (activeTab !== "requests") {
+                            setActiveTab("requests");
+                            setSelectedUserId(null);
+                            setSelectedUser(null);
+                          }
                         }}
                         flex={1}
                         position="relative"
                       >
                         <Trans>Zahteve</Trans>
-                        {requests.length > 0 && (
-                          <Badge
-                            position="absolute"
-                            top="-1"
-                            right="-1"
-                            colorPalette="red"
-                            borderRadius="full"
-                            minW="20px"
-                            h="20px"
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            fontSize="xs"
-                            fontWeight="bold"
-                          >
-                            {requests.length}
-                          </Badge>
-                        )}
+                        {(() => {
+                          const unreadRequestsCount = requests.reduce((total, req) => total + req.unreadCount, 0);
+                          return unreadRequestsCount > 0 ? (
+                            <Badge
+                              position="absolute"
+                              top="-1"
+                              right="-1"
+                              colorPalette="red"
+                              borderRadius="full"
+                              minW="20px"
+                              h="20px"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                              fontSize="xs"
+                              fontWeight="bold"
+                            >
+                              {unreadRequestsCount > 99 ? "99+" : unreadRequestsCount}
+                            </Badge>
+                          ) : null;
+                        })()}
                       </Button>
                       <IconButton
                         variant="ghost"
@@ -317,26 +419,51 @@ export function MessagesPage() {
                       </Box>
                     ) : activeTab === "requests" ? (
                       // Message Requests Tab
-                      requests.length === 0 ? (
-                        <Box textAlign="center" py={8}>
-                          <Icon
-                            as={LuMail}
-                            boxSize={8}
-                            color={{ base: "gray.400", _dark: "gray.500" }}
-                            mb={2}
-                          />
-                          <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-                            <Trans>Nimate zahtev za sporočila</Trans>
-                          </Text>
-                        </Box>
-                      ) : (
-                        requests
-                          .filter((request) => request.user !== null)
-                          .map((request) => {
-                            const otherUser = request.user!;
-                            const fullName = `${otherUser.name} ${otherUser.surname}`;
-                            const isSelected = selectedUserId === request.userId;
-                          return (
+                      (() => {
+                        // Check if selected user is a non-friend (should show in requests even if no messages yet)
+                        const selectedUserIsNonFriend = selectedUserId && selectedUser && 
+                          !friends?.some(f => f.userId === selectedUserId) &&
+                          !requests.some(r => r.userId === selectedUserId);
+                        
+                        const allRequests = selectedUserIsNonFriend && selectedUser
+                          ? [
+                              ...requests,
+                              {
+                                userId: selectedUserId,
+                                user: selectedUser.user,
+                                lastMessage: {
+                                  id: 0,
+                                  content: "",
+                                  sentAt: new Date().toISOString(),
+                                  isRead: true,
+                                },
+                                unreadCount: 0,
+                                totalCount: 0,
+                                isOutgoing: true, // User is selecting to send, so it's outgoing
+                              } as MessageRequest,
+                            ]
+                          : requests;
+                        
+                        return allRequests.length === 0 ? (
+                          <Box textAlign="center" py={8}>
+                            <Icon
+                              as={LuMail}
+                              boxSize={8}
+                              color={{ base: "gray.400", _dark: "gray.500" }}
+                              mb={2}
+                            />
+                            <Text color={{ base: "gray.600", _dark: "gray.400" }}>
+                              <Trans>Nimate zahtev za sporočila</Trans>
+                            </Text>
+                          </Box>
+                        ) : (
+                          allRequests
+                            .filter((request) => request.user !== null)
+                            .map((request) => {
+                              const otherUser = request.user!;
+                              const fullName = `${otherUser.name} ${otherUser.surname}`;
+                              const isSelected = selectedUserId === request.userId;
+                            return (
                             <Card.Root
                               key={request.userId}
                               variant={isSelected ? "outline" : "subtle"}
@@ -352,9 +479,11 @@ export function MessagesPage() {
                                   : { base: "blue.50", _dark: "blue.950" }
                               }
                               cursor="pointer"
-                              onClick={() =>
-                                handleUserSelect(request.userId, request.user)
-                              }
+                              onClick={() => {
+                                if (request.user) {
+                                  handleUserSelect(request.userId, request.user);
+                                }
+                              }}
                             >
                               <CardBody p={3}>
                                 <VStack gap={2} align="stretch">
@@ -438,76 +567,84 @@ export function MessagesPage() {
                                           </Badge>
                                         )}
                                       </HStack>
-                                      <Text
-                                        fontSize="xs"
-                                        color={{
-                                          base: "gray.600",
-                                          _dark: "gray.400",
-                                        }}
-                                        lineClamp={1}
-                                      >
-                                        {request.lastMessage.content}
-                                      </Text>
-                                      <Text
-                                        fontSize="2xs"
-                                        color={{
-                                          base: "gray.500",
-                                          _dark: "gray.500",
-                                        }}
-                                      >
-                                        {new Date(
-                                          request.lastMessage.sentAt
-                                        ).toLocaleDateString("sl-SI", {
-                                          month: "short",
-                                          day: "numeric",
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                        })}
-                                      </Text>
+                                      {request.lastMessage.content && (
+                                        <Text
+                                          fontSize="xs"
+                                          color={{
+                                            base: "gray.600",
+                                            _dark: "gray.400",
+                                          }}
+                                          lineClamp={1}
+                                        >
+                                          {request.lastMessage.content}
+                                        </Text>
+                                      )}
+                                      {request.lastMessage.sentAt && (
+                                        <Text
+                                          fontSize="2xs"
+                                          color={{
+                                            base: "gray.500",
+                                            _dark: "gray.500",
+                                          }}
+                                        >
+                                          {new Date(
+                                            request.lastMessage.sentAt
+                                          ).toLocaleDateString("sl-SI", {
+                                            month: "short",
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          })}
+                                        </Text>
+                                      )}
                                     </VStack>
                                   </HStack>
-                                  <HStack gap={2} mt={1}>
-                                    <Button
-                                      size="xs"
-                                      colorPalette="green"
-                                      variant="solid"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleAcceptRequest(request.userId);
-                                      }}
-                                      disabled={isAccepting || isDeclining}
-                                      loading={isAccepting}
-                                      flex={1}
-                                    >
-                                      <HStack gap={1}>
-                                        <Icon as={LuCheck} />
-                                        <Text><Trans>Sprejmi</Trans></Text>
-                                      </HStack>
-                                    </Button>
-                                    <Button
-                                      size="xs"
-                                      colorPalette="red"
-                                      variant="outline"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeclineRequest(request.userId);
-                                      }}
-                                      disabled={isAccepting || isDeclining}
-                                      loading={isDeclining}
-                                      flex={1}
-                                    >
-                                      <HStack gap={1}>
-                                        <Icon as={LuX} />
-                                        <Text><Trans>Zavrni</Trans></Text>
-                                      </HStack>
-                                    </Button>
-                                  </HStack>
+                                  {/* Only show accept/decline buttons if this is an incoming request (not outgoing) */}
+                                  {!request.isOutgoing && (
+                                    <HStack gap={2} mt={1}>
+                                      <Button
+                                        size="xs"
+                                        colorPalette="green"
+                                        variant="solid"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleAcceptRequest(request.userId);
+                                        }}
+                                        disabled={isAccepting || isDeclining}
+                                        loading={isAccepting}
+                                        flex={1}
+                                      >
+                                        <HStack gap={1}>
+                                          <Icon as={LuCheck} />
+                                          <Text><Trans>Sprejmi</Trans></Text>
+                                        </HStack>
+                                      </Button>
+                                      <Button
+                                        size="xs"
+                                        colorPalette="red"
+                                        variant="outline"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDeclineRequest(request.userId);
+                                        }}
+                                        disabled={isAccepting || isDeclining}
+                                        loading={isDeclining}
+                                        flex={1}
+                                      >
+                                        <HStack gap={1}>
+                                          <Icon as={LuX} />
+                                          <Text><Trans>Zavrni</Trans></Text>
+                                        </HStack>
+                                      </Button>
+                                    </HStack>
+                                  )}
                                 </VStack>
                               </CardBody>
                             </Card.Root>
                           );
                         })
-                      )
+                        );
+                      })()
                     ) : displayItems.items.length === 0 ? (
                       <Box textAlign="center" py={8}>
                         <Icon
@@ -622,19 +759,22 @@ export function MessagesPage() {
                                           _dark: "gray.100",
                                         }}
                                         lineClamp={1}
+                                        flex={1}
                                       >
                                         {fullName}
                                       </Text>
-                                      {conversation.isFriend === false && (
-                                        <Badge colorPalette="gray" size="xs" variant="outline">
-                                          <Trans>Ni prijatelj</Trans>
-                                        </Badge>
-                                      )}
-                                      {conversation.unreadCount > 0 && (
-                                        <Badge colorPalette="red" size="xs">
-                                          {conversation.unreadCount}
-                                        </Badge>
-                                      )}
+                                      <HStack gap={2} ml="auto">
+                                        {conversation.isFriend === false && (
+                                          <Badge colorPalette="gray" size="xs" variant="outline">
+                                            <Trans>Ni prijatelj</Trans>
+                                          </Badge>
+                                        )}
+                                        {conversation.unreadCount > 0 && (
+                                          <Badge colorPalette="red" size="xs">
+                                            {conversation.unreadCount}
+                                          </Badge>
+                                        )}
+                                      </HStack>
                                     </HStack>
                                     <Text
                                       fontSize="xs"

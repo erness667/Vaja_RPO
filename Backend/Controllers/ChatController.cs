@@ -218,54 +218,126 @@ namespace Backend.Controllers
         [HttpGet("requests")]
         public async Task<IActionResult> GetMessageRequests()
         {
-            var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (currentUserIdClaim == null || !Guid.TryParse(currentUserIdClaim.Value, out var currentUserId))
+            try
             {
-                return Unauthorized(new { message = "Invalid token." });
-            }
-
-            // Get message requests grouped by sender
-            var messageRequests = await _dbContext.Messages
-                .Where(m => m.ReceiverId == currentUserId && m.IsMessageRequest)
-                .Include(m => m.Sender)
-                .GroupBy(m => m.SenderId)
-                .Select(g => new
+                var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (currentUserIdClaim == null || !Guid.TryParse(currentUserIdClaim.Value, out var currentUserId))
                 {
-                    SenderId = g.Key,
-                    Sender = g.First().Sender != null ? new UserDto
+                    return Unauthorized(new { message = "Invalid token." });
+                }
+
+                // Get incoming message requests (where current user is receiver)
+                var incomingRequests = await _dbContext.Messages
+                    .Where(m => m.ReceiverId == currentUserId && m.IsMessageRequest)
+                    .Include(m => m.Sender)
+                    .OrderByDescending(m => m.SentAt)
+                    .ToListAsync();
+
+                // Get outgoing message requests (where current user is sender)
+                var outgoingRequests = await _dbContext.Messages
+                    .Where(m => m.SenderId == currentUserId && m.IsMessageRequest)
+                    .Include(m => m.Receiver)
+                    .OrderByDescending(m => m.SentAt)
+                    .ToListAsync();
+
+                // Group incoming requests by sender ID
+                var groupedIncoming = incomingRequests
+                    .GroupBy(m => m.SenderId)
+                    .Select(g =>
                     {
-                        Id = g.First().Sender.Id,
-                        Email = g.First().Sender.Email,
-                        Name = g.First().Sender.Name,
-                        Surname = g.First().Sender.Surname,
-                        Username = g.First().Sender.Username,
-                        PhoneNumber = g.First().Sender.PhoneNumber,
-                        AvatarImageUrl = g.First().Sender.AvatarImageUrl,
-                        Role = g.First().Sender.Role
-                    } : null,
-                    LatestMessage = g.OrderByDescending(m => m.SentAt).First(),
-                    UnreadCount = g.Count(m => !m.IsRead),
-                    TotalCount = g.Count()
-                })
-                .OrderByDescending(mr => mr.LatestMessage.SentAt)
-                .ToListAsync();
+                        var firstMessage = g.OrderByDescending(m => m.SentAt).First();
+                        var sender = firstMessage.Sender;
 
-            var result = messageRequests.Select(mr => new
+                        return new
+                        {
+                            UserId = g.Key,
+                            User = sender != null ? new UserDto
+                            {
+                                Id = sender.Id,
+                                Email = sender.Email,
+                                Name = sender.Name,
+                                Surname = sender.Surname,
+                                Username = sender.Username,
+                                PhoneNumber = sender.PhoneNumber,
+                                AvatarImageUrl = sender.AvatarImageUrl,
+                                Role = sender.Role
+                            } : null,
+                            LastMessage = new
+                            {
+                                Id = firstMessage.Id,
+                                Content = firstMessage.Content,
+                                SentAt = firstMessage.SentAt,
+                                IsRead = firstMessage.IsRead
+                            },
+                            UnreadCount = g.Count(m => !m.IsRead),
+                            TotalCount = g.Count(),
+                            IsOutgoing = false
+                        };
+                    })
+                    .ToList();
+
+                // Group outgoing requests by receiver ID
+                var groupedOutgoing = outgoingRequests
+                    .GroupBy(m => m.ReceiverId)
+                    .Select(g =>
+                    {
+                        var firstMessage = g.OrderByDescending(m => m.SentAt).First();
+                        var receiver = firstMessage.Receiver;
+
+                        return new
+                        {
+                            UserId = g.Key,
+                            User = receiver != null ? new UserDto
+                            {
+                                Id = receiver.Id,
+                                Email = receiver.Email,
+                                Name = receiver.Name,
+                                Surname = receiver.Surname,
+                                Username = receiver.Username,
+                                PhoneNumber = receiver.PhoneNumber,
+                                AvatarImageUrl = receiver.AvatarImageUrl,
+                                Role = receiver.Role
+                            } : null,
+                            LastMessage = new
+                            {
+                                Id = firstMessage.Id,
+                                Content = firstMessage.Content,
+                                SentAt = firstMessage.SentAt,
+                                IsRead = firstMessage.IsRead
+                            },
+                            UnreadCount = 0, // Outgoing requests don't have unread count for sender
+                            TotalCount = g.Count(),
+                            IsOutgoing = true
+                        };
+                    })
+                    .ToList();
+
+                // Combine both lists, prioritizing incoming if user appears in both
+                var allGroupedRequests = groupedIncoming
+                    .Concat(groupedOutgoing)
+                    .GroupBy(mr => mr.UserId)
+                    .Select(g =>
+                    {
+                        // If user appears in both incoming and outgoing, prefer incoming
+                        var incoming = g.FirstOrDefault(mr => !mr.IsOutgoing);
+                        if (incoming != null)
+                        {
+                            return incoming;
+                        }
+                        return g.First();
+                    })
+                    .OrderByDescending(mr => mr.LastMessage.SentAt)
+                    .ToList();
+
+                return Ok(allGroupedRequests);
+            }
+            catch (Exception ex)
             {
-                UserId = mr.SenderId,
-                User = mr.Sender,
-                LastMessage = new
-                {
-                    Id = mr.LatestMessage.Id,
-                    Content = mr.LatestMessage.Content,
-                    SentAt = mr.LatestMessage.SentAt,
-                    IsRead = mr.LatestMessage.IsRead
-                },
-                UnreadCount = mr.UnreadCount,
-                TotalCount = mr.TotalCount
-            }).ToList();
-
-            return Ok(result);
+                // Log the exception for debugging
+                Console.WriteLine($"Error in GetMessageRequests: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return StatusCode(500, new { message = "An error occurred while fetching message requests.", error = ex.Message });
+            }
         }
 
         /// <summary>

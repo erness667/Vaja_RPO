@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import * as signalR from "@microsoft/signalr";
-import { getAccessToken, isAuthenticated } from "@/lib/utils/auth-storage";
+import { getAccessToken, isAuthenticated, getStoredUser } from "@/lib/utils/auth-storage";
+import type { Message } from "@/lib/types/chat";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5121';
 const HUB_URL = `${API_URL}/chatHub`;
@@ -69,10 +70,24 @@ export function useGlobalChatListener() {
           .build();
 
         // Listen for incoming messages and dispatch global event
-        connection.on("ReceiveMessage", () => {
-          // Dispatch custom event to trigger conversation updates everywhere
-          if (typeof window !== "undefined") {
+        connection.on("ReceiveMessage", (message: Message) => {
+          console.log('Global listener received message:', message);
+          // Get current user to check if we're the receiver
+          const currentUser = getStoredUser();
+          if (!currentUser) {
+            console.log('No current user found, ignoring message');
+            return;
+          }
+
+          console.log('Message receiverId:', message.receiverId, 'Current userId:', currentUser.id);
+          
+          // Only dispatch if we're the receiver (not the sender)
+          if (message.receiverId === currentUser.id && typeof window !== "undefined") {
+            console.log('Dispatching newMessageReceived event');
+            // Dispatch custom event to trigger conversation updates everywhere
             window.dispatchEvent(new CustomEvent("newMessageReceived"));
+          } else {
+            console.log('Not dispatching - user is not the receiver');
           }
         });
 

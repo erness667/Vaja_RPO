@@ -149,11 +149,27 @@ namespace Backend.Hubs
 
         private async Task<bool> AreFriendsAsync(Guid userId1, Guid userId2)
         {
-            return await _dbContext.FriendRequests
+            // Check if users are friends via friend requests
+            var areFriends = await _dbContext.FriendRequests
                 .AnyAsync(fr =>
                     fr.Status == FriendRequestStatus.Accepted &&
                     ((fr.RequesterId == userId1 && fr.AddresseeId == userId2) ||
                      (fr.RequesterId == userId2 && fr.AddresseeId == userId1)));
+
+            // If not friends, check if they have any accepted message requests (non-IsMessageRequest messages)
+            // This means they've accepted a message request and can now message each other freely
+            if (!areFriends)
+            {
+                var hasAcceptedMessageRequest = await _dbContext.Messages
+                    .AnyAsync(m =>
+                        !m.IsMessageRequest &&
+                        ((m.SenderId == userId1 && m.ReceiverId == userId2) ||
+                         (m.SenderId == userId2 && m.ReceiverId == userId1)));
+                
+                return hasAcceptedMessageRequest;
+            }
+
+            return areFriends;
         }
     }
 }

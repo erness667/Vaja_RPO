@@ -59,13 +59,13 @@ export function useConversations() {
     };
 
     // Listen for new messages to update conversations list
-    // Throttle: only refetch if last refetch was more than 3 seconds ago
+    // Throttle: only refetch if last refetch was more than 500ms ago
     const handleNewMessage = () => {
       const now = Date.now();
       const timeSinceLastRefetch = now - lastRefetchRef.current;
       
-      // Only refetch if it's been at least 3 seconds since last refetch
-      if (timeSinceLastRefetch < 3000) {
+      // Only refetch if it's been at least 500ms since last refetch
+      if (timeSinceLastRefetch < 500) {
         // Clear any pending timeout and schedule a new one
         if (refetchTimeoutRef.current) {
           clearTimeout(refetchTimeoutRef.current);
@@ -73,7 +73,7 @@ export function useConversations() {
         refetchTimeoutRef.current = setTimeout(() => {
           fetchConversations(false); // Don't show loading state
           refetchTimeoutRef.current = null;
-        }, 3000 - timeSinceLastRefetch);
+        }, 500 - timeSinceLastRefetch);
         return;
       }
 
@@ -86,13 +86,13 @@ export function useConversations() {
     };
 
     // Listen for messages marked as read to update conversations list
-    // Throttle: only refetch if last refetch was more than 2 seconds ago
+    // Throttle: only refetch if last refetch was more than 500ms ago
     const handleMessagesRead = () => {
       const now = Date.now();
       const timeSinceLastRefetch = now - lastRefetchRef.current;
       
-      // Only refetch if it's been at least 2 seconds since last refetch
-      if (timeSinceLastRefetch < 2000) {
+      // Only refetch if it's been at least 500ms since last refetch
+      if (timeSinceLastRefetch < 500) {
         // Clear any pending timeout and schedule a new one
         if (refetchTimeoutRef.current) {
           clearTimeout(refetchTimeoutRef.current);
@@ -100,7 +100,7 @@ export function useConversations() {
         refetchTimeoutRef.current = setTimeout(() => {
           fetchConversations(false); // Don't show loading state
           refetchTimeoutRef.current = null;
-        }, 2000 - timeSinceLastRefetch);
+        }, 500 - timeSinceLastRefetch);
         return;
       }
 
@@ -112,15 +112,41 @@ export function useConversations() {
       fetchConversations(false); // Don't show loading state
     };
 
+    // Listen for message request accepted to update conversations list
+    const handleMessageRequestAccepted = () => {
+      const now = Date.now();
+      const timeSinceLastRefetch = now - lastRefetchRef.current;
+      
+      // Only refetch if it's been at least 500ms since last refetch
+      if (timeSinceLastRefetch < 500) {
+        if (refetchTimeoutRef.current) {
+          clearTimeout(refetchTimeoutRef.current);
+        }
+        refetchTimeoutRef.current = setTimeout(() => {
+          fetchConversations(false); // Don't show loading state
+          refetchTimeoutRef.current = null;
+        }, 500 - timeSinceLastRefetch);
+        return;
+      }
+
+      if (refetchTimeoutRef.current) {
+        clearTimeout(refetchTimeoutRef.current);
+        refetchTimeoutRef.current = null;
+      }
+      fetchConversations(false); // Don't show loading state
+    };
+
     if (typeof window !== "undefined") {
       window.addEventListener("authStateChanged", handleAuthStateChange);
       window.addEventListener("newMessageReceived", handleNewMessage);
       window.addEventListener("messagesMarkedAsRead", handleMessagesRead);
+      window.addEventListener("messageRequestAccepted", handleMessageRequestAccepted);
 
       return () => {
         window.removeEventListener("authStateChanged", handleAuthStateChange);
         window.removeEventListener("newMessageReceived", handleNewMessage);
         window.removeEventListener("messagesMarkedAsRead", handleMessagesRead);
+        window.removeEventListener("messageRequestAccepted", handleMessageRequestAccepted);
         if (refetchTimeoutRef.current) {
           clearTimeout(refetchTimeoutRef.current);
         }

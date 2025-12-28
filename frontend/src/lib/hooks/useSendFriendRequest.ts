@@ -35,6 +35,12 @@ export function useSendFriendRequest() {
       }
 
       setIsLoading(false);
+      
+      // Dispatch event to trigger sidebar updates (receiver will get SignalR event, but this helps with immediate UI updates)
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("friendRequestSent"));
+      }
+      
       return response.data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";

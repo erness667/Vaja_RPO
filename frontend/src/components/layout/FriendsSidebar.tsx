@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -222,7 +222,7 @@ export function FriendsSidebar() {
   const { user, isLoading: isLoadingUser } = useUserProfile();
   const { friends, isLoading: isLoadingFriends, refetch: refetchFriends } = useFriends();
   const { requests, refetch: refetchRequests } = useFriendRequests();
-  const { conversations } = useConversations();
+  const { conversations, refetch: refetchConversations } = useConversations();
 
   // Set up real-time friend updates
   useFriendHub(
@@ -249,6 +249,62 @@ export function FriendsSidebar() {
     }
   );
 
+  // Listen for new messages to update conversation counts in sidebar
+  useEffect(() => {
+    const handleNewMessage = () => {
+      // Refetch conversations to update unread counts
+      // Small delay to ensure backend has processed
+      setTimeout(() => {
+        refetchConversations();
+      }, 200);
+    };
+
+    const handleMessagesRead = () => {
+      // Refetch conversations when messages are marked as read
+      setTimeout(() => {
+        refetchConversations();
+      }, 200);
+    };
+
+    const handleFriendRequestSent = () => {
+      // Refetch friend requests when a request is sent (for immediate UI feedback)
+      setTimeout(() => {
+        refetchRequests();
+      }, 200);
+    };
+
+    const handleFriendRequestRejected = () => {
+      // Refetch friend requests when a request is rejected
+      setTimeout(() => {
+        refetchRequests();
+      }, 200);
+    };
+
+    const handleMessageRequestAccepted = () => {
+      // When a message request is accepted, refetch conversations to show it in sidebar
+      // This works even if users are not friends - the conversation should appear
+      setTimeout(() => {
+        refetchConversations();
+      }, 200);
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("newMessageReceived", handleNewMessage);
+      window.addEventListener("messagesMarkedAsRead", handleMessagesRead);
+      window.addEventListener("friendRequestSent", handleFriendRequestSent);
+      window.addEventListener("friendRequestRejected", handleFriendRequestRejected);
+      window.addEventListener("messageRequestAccepted", handleMessageRequestAccepted);
+
+      return () => {
+        window.removeEventListener("newMessageReceived", handleNewMessage);
+        window.removeEventListener("messagesMarkedAsRead", handleMessagesRead);
+        window.removeEventListener("friendRequestSent", handleFriendRequestSent);
+        window.removeEventListener("friendRequestRejected", handleFriendRequestRejected);
+        window.removeEventListener("messageRequestAccepted", handleMessageRequestAccepted);
+      };
+    }
+  }, [refetchConversations, refetchRequests]);
+
   // Compute recent requests from props
   const recentRequests = useMemo(() => {
     if (!requests || !user) return [];
@@ -264,9 +320,10 @@ export function FriendsSidebar() {
     return requests.filter((r) => r.addresseeId === user.id && r.status === 0).length;
   }, [requests, user]);
 
-  // Calculate total unread messages count
+  // Calculate total unread messages count (includes all conversations, including accepted message requests)
   const totalUnreadCount = useMemo(() => {
     if (!conversations) return 0;
+    // Count all conversations, including accepted message requests (even if users are not friends)
     return conversations.reduce((total, conv) => total + conv.unreadCount, 0);
   }, [conversations]);
 
@@ -436,8 +493,9 @@ export function FriendsSidebar() {
                     {displayedFriends.map((friend) => {
                       const fullName = `${friend.user.name} ${friend.user.surname}`;
                       // Find conversation for this friend to get unread count
+                      // Only show unread count if the conversation exists and user is still a friend
                       const conversation = conversations?.find(
-                        (c) => c.userId === friend.userId
+                        (c) => c.userId === friend.userId && c.isFriend !== false
                       );
                       const unreadCount = conversation?.unreadCount || 0;
                       return (

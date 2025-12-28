@@ -35,6 +35,12 @@ export function useAcceptMessageRequest() {
       }
 
       setIsLoading(false);
+      
+      // Dispatch event to trigger sidebar updates (conversations should now include this user)
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("messageRequestAccepted"));
+      }
+      
       return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";

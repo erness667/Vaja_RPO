@@ -35,6 +35,12 @@ export function useRejectFriendRequest() {
       }
 
       setIsLoading(false);
+      
+      // Dispatch event to trigger sidebar updates
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("friendRequestRejected"));
+      }
+      
       return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";

@@ -612,16 +612,29 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                     </HStack>
                     
                     {/* Contact Button */}
-                    <Button
-                      colorPalette="blue"
-                      size="lg"
-                      width="full"
-                      fontWeight="semibold"
-                      onClick={() => window.location.href = `tel:${car.seller?.phoneNumber}`}
-                    >
-                      <Icon as={LuPhone} mr={2} />
-                    <Trans>Pokliči prodajalca</Trans>
-                    </Button>
+                    {isLoggedIn ? (
+                      <Button
+                        colorPalette="blue"
+                        size="lg"
+                        width="full"
+                        fontWeight="semibold"
+                        onClick={() => router.push(`/messages?userId=${car.sellerId}`)}
+                      >
+                        <Icon as={LuMessageSquare} mr={2} />
+                        <Trans>Pošlji sporočilo</Trans>
+                      </Button>
+                    ) : (
+                      <Button
+                        colorPalette="blue"
+                        size="lg"
+                        width="full"
+                        fontWeight="semibold"
+                        onClick={() => window.location.href = `tel:${car.seller?.phoneNumber}`}
+                      >
+                        <Icon as={LuPhone} mr={2} />
+                        <Trans>Pokliči prodajalca</Trans>
+                      </Button>
+                    )}
                   </VStack>
                 </CardBody>
               </Card.Root>

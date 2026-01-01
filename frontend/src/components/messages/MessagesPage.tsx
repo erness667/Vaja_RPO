@@ -458,6 +458,11 @@ export function MessagesPage() {
                           </Box>
                         ) : (
                           allRequests
+                            .sort(
+                              (a, b) =>
+                                new Date(b.lastMessage.sentAt).getTime() -
+                                new Date(a.lastMessage.sentAt).getTime()
+                            )
                             .filter((request) => request.user !== null)
                             .map((request) => {
                               const otherUser = request.user!;

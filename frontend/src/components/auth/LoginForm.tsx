@@ -74,7 +74,7 @@ export function LoginForm() {
           </Box>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} suppressHydrationWarning>
           <Stack gap={6}>
             <Field.Root required>
               <Field.Label

@@ -17,6 +17,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<FriendRequest> FriendRequests { get; set; }
     public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<CarDealership> CarDealerships { get; set; }
+    public DbSet<DealershipWorker> DealershipWorkers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -148,6 +150,49 @@ public class ApplicationDbContext : DbContext
             // Index for faster queries on conversations
             entity.HasIndex(m => new { m.SenderId, m.ReceiverId, m.SentAt });
             entity.HasIndex(m => new { m.ReceiverId, m.IsRead });
+        });
+
+        modelBuilder.Entity<CarDealership>(entity =>
+        {
+            entity.HasOne(d => d.Owner)
+                .WithMany()
+                .HasForeignKey(d => d.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if user owns dealership
+
+            entity.HasOne(d => d.ReviewedByAdmin)
+                .WithMany()
+                .HasForeignKey(d => d.ReviewedByAdminId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if admin reviewed
+
+            // Index for faster queries
+            entity.HasIndex(d => d.OwnerId);
+            entity.HasIndex(d => d.Status);
+        });
+
+        modelBuilder.Entity<DealershipWorker>(entity =>
+        {
+            // Unique constraint: a user can only be a worker in a dealership once
+            entity.HasIndex(dw => new { dw.DealershipId, dw.UserId }).IsUnique();
+
+            entity.HasOne(dw => dw.Dealership)
+                .WithMany(d => d.Workers)
+                .HasForeignKey(dw => dw.DealershipId)
+                .OnDelete(DeleteBehavior.Cascade); // Delete workers when dealership is deleted
+
+            entity.HasOne(dw => dw.User)
+                .WithMany()
+                .HasForeignKey(dw => dw.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if user is a worker
+
+            entity.HasOne(dw => dw.InvitedByUser)
+                .WithMany()
+                .HasForeignKey(dw => dw.InvitedByUserId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if user invited workers
+
+            // Index for faster queries
+            entity.HasIndex(dw => dw.UserId);
+            entity.HasIndex(dw => dw.DealershipId);
+            entity.HasIndex(dw => dw.Status);
         });
     }
 }

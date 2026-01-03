@@ -4,6 +4,11 @@ export type ClientOptions = {
     baseUrl: `${string}://${string}` | (string & {});
 };
 
+export type ApproveDealershipRequest = {
+    approve: boolean;
+    notes?: string | null;
+};
+
 export type ChangePasswordRequest = {
     currentPassword: string;
     newPassword: string;
@@ -28,8 +33,23 @@ export type CreateCommentRequest = {
     content: string;
 };
 
+export type CreateDealershipRequest = {
+    name: string;
+    description?: string | null;
+    address: string;
+    city: string;
+    phoneNumber: string;
+    email?: string | null;
+    website?: string | null;
+};
+
 export type ForgotPasswordRequest = {
     email: string;
+};
+
+export type InviteWorkerRequest = {
+    userId: string;
+    role: string;
 };
 
 export type LoginRequest = {
@@ -84,6 +104,16 @@ export type UpdateCommentRequest = {
     content: string;
 };
 
+export type UpdateDealershipRequest = {
+    name?: string | null;
+    description?: string | null;
+    address?: string | null;
+    city?: string | null;
+    phoneNumber?: string | null;
+    email?: string | null;
+    website?: string | null;
+};
+
 export type UpdateProfileRequest = {
     name?: string | null;
     surname?: string | null;
@@ -92,6 +122,10 @@ export type UpdateProfileRequest = {
 
 export type UpdateUserRoleRequest = {
     role: Role;
+};
+
+export type UpdateWorkerRoleRequest = {
+    role: string;
 };
 
 export type PostApiAuthRegisterData = {
@@ -535,6 +569,225 @@ export type PutApiCommentsByIdData = {
 };
 
 export type PutApiCommentsByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiDealershipsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        status?: string;
+        ownerId?: string;
+    };
+    url: '/api/dealerships';
+};
+
+export type GetApiDealershipsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiDealershipsData = {
+    body?: CreateDealershipRequest;
+    path?: never;
+    query?: never;
+    url: '/api/dealerships';
+};
+
+export type PostApiDealershipsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiDealershipsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/dealerships/{id}';
+};
+
+export type GetApiDealershipsByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiDealershipsByIdData = {
+    body?: UpdateDealershipRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/dealerships/{id}';
+};
+
+export type PutApiDealershipsByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiDealershipsPendingData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/dealerships/pending';
+};
+
+export type GetApiDealershipsPendingResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiDealershipsByIdApproveData = {
+    body?: ApproveDealershipRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/dealerships/{id}/approve';
+};
+
+export type PostApiDealershipsByIdApproveResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiDealershipsByIdWorkersInviteData = {
+    body?: InviteWorkerRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/dealerships/{id}/workers/invite';
+};
+
+export type PostApiDealershipsByIdWorkersInviteResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiDealershipsByIdWorkersData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/dealerships/{id}/workers';
+};
+
+export type GetApiDealershipsByIdWorkersResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type DeleteApiDealershipsWorkersByWorkerIdData = {
+    body?: never;
+    path: {
+        workerId: number;
+    };
+    query?: never;
+    url: '/api/dealerships/workers/{workerId}';
+};
+
+export type DeleteApiDealershipsWorkersByWorkerIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiDealershipsWorkersByWorkerIdData = {
+    body?: never;
+    path: {
+        workerId: number;
+    };
+    query?: never;
+    url: '/api/dealerships/workers/{workerId}';
+};
+
+export type GetApiDealershipsWorkersByWorkerIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiDealershipsWorkersByWorkerIdRespondData = {
+    body?: boolean;
+    path: {
+        workerId: number;
+    };
+    query?: never;
+    url: '/api/dealerships/workers/{workerId}/respond';
+};
+
+export type PostApiDealershipsWorkersByWorkerIdRespondResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiDealershipsWorkersInvitationsPendingData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/dealerships/workers/invitations/pending';
+};
+
+export type GetApiDealershipsWorkersInvitationsPendingResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiDealershipsWorkersByWorkerIdRoleData = {
+    body?: UpdateWorkerRoleRequest;
+    path: {
+        workerId: number;
+    };
+    query?: never;
+    url: '/api/dealerships/workers/{workerId}/role';
+};
+
+export type PutApiDealershipsWorkersByWorkerIdRoleResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PutApiDealershipsWorkersByWorkerIdStatusData = {
+    body?: boolean;
+    path: {
+        workerId: number;
+    };
+    query?: never;
+    url: '/api/dealerships/workers/{workerId}/status';
+};
+
+export type PutApiDealershipsWorkersByWorkerIdStatusResponses = {
     /**
      * Success
      */

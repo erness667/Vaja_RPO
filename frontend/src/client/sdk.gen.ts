@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteApiCarsByIdData, DeleteApiCarsByIdImagesByImageIdData, DeleteApiCarsByIdImagesByImageIdResponses, DeleteApiCarsByIdResponses, DeleteApiChatRequestsByUserIdData, DeleteApiChatRequestsByUserIdResponses, DeleteApiCommentsByIdData, DeleteApiCommentsByIdResponses, DeleteApiFavouritesByCarIdData, DeleteApiFavouritesByCarIdResponses, DeleteApiFriendsByFriendIdData, DeleteApiFriendsByFriendIdResponses, DeleteApiFriendsRequestByIdData, DeleteApiFriendsRequestByIdResponses, DeleteApiUserAdminUsersByIdData, DeleteApiUserAdminUsersByIdResponses, GetApiCarCatalogMakesByMakeIdModelsData, GetApiCarCatalogMakesByMakeIdModelsResponses, GetApiCarCatalogMakesData, GetApiCarCatalogMakesResponses, GetApiCarCatalogMakesSearchData, GetApiCarCatalogMakesSearchResponses, GetApiCarsByCarIdCommentsData, GetApiCarsByCarIdCommentsResponses, GetApiCarsByIdData, GetApiCarsByIdResponses, GetApiCarsData, GetApiCarsResponses, GetApiChatConversationByUserIdData, GetApiChatConversationByUserIdResponses, GetApiChatConversationsData, GetApiChatConversationsResponses, GetApiChatRequestsByUserIdData, GetApiChatRequestsByUserIdResponses, GetApiChatRequestsData, GetApiChatRequestsResponses, GetApiFavouritesByCarIdCheckData, GetApiFavouritesByCarIdCheckResponses, GetApiFavouritesData, GetApiFavouritesResponses, GetApiFriendsData, GetApiFriendsRequestsPendingData, GetApiFriendsRequestsPendingResponses, GetApiFriendsResponses, GetApiUserAdminUsersByIdData, GetApiUserAdminUsersByIdResponses, GetApiUserAdminUsersData, GetApiUserAdminUsersResponses, GetApiUserMeData, GetApiUserMeResponses, GetApiUserSearchData, GetApiUserSearchResponses, GetApiViewHistoryData, GetApiViewHistoryResponses, PostApiAuthForgotPasswordData, PostApiAuthForgotPasswordResponses, PostApiAuthLoginData, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRefreshData, PostApiAuthRefreshResponses, PostApiAuthRegisterData, PostApiAuthRegisterResponses, PostApiAuthResetPasswordData, PostApiAuthResetPasswordResponses, PostApiCarsByCarIdCommentsData, PostApiCarsByCarIdCommentsResponses, PostApiCarsByIdImagesData, PostApiCarsByIdImagesResponses, PostApiCarsData, PostApiCarsResponses, PostApiChatMarkReadData, PostApiChatMarkReadResponses, PostApiChatRequestsByUserIdAcceptData, PostApiChatRequestsByUserIdAcceptResponses, PostApiFavouritesByCarIdData, PostApiFavouritesByCarIdResponses, PostApiFavouritesByCarIdToggleData, PostApiFavouritesByCarIdToggleResponses, PostApiFriendsRequestByIdAcceptData, PostApiFriendsRequestByIdAcceptResponses, PostApiFriendsRequestByIdRejectData, PostApiFriendsRequestByIdRejectResponses, PostApiFriendsRequestData, PostApiFriendsRequestResponses, PostApiUserAdminUsersByIdImpersonateData, PostApiUserAdminUsersByIdImpersonateResponses, PutApiCarsByIdData, PutApiCarsByIdImagesByImageIdSetMainData, PutApiCarsByIdImagesByImageIdSetMainResponses, PutApiCarsByIdResponses, PutApiCommentsByIdData, PutApiCommentsByIdResponses, PutApiUserAdminUsersByIdAvatarData, PutApiUserAdminUsersByIdAvatarResponses, PutApiUserAdminUsersByIdProfileData, PutApiUserAdminUsersByIdProfileResponses, PutApiUserAdminUsersByIdRoleData, PutApiUserAdminUsersByIdRoleResponses, PutApiUserAvatarData, PutApiUserAvatarResponses, PutApiUserPasswordData, PutApiUserPasswordResponses, PutApiUserProfileData, PutApiUserProfileResponses } from './types.gen';
+import type { DeleteApiCarsByIdData, DeleteApiCarsByIdImagesByImageIdData, DeleteApiCarsByIdImagesByImageIdResponses, DeleteApiCarsByIdResponses, DeleteApiChatRequestsByUserIdData, DeleteApiChatRequestsByUserIdResponses, DeleteApiCommentsByIdData, DeleteApiCommentsByIdResponses, DeleteApiDealershipsWorkersByWorkerIdData, DeleteApiDealershipsWorkersByWorkerIdResponses, DeleteApiFavouritesByCarIdData, DeleteApiFavouritesByCarIdResponses, DeleteApiFriendsByFriendIdData, DeleteApiFriendsByFriendIdResponses, DeleteApiFriendsRequestByIdData, DeleteApiFriendsRequestByIdResponses, DeleteApiUserAdminUsersByIdData, DeleteApiUserAdminUsersByIdResponses, GetApiCarCatalogMakesByMakeIdModelsData, GetApiCarCatalogMakesByMakeIdModelsResponses, GetApiCarCatalogMakesData, GetApiCarCatalogMakesResponses, GetApiCarCatalogMakesSearchData, GetApiCarCatalogMakesSearchResponses, GetApiCarsByCarIdCommentsData, GetApiCarsByCarIdCommentsResponses, GetApiCarsByIdData, GetApiCarsByIdResponses, GetApiCarsData, GetApiCarsResponses, GetApiChatConversationByUserIdData, GetApiChatConversationByUserIdResponses, GetApiChatConversationsData, GetApiChatConversationsResponses, GetApiChatRequestsByUserIdData, GetApiChatRequestsByUserIdResponses, GetApiChatRequestsData, GetApiChatRequestsResponses, GetApiDealershipsByIdData, GetApiDealershipsByIdResponses, GetApiDealershipsByIdWorkersData, GetApiDealershipsByIdWorkersResponses, GetApiDealershipsData, GetApiDealershipsPendingData, GetApiDealershipsPendingResponses, GetApiDealershipsResponses, GetApiDealershipsWorkersByWorkerIdData, GetApiDealershipsWorkersByWorkerIdResponses, GetApiDealershipsWorkersInvitationsPendingData, GetApiDealershipsWorkersInvitationsPendingResponses, GetApiFavouritesByCarIdCheckData, GetApiFavouritesByCarIdCheckResponses, GetApiFavouritesData, GetApiFavouritesResponses, GetApiFriendsData, GetApiFriendsRequestsPendingData, GetApiFriendsRequestsPendingResponses, GetApiFriendsResponses, GetApiUserAdminUsersByIdData, GetApiUserAdminUsersByIdResponses, GetApiUserAdminUsersData, GetApiUserAdminUsersResponses, GetApiUserMeData, GetApiUserMeResponses, GetApiUserSearchData, GetApiUserSearchResponses, GetApiViewHistoryData, GetApiViewHistoryResponses, PostApiAuthForgotPasswordData, PostApiAuthForgotPasswordResponses, PostApiAuthLoginData, PostApiAuthLoginResponses, PostApiAuthLogoutData, PostApiAuthLogoutResponses, PostApiAuthRefreshData, PostApiAuthRefreshResponses, PostApiAuthRegisterData, PostApiAuthRegisterResponses, PostApiAuthResetPasswordData, PostApiAuthResetPasswordResponses, PostApiCarsByCarIdCommentsData, PostApiCarsByCarIdCommentsResponses, PostApiCarsByIdImagesData, PostApiCarsByIdImagesResponses, PostApiCarsData, PostApiCarsResponses, PostApiChatMarkReadData, PostApiChatMarkReadResponses, PostApiChatRequestsByUserIdAcceptData, PostApiChatRequestsByUserIdAcceptResponses, PostApiDealershipsByIdApproveData, PostApiDealershipsByIdApproveResponses, PostApiDealershipsByIdWorkersInviteData, PostApiDealershipsByIdWorkersInviteResponses, PostApiDealershipsData, PostApiDealershipsResponses, PostApiDealershipsWorkersByWorkerIdRespondData, PostApiDealershipsWorkersByWorkerIdRespondResponses, PostApiFavouritesByCarIdData, PostApiFavouritesByCarIdResponses, PostApiFavouritesByCarIdToggleData, PostApiFavouritesByCarIdToggleResponses, PostApiFriendsRequestByIdAcceptData, PostApiFriendsRequestByIdAcceptResponses, PostApiFriendsRequestByIdRejectData, PostApiFriendsRequestByIdRejectResponses, PostApiFriendsRequestData, PostApiFriendsRequestResponses, PostApiUserAdminUsersByIdImpersonateData, PostApiUserAdminUsersByIdImpersonateResponses, PutApiCarsByIdData, PutApiCarsByIdImagesByImageIdSetMainData, PutApiCarsByIdImagesByImageIdSetMainResponses, PutApiCarsByIdResponses, PutApiCommentsByIdData, PutApiCommentsByIdResponses, PutApiDealershipsByIdData, PutApiDealershipsByIdResponses, PutApiDealershipsWorkersByWorkerIdRoleData, PutApiDealershipsWorkersByWorkerIdRoleResponses, PutApiDealershipsWorkersByWorkerIdStatusData, PutApiDealershipsWorkersByWorkerIdStatusResponses, PutApiUserAdminUsersByIdAvatarData, PutApiUserAdminUsersByIdAvatarResponses, PutApiUserAdminUsersByIdProfileData, PutApiUserAdminUsersByIdProfileResponses, PutApiUserAdminUsersByIdRoleData, PutApiUserAdminUsersByIdRoleResponses, PutApiUserAvatarData, PutApiUserAvatarResponses, PutApiUserPasswordData, PutApiUserPasswordResponses, PutApiUserProfileData, PutApiUserProfileResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -145,6 +145,83 @@ export const deleteApiCommentsById = <ThrowOnError extends boolean = false>(opti
 
 export const putApiCommentsById = <ThrowOnError extends boolean = false>(options: Options<PutApiCommentsByIdData, ThrowOnError>) => (options.client ?? client).put<PutApiCommentsByIdResponses, unknown, ThrowOnError>({
     url: '/api/comments/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const getApiDealerships = <ThrowOnError extends boolean = false>(options?: Options<GetApiDealershipsData, ThrowOnError>) => (options?.client ?? client).get<GetApiDealershipsResponses, unknown, ThrowOnError>({ url: '/api/dealerships', ...options });
+
+export const postApiDealerships = <ThrowOnError extends boolean = false>(options?: Options<PostApiDealershipsData, ThrowOnError>) => (options?.client ?? client).post<PostApiDealershipsResponses, unknown, ThrowOnError>({
+    url: '/api/dealerships',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+export const getApiDealershipsById = <ThrowOnError extends boolean = false>(options: Options<GetApiDealershipsByIdData, ThrowOnError>) => (options.client ?? client).get<GetApiDealershipsByIdResponses, unknown, ThrowOnError>({ url: '/api/dealerships/{id}', ...options });
+
+export const putApiDealershipsById = <ThrowOnError extends boolean = false>(options: Options<PutApiDealershipsByIdData, ThrowOnError>) => (options.client ?? client).put<PutApiDealershipsByIdResponses, unknown, ThrowOnError>({
+    url: '/api/dealerships/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const getApiDealershipsPending = <ThrowOnError extends boolean = false>(options?: Options<GetApiDealershipsPendingData, ThrowOnError>) => (options?.client ?? client).get<GetApiDealershipsPendingResponses, unknown, ThrowOnError>({ url: '/api/dealerships/pending', ...options });
+
+export const postApiDealershipsByIdApprove = <ThrowOnError extends boolean = false>(options: Options<PostApiDealershipsByIdApproveData, ThrowOnError>) => (options.client ?? client).post<PostApiDealershipsByIdApproveResponses, unknown, ThrowOnError>({
+    url: '/api/dealerships/{id}/approve',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const postApiDealershipsByIdWorkersInvite = <ThrowOnError extends boolean = false>(options: Options<PostApiDealershipsByIdWorkersInviteData, ThrowOnError>) => (options.client ?? client).post<PostApiDealershipsByIdWorkersInviteResponses, unknown, ThrowOnError>({
+    url: '/api/dealerships/{id}/workers/invite',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const getApiDealershipsByIdWorkers = <ThrowOnError extends boolean = false>(options: Options<GetApiDealershipsByIdWorkersData, ThrowOnError>) => (options.client ?? client).get<GetApiDealershipsByIdWorkersResponses, unknown, ThrowOnError>({ url: '/api/dealerships/{id}/workers', ...options });
+
+export const deleteApiDealershipsWorkersByWorkerId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiDealershipsWorkersByWorkerIdData, ThrowOnError>) => (options.client ?? client).delete<DeleteApiDealershipsWorkersByWorkerIdResponses, unknown, ThrowOnError>({ url: '/api/dealerships/workers/{workerId}', ...options });
+
+export const getApiDealershipsWorkersByWorkerId = <ThrowOnError extends boolean = false>(options: Options<GetApiDealershipsWorkersByWorkerIdData, ThrowOnError>) => (options.client ?? client).get<GetApiDealershipsWorkersByWorkerIdResponses, unknown, ThrowOnError>({ url: '/api/dealerships/workers/{workerId}', ...options });
+
+export const postApiDealershipsWorkersByWorkerIdRespond = <ThrowOnError extends boolean = false>(options: Options<PostApiDealershipsWorkersByWorkerIdRespondData, ThrowOnError>) => (options.client ?? client).post<PostApiDealershipsWorkersByWorkerIdRespondResponses, unknown, ThrowOnError>({
+    url: '/api/dealerships/workers/{workerId}/respond',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const getApiDealershipsWorkersInvitationsPending = <ThrowOnError extends boolean = false>(options?: Options<GetApiDealershipsWorkersInvitationsPendingData, ThrowOnError>) => (options?.client ?? client).get<GetApiDealershipsWorkersInvitationsPendingResponses, unknown, ThrowOnError>({ url: '/api/dealerships/workers/invitations/pending', ...options });
+
+export const putApiDealershipsWorkersByWorkerIdRole = <ThrowOnError extends boolean = false>(options: Options<PutApiDealershipsWorkersByWorkerIdRoleData, ThrowOnError>) => (options.client ?? client).put<PutApiDealershipsWorkersByWorkerIdRoleResponses, unknown, ThrowOnError>({
+    url: '/api/dealerships/workers/{workerId}/role',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const putApiDealershipsWorkersByWorkerIdStatus = <ThrowOnError extends boolean = false>(options: Options<PutApiDealershipsWorkersByWorkerIdStatusData, ThrowOnError>) => (options.client ?? client).put<PutApiDealershipsWorkersByWorkerIdStatusResponses, unknown, ThrowOnError>({
+    url: '/api/dealerships/workers/{workerId}/status',
     ...options,
     headers: {
         'Content-Type': 'application/json',

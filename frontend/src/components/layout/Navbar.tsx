@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HiUser, HiUserAdd, HiPlus } from "react-icons/hi";
-import { LuHeart, LuHistory, LuUser, LuLogOut, LuSearch, LuX, LuImage, LuShield, LuFileText, LuUsers } from "react-icons/lu";
+import { LuHeart, LuHistory, LuUser, LuLogOut, LuSearch, LuX, LuImage, LuShield, LuFileText, LuUsers, LuBuilding2 } from "react-icons/lu";
 import { Trans, t } from "@lingui/macro";
 import { 
   Box, 
@@ -607,17 +607,47 @@ export function Navbar() {
                       </HStack>
                     </MenuItem>
                     {isAdmin && (
+                      <>
+                        <MenuItem
+                          value="admin-users"
+                          onClick={() => router.push("/admin/users")}
+                          color={{ base: "#374151", _dark: "#f3f4f6" }}
+                          _hover={{
+                            bg: { base: "#f3f4f6", _dark: "#374151" },
+                          }}
+                        >
+                          <HStack gap={2}>
+                            <Icon as={LuShield} boxSize={4} />
+                            <Trans>Upravljanje uporabnikov</Trans>
+                          </HStack>
+                        </MenuItem>
+                        <MenuItem
+                          value="admin-dealerships"
+                          onClick={() => router.push("/admin/dealerships")}
+                          color={{ base: "#374151", _dark: "#f3f4f6" }}
+                          _hover={{
+                            bg: { base: "#f3f4f6", _dark: "#374151" },
+                          }}
+                        >
+                          <HStack gap={2}>
+                            <Icon as={LuBuilding2} boxSize={4} />
+                            <Trans>Zahteve za prodajalnice</Trans>
+                          </HStack>
+                        </MenuItem>
+                      </>
+                    )}
+                    {authenticated && (
                       <MenuItem
-                        value="admin-users"
-                        onClick={() => router.push("/admin/users")}
+                        value="request-dealership"
+                        onClick={() => router.push("/dealerships/create")}
                         color={{ base: "#374151", _dark: "#f3f4f6" }}
                         _hover={{
                           bg: { base: "#f3f4f6", _dark: "#374151" },
                         }}
                       >
                         <HStack gap={2}>
-                          <Icon as={LuShield} boxSize={4} />
-                          <Trans>Upravljanje uporabnikov</Trans>
+                          <Icon as={LuBuilding2} boxSize={4} />
+                          <Trans>Zahtevaj prodajalnico</Trans>
                         </HStack>
                       </MenuItem>
                     )}

@@ -26,6 +26,9 @@ namespace Backend.DTOs.Dealership
         [MaxLength(500)]
         [Url]
         public string? Website { get; set; }
+
+        [MaxLength(20)]
+        public string? TaxNumber { get; set; }
     }
 }
 

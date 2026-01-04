@@ -153,6 +153,15 @@ function DealershipCard({
                 </Text>
               </HStack>
 
+              {dealership.taxNumber && (
+                <HStack gap={3}>
+                  <Icon as={LuFileText} boxSize={4} color={{ base: "gray.600", _dark: "gray.400" }} />
+                  <Text color={{ base: "gray.600", _dark: "gray.400" }}>
+                    <Trans>Davčna številka:</Trans> {dealership.taxNumber}
+                  </Text>
+                </HStack>
+              )}
+
               {dealership.email && (
                 <HStack gap={3}>
                   <Icon as={LuMail} boxSize={4} color={{ base: "gray.600", _dark: "gray.400" }} />

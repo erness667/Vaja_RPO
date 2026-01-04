@@ -59,6 +59,7 @@ namespace Backend.Controllers
                     PhoneNumber = request.PhoneNumber,
                     Email = request.Email,
                     Website = request.Website,
+                    TaxNumber = request.TaxNumber,
                     Status = DealershipStatus.Pending,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
@@ -291,6 +292,8 @@ namespace Backend.Controllers
                     dealership.Email = request.Email;
                 if (request.Website != null)
                     dealership.Website = request.Website;
+                if (request.TaxNumber != null)
+                    dealership.TaxNumber = request.TaxNumber;
 
                 dealership.UpdatedAt = DateTime.UtcNow;
 
@@ -800,6 +803,7 @@ namespace Backend.Controllers
                 PhoneNumber = dealership.PhoneNumber,
                 Email = dealership.Email,
                 Website = dealership.Website,
+                TaxNumber = dealership.TaxNumber,
                 Status = dealership.Status.ToString(),
                 ReviewedByAdminId = dealership.ReviewedByAdminId,
                 ReviewedByAdminName = dealership.ReviewedByAdmin != null 

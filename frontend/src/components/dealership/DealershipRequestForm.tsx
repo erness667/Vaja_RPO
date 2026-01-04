@@ -43,6 +43,7 @@ export function DealershipRequestForm() {
     phoneNumber: "",
     email: "",
     website: "",
+    taxNumber: "",
   });
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -62,6 +63,7 @@ export function DealershipRequestForm() {
       description: formData.description || null,
       email: formData.email || null,
       website: formData.website || null,
+      taxNumber: formData.taxNumber || null,
     });
     
     if (result.success) {
@@ -76,6 +78,7 @@ export function DealershipRequestForm() {
           phoneNumber: "",
           email: "",
           website: "",
+          taxNumber: "",
         });
         setSuccess(false);
         router.push("/profile");
@@ -263,6 +266,31 @@ export function DealershipRequestForm() {
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     placeholder={t`Vnesite telefonsko številko`}
+                    disabled={isLoading || success}
+                  />
+                </Field.Root>
+
+                <Field.Root>
+                  <Field.Label
+                    fontSize="sm"
+                    fontWeight="medium"
+                    color={{ base: "gray.700", _dark: "gray.300" }}
+                  >
+                    <HStack gap={2}>
+                      <Icon as={LuFileText} boxSize={4} />
+                      <Trans>Davčna številka</Trans>
+                      <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.500" }}>
+                        (neobvezno)
+                      </Text>
+                    </HStack>
+                  </Field.Label>
+                  <Input
+                    id="taxNumber"
+                    name="taxNumber"
+                    type="text"
+                    value={formData.taxNumber || ""}
+                    onChange={handleChange}
+                    placeholder={t`Vnesite davčno številko`}
                     disabled={isLoading || success}
                   />
                 </Field.Root>

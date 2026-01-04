@@ -20,6 +20,7 @@ export interface Dealership {
   phoneNumber: string;
   email?: string | null;
   website?: string | null;
+  taxNumber?: string | null;
   status: string; // "Pending", "Approved", "Declined", "Suspended"
   reviewedByAdminId?: string | null;
   reviewedByAdminName?: string | null;

@@ -33,6 +33,9 @@ namespace SuperCarsApi.Models
         [MaxLength(500)]
         public string? Website { get; set; }
 
+        [MaxLength(20)]
+        public string? TaxNumber { get; set; }
+
         // Approval status
         [Required]
         public DealershipStatus Status { get; set; } = DealershipStatus.Pending;

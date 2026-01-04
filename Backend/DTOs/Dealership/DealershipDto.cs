@@ -13,6 +13,7 @@ namespace Backend.DTOs.Dealership
         public string PhoneNumber { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? Website { get; set; }
+        public string? TaxNumber { get; set; }
         public string Status { get; set; } = string.Empty; // "Pending", "Approved", "Declined", "Suspended"
         public Guid? ReviewedByAdminId { get; set; }
         public string? ReviewedByAdminName { get; set; }

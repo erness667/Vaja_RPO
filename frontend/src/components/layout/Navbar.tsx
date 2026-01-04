@@ -27,6 +27,7 @@ import {
 import { useColorMode } from "@/components/ui/color-mode";
 import { isAuthenticated, getStoredUser, type StoredUser } from "@/lib/utils/auth-storage";
 import { useLogout } from "@/lib/hooks/useLogout";
+import { useUserDealership } from "@/lib/hooks/useUserDealership";
 import { getApiCars } from "@/client";
 import "@/lib/api-client";
 import type { Car } from "@/lib/types/car";
@@ -38,7 +39,9 @@ export function Navbar() {
   const [authenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState<StoredUser | null>(null);
   const { logout, isLoading: isLoggingOut } = useLogout();
+  const { dealership } = useUserDealership();
   const isAdmin = user?.role === 1; // 1 = Admin
+  const hasApprovedDealership = !!dealership;
   
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -636,7 +639,22 @@ export function Navbar() {
                         </MenuItem>
                       </>
                     )}
-                    {authenticated && (
+                    {authenticated && hasApprovedDealership && (
+                      <MenuItem
+                        value="manage-dealership"
+                        onClick={() => router.push("/dealerships/manage")}
+                        color={{ base: "#374151", _dark: "#f3f4f6" }}
+                        _hover={{
+                          bg: { base: "#f3f4f6", _dark: "#374151" },
+                        }}
+                      >
+                        <HStack gap={2}>
+                          <Icon as={LuBuilding2} boxSize={4} />
+                          <Trans>Moja prodajalnica</Trans>
+                        </HStack>
+                      </MenuItem>
+                    )}
+                    {authenticated && !hasApprovedDealership && (
                       <MenuItem
                         value="request-dealership"
                         onClick={() => router.push("/dealerships/create")}

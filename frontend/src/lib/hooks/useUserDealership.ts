@@ -89,9 +89,22 @@ export function useUserDealership() {
     }
   }, []);
 
-  // Auto-fetch on mount
+// Auto-fetch on mount and listen for auth state changes
   useEffect(() => {
     fetchUserDealership();
+
+    // Listen for authentication state changes (login/logout)
+    const handleAuthStateChange = () => {
+      fetchUserDealership();
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("authStateChanged", handleAuthStateChange);
+
+      return () => {
+        window.removeEventListener("authStateChanged", handleAuthStateChange);
+      };
+    }
   }, [fetchUserDealership]);
 
   return {

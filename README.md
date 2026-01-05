@@ -21,6 +21,12 @@ A modern web application for buying and selling used cars, similar to avto.net a
 - **Admin Panel**: User management, role assignment, and content moderation
 - **User Roles**: Support for Admin and User roles with role-based authorization
 - **Price History**: Track original listing price vs current price
+- **Car Dealership Management**: Create and manage car dealerships with worker/team management
+  - Create dealership requests (pending admin approval)
+  - Worker invitation system with accept/decline functionality
+  - Worker role management (Worker/Admin roles)
+  - Ownership transfer capability
+  - Leave dealership functionality for workers
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 
 ## 🛠️ Tech Stack
@@ -57,7 +63,10 @@ Vaja_RPO/
 │   │   ├── UserController.cs         # User profile & admin endpoints
 │   │   ├── CommentController.cs      # Comment endpoints
 │   │   ├── FavouriteController.cs    # Favourite/wishlist endpoints
-│   │   └── ViewHistoryController.cs  # View history endpoints
+│   │   ├── ViewHistoryController.cs  # View history endpoints
+│   │   ├── DealershipController.cs   # Dealership management endpoints
+│   │   ├── ChatController.cs         # Chat/messaging endpoints
+│   │   └── FriendController.cs       # Friend request endpoints
 │   ├── Models/                        # Domain models
 │   │   ├── User.cs                   # User entity
 │   │   ├── Car.cs                    # Car listing entity
@@ -67,6 +76,10 @@ Vaja_RPO/
 │   │   ├── ViewHistory.cs            # View history entity
 │   │   ├── RefreshToken.cs           # Refresh token entity
 │   │   ├── BlacklistedToken.cs       # Blacklisted JWT tokens
+│   │   ├── CarDealership.cs          # Car dealership entity
+│   │   ├── DealershipWorker.cs       # Dealership worker/team member entity
+│   │   ├── Message.cs                # Chat message entity
+│   │   ├── FriendRequest.cs          # Friend request entity
 │   │   └── Role.cs                   # User role enumeration
 │   ├── DTOs/                         # Data Transfer Objects
 │   │   ├── Auth/                    # Authentication DTOs
@@ -95,6 +108,17 @@ Vaja_RPO/
 │   │   │   └── FavouriteDto.cs
 │   │   └── ViewHistory/             # View history DTOs
 │   │       └── ViewHistoryDto.cs
+│   │   ├── Dealership/              # Dealership DTOs
+│   │   │   ├── DealershipDto.cs
+│   │   │   ├── CreateDealershipRequest.cs
+│   │   │   ├── UpdateDealershipRequest.cs
+│   │   │   ├── ApproveDealershipRequest.cs
+│   │   │   ├── DealershipWorkerDto.cs
+│   │   │   ├── InviteWorkerRequest.cs
+│   │   │   ├── UpdateWorkerRoleRequest.cs
+│   │   │   └── TransferOwnershipRequest.cs
+│   │   ├── Chat/                    # Chat/messaging DTOs
+│   │   └── Friend/                  # Friend request DTOs
 │   ├── Services/                     # Business logic services
 │   │   ├── CarDataService.cs        # Car make/model data service
 │   │   ├── AutoDevApiService.cs     # External API integration
@@ -123,12 +147,21 @@ Vaja_RPO/
 │   │   │   ├── login/               # Login page
 │   │   │   ├── register/            # Registration page
 │   │   │   ├── create/              # Create car listing page
-│   │   │   └── profile/             # User profile page
+│   │   │   ├── profile/             # User profile page
+│   │   │   ├── dealerships/         # Dealership pages
+│   │   │   │   ├── create/          # Create dealership page
+│   │   │   │   └── manage/          # Manage dealership page
+│   │   │   └── admin/               # Admin pages
 │   │   ├── components/              # React components
 │   │   │   ├── auth/               # Authentication components
 │   │   │   ├── car/                # Car-related components
 │   │   │   ├── layout/             # Layout components
 │   │   │   ├── profile/            # Profile components
+│   │   │   ├── dealership/         # Dealership components
+│   │   │   │   ├── DealershipRequestForm.tsx
+│   │   │   │   ├── DealershipManagementPage.tsx
+│   │   │   │   └── DealershipInvitationsList.tsx
+│   │   │   ├── admin/              # Admin components
 │   │   │   └── ui/                 # UI components
 │   │   ├── lib/                    # Utilities and helpers
 │   │   │   ├── hooks/              # Custom React hooks
@@ -290,6 +323,10 @@ The application uses the following main database entities:
 - **Comments**: User comments on car listings
 - **Favourites**: User's favourite car listings
 - **ViewHistory**: Tracks recently viewed cars per user (keeps last 10 entries)
+- **CarDealerships**: Car dealership entities with owner, status, and business information
+- **DealershipWorkers**: Worker/team members associated with dealerships (with roles and status)
+- **Messages**: Chat messages between users
+- **FriendRequests**: Friend request system for connecting users
 - **RefreshTokens**: JWT refresh tokens for token rotation
 - **BlacklistedTokens**: Blacklisted JWT access tokens (for logout)
 
@@ -580,6 +617,100 @@ All endpoints in this section require authentication (Bearer token).
 
 - **GET** `/api/view-history`  
   - **Description**: Get the last 10 cars the authenticated user viewed, ordered by most recent first. Includes full car details and seller information.
+
+### 🏢 Dealership Management (`/api/dealerships`)
+
+All endpoints in this section require authentication (Bearer token) unless otherwise specified.
+
+- **POST** `/api/dealerships`  
+  - **Body**: `CreateDealershipRequest` (name, description, address, city, phoneNumber, email, website, taxNumber)
+  - **Auth**: Required
+  - **Description**: Create a new dealership request. Status starts as "Pending" and requires admin approval. Users can only create one dealership.
+
+- **GET** `/api/dealerships`  
+  - **Query params** (optional):
+    - `status` (string: "Pending", "Approved", "Declined", "Suspended")
+    - `ownerId` (Guid)
+  - **Auth**: None
+  - **Description**: Get all dealerships with optional filtering by status or owner.
+
+- **GET** `/api/dealerships/{id}`  
+  - **Path params**: `id` (int)
+  - **Auth**: None
+  - **Description**: Get details of a specific dealership by ID.
+
+- **GET** `/api/dealerships/pending`  
+  - **Auth**: Required (Admin only)
+  - **Description**: Get all dealerships pending admin approval.
+
+- **POST** `/api/dealerships/{id}/approve`  
+  - **Path params**: `id` (int)
+  - **Body**: `ApproveDealershipRequest` (approve: boolean, notes?: string)
+  - **Auth**: Required (Admin only)
+  - **Description**: Approve or decline a pending dealership request. Admin can add optional notes.
+
+- **PUT** `/api/dealerships/{id}`  
+  - **Path params**: `id` (int)
+  - **Body**: `UpdateDealershipRequest` (optional fields: name, description, address, city, phoneNumber, email, website, taxNumber)
+  - **Auth**: Required (Owner or Admin only)
+  - **Description**: Update dealership information. Only approved dealerships can be updated (unless admin).
+
+- **POST** `/api/dealerships/{id}/transfer-ownership`  
+  - **Path params**: `id` (int)
+  - **Body**: `TransferOwnershipRequest` (newOwnerId: Guid)
+  - **Auth**: Required (Current owner only)
+  - **Description**: Transfer ownership of a dealership to an active worker. The new owner must be an active worker. The previous owner becomes a worker automatically.
+
+- **GET** `/api/dealerships/my`  
+  - **Auth**: Required
+  - **Description**: Get the current user's dealership (if they own one).
+
+- **GET** `/api/dealerships/my/worker`  
+  - **Auth**: Required
+  - **Description**: Get dealerships where the current user is an active worker.
+
+- **GET** `/api/dealerships/{id}/workers`  
+  - **Path params**: `id` (int)
+  - **Auth**: None
+  - **Description**: Get all workers for a specific dealership.
+
+- **POST** `/api/dealerships/{id}/workers/invite`  
+  - **Path params**: `id` (int)
+  - **Body**: `InviteWorkerRequest` (userId: Guid, role: "Worker" | "Admin")
+  - **Auth**: Required (Owner or Dealership Admin only)
+  - **Description**: Invite a user to join the dealership as a worker. Creates a pending invitation.
+
+- **POST** `/api/dealerships/workers/{workerId}/respond`  
+  - **Path params**: `workerId` (int)
+  - **Body**: `boolean` (true to accept, false to decline)
+  - **Auth**: Required
+  - **Description**: Accept or decline a worker invitation.
+
+- **GET** `/api/dealerships/workers/invitations/pending`  
+  - **Auth**: Required
+  - **Description**: Get all pending worker invitations for the current user.
+
+- **GET** `/api/dealerships/workers/{workerId}`  
+  - **Path params**: `workerId` (int)
+  - **Auth**: None
+  - **Description**: Get details of a specific worker by ID.
+
+- **PUT** `/api/dealerships/workers/{workerId}/role`  
+  - **Path params**: `workerId` (int)
+  - **Body**: `UpdateWorkerRoleRequest` (role: "Worker" | "Admin")
+  - **Auth**: Required (Owner or Dealership Admin only)
+  - **Description**: Update a worker's role (promote to admin or demote to worker).
+
+- **DELETE** `/api/dealerships/workers/{workerId}`  
+  - **Path params**: `workerId` (int)
+  - **Auth**: Required (Owner, Dealership Admin, or the worker themselves)
+  - **Description**: Remove a worker from the dealership. Workers can remove themselves. Owners cannot be removed.
+
+- **PUT** `/api/dealerships/workers/{workerId}/status`  
+  - **Path params**: `workerId` (int)
+  - **Body**: `boolean` (true to activate, false to deactivate)
+  - **Auth**: Required (Owner or Dealership Admin only)
+  - **Description**: Activate or deactivate a worker.
 
 ## 🧪 Testing
 

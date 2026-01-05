@@ -691,7 +691,7 @@ namespace Backend.Controllers
         }
 
         /// <summary>
-        /// Remove a worker from the dealership (owner or dealership admin only)
+        /// Remove a worker from the dealership (owner, dealership admin, or the worker themselves)
         /// </summary>
         [HttpDelete("workers/{workerId}")]
         [Authorize]
@@ -714,8 +714,11 @@ namespace Backend.Controllers
                     return NotFound(new { message = "Worker not found." });
                 }
 
-                // Check if user has permission (owner or dealership admin)
-                if (!await IsDealershipOwnerOrAdmin(userId, worker.DealershipId))
+                // Check if user has permission (owner, dealership admin, or the worker themselves)
+                bool isOwnerOrAdmin = await IsDealershipOwnerOrAdmin(userId, worker.DealershipId);
+                bool isSelf = worker.UserId == userId;
+
+                if (!isOwnerOrAdmin && !isSelf)
                 {
                     return Forbid();
                 }
@@ -728,6 +731,124 @@ namespace Backend.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Failed to remove worker", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Transfer ownership of a dealership to another user (current owner only)
+        /// </summary>
+        [HttpPost("{id}/transfer-ownership")]
+        [Authorize]
+        public async Task<IActionResult> TransferOwnership(int id, [FromBody] TransferOwnershipRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+                {
+                    return Unauthorized(new { message = "Invalid user token." });
+                }
+
+                var dealership = await _dbContext.CarDealerships
+                    .Include(d => d.Workers)
+                    .FirstOrDefaultAsync(d => d.Id == id);
+
+                if (dealership == null)
+                {
+                    return NotFound(new { message = "Dealership not found." });
+                }
+
+                // Only the current owner can transfer ownership
+                if (dealership.OwnerId != userId)
+                {
+                    return Forbid();
+                }
+
+                // Cannot transfer to yourself
+                if (request.NewOwnerId == userId)
+                {
+                    return BadRequest(new { message = "Cannot transfer ownership to yourself." });
+                }
+
+                // Check if new owner exists
+                var newOwner = await _dbContext.Users
+                    .FirstOrDefaultAsync(u => u.Id == request.NewOwnerId);
+
+                if (newOwner == null)
+                {
+                    return NotFound(new { message = "New owner not found." });
+                }
+
+                // Check if new owner is already a worker (they should be an active worker)
+                var newOwnerWorker = dealership.Workers
+                    .FirstOrDefault(w => w.UserId == request.NewOwnerId && w.Status == DealershipWorkerStatus.Active);
+
+                if (newOwnerWorker == null)
+                {
+                    return BadRequest(new { message = "New owner must be an active worker in the dealership." });
+                }
+
+                // Transfer ownership
+                var oldOwnerId = dealership.OwnerId;
+                dealership.OwnerId = request.NewOwnerId;
+                dealership.UpdatedAt = DateTime.UtcNow;
+
+                // Remove the new owner from workers list (since they're now the owner)
+                if (newOwnerWorker != null)
+                {
+                    _dbContext.DealershipWorkers.Remove(newOwnerWorker);
+                }
+
+                // Add the old owner as a worker so they remain in the dealership
+                var oldOwnerWorker = await _dbContext.DealershipWorkers
+                    .FirstOrDefaultAsync(w => w.DealershipId == id && w.UserId == oldOwnerId);
+
+                if (oldOwnerWorker == null)
+                {
+                    // Old owner is not already a worker, add them
+                    var newWorker = new DealershipWorker
+                    {
+                        DealershipId = id,
+                        UserId = oldOwnerId,
+                        Role = DealershipWorkerRole.Worker,
+                        Status = DealershipWorkerStatus.Active,
+                        InvitedByUserId = request.NewOwnerId, // The new owner is effectively "inviting" the old owner
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        AcceptedAt = DateTime.UtcNow, // Auto-accepted since they were the owner
+                    };
+                    _dbContext.DealershipWorkers.Add(newWorker);
+                }
+                else if (oldOwnerWorker.Status != DealershipWorkerStatus.Active)
+                {
+                    // Old owner was a worker but not active, reactivate them
+                    oldOwnerWorker.Status = DealershipWorkerStatus.Active;
+                    oldOwnerWorker.UpdatedAt = DateTime.UtcNow;
+                    if (oldOwnerWorker.AcceptedAt == null)
+                    {
+                        oldOwnerWorker.AcceptedAt = DateTime.UtcNow;
+                    }
+                }
+
+                await _dbContext.SaveChangesAsync();
+
+                // Reload with related data
+                await _dbContext.Entry(dealership)
+                    .Reference(d => d.Owner)
+                    .LoadAsync();
+
+                var dealershipDto = MapToDto(dealership);
+
+                return Ok(dealershipDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to transfer ownership", error = ex.Message });
             }
         }
 

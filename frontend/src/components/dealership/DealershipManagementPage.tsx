@@ -41,6 +41,8 @@ import {
   LuFileText,
   LuSearch,
   LuEllipsisVertical,
+  LuLogOut,
+  LuArrowRightLeft,
 } from "react-icons/lu";
 import { useUserDealership } from "@/lib/hooks/useUserDealership";
 import { useDealershipWorkers, type DealershipWorker } from "@/lib/hooks/useDealershipWorkers";
@@ -53,20 +55,25 @@ function WorkerCard({
   isOwner,
   currentUserId,
   onPromote,
+  onDemote,
   onRemove,
+  onTransferOwnership,
   isProcessing,
 }: {
   worker: DealershipWorker;
   isOwner: boolean;
   currentUserId: string;
   onPromote: (workerId: number) => void;
+  onDemote: (workerId: number) => void;
   onRemove: (workerId: number) => void;
+  onTransferOwnership: (workerId: number) => void;
   isProcessing: boolean;
 }) {
   const isAdmin = worker.role === "Admin";
   const isPending = worker.status === "Pending";
   const isActive = worker.status === "Active";
   const canManage = isOwner && (isActive || isPending);
+  const isCurrentUser = worker.userId === currentUserId;
 
   return (
     <Card.Root>
@@ -124,6 +131,7 @@ function WorkerCard({
               </Text>
             </VStack>
           </HStack>
+        
           {canManage && (
             <MenuRoot>
               <MenuTrigger asChild>
@@ -147,6 +155,31 @@ function WorkerCard({
                       <HStack gap={2}>
                         <Icon as={LuShield} boxSize={4} />
                         <Trans>Promoviraj v admina</Trans>
+                      </HStack>
+                    </MenuItem>
+                  )}
+                  {isAdmin && isActive && (
+                    <MenuItem
+                      value="demote"
+                      onClick={() => onDemote(worker.id)}
+                      disabled={isProcessing}
+                    >
+                      <HStack gap={2}>
+                        <Icon as={LuUser} boxSize={4} />
+                        <Trans>Odstrani admin pravice</Trans>
+                      </HStack>
+                    </MenuItem>
+                  )}
+                  {isOwner && isActive && (
+                    <MenuItem
+                      value="transfer"
+                      onClick={() => onTransferOwnership(worker.id)}
+                      disabled={isProcessing}
+                      colorPalette="orange"
+                    >
+                      <HStack gap={2}>
+                        <Icon as={LuArrowRightLeft} boxSize={4} />
+                        <Trans>Prenesi lastništvo</Trans>
                       </HStack>
                     </MenuItem>
                   )}
@@ -183,6 +216,7 @@ export function DealershipManagementPage() {
     inviteWorker,
     updateWorkerRole,
     removeWorker,
+    transferOwnership,
     setError,
   } = useDealershipWorkers(dealership?.id ?? null);
   const { users: searchResults, isLoading: isSearching, searchUsers, clearResults } = useSearchUsers();
@@ -194,6 +228,7 @@ export function DealershipManagementPage() {
   const [processingId, setProcessingId] = useState<number | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [workerToRemove, setWorkerToRemove] = useState<DealershipWorker | null>(null);
+  const [workerToTransferTo, setWorkerToTransferTo] = useState<DealershipWorker | null>(null);
 
   // Fetch workers when dealership is available
   useEffect(() => {
@@ -249,6 +284,16 @@ export function DealershipManagementPage() {
     }
   }, [updateWorkerRole, fetchWorkers]);
 
+  const handleDemote = useCallback(async (workerId: number) => {
+    setProcessingId(workerId);
+    const result = await updateWorkerRole(workerId, "Worker");
+    setProcessingId(null);
+
+    if (result) {
+      await fetchWorkers();
+    }
+  }, [updateWorkerRole, fetchWorkers]);
+
   const handleRemoveClick = useCallback((workerId: number) => {
     const worker = workers.find(w => w.id === workerId);
     if (worker) {
@@ -266,8 +311,40 @@ export function DealershipManagementPage() {
 
     if (result) {
       await fetchWorkers();
+      // If the current user left the dealership, refetch their dealership status
+      if (workerToRemove.userId === currentUser?.id) {
+        await fetchUserDealership();
+        // Redirect to home if user no longer has a dealership
+        if (!dealership) {
+          router.push("/");
+        }
+      }
     }
-  }, [workerToRemove, removeWorker, fetchWorkers]);
+  }, [workerToRemove, removeWorker, fetchWorkers, fetchUserDealership, currentUser?.id, dealership, router]);
+
+  const handleTransferOwnershipClick = useCallback((workerId: number) => {
+    const worker = workers.find(w => w.id === workerId);
+    if (worker) {
+      setWorkerToTransferTo(worker);
+    }
+  }, [workers]);
+
+  const handleTransferOwnershipConfirm = useCallback(async () => {
+    if (!dealership || !workerToTransferTo) return;
+
+    setProcessingId(workerToTransferTo.id);
+    const result = await transferOwnership(workerToTransferTo.userId);
+    setProcessingId(null);
+    setWorkerToTransferTo(null);
+
+    if (result) {
+      // Refetch workers and dealership data
+      await fetchWorkers();
+      await fetchUserDealership();
+      // After transfer, the current user is no longer the owner, so they can leave if they want
+      // The page will update to show them as a worker or allow them to leave
+    }
+  }, [dealership, workerToTransferTo, transferOwnership, fetchWorkers, fetchUserDealership]);
 
   const isOwner = dealership && currentUser?.id === dealership.ownerId;
 
@@ -367,15 +444,35 @@ export function DealershipManagementPage() {
                   <Trans>Odobreno</Trans>
                 </Badge>
               </VStack>
-              {isOwner && (
-                <Button
-                  colorPalette="blue"
-                  leftIcon={<Icon as={LuUserPlus} />}
-                  onClick={() => setShowInviteModal(true)}
-                >
-                  <Trans>Dodaj delavca</Trans>
-                </Button>
-              )}
+              <HStack gap={2}>
+                {!isOwner && currentUser && (() => {
+                  const currentUserWorker = workers.find(w => w.userId === currentUser.id && w.status === "Active");
+                  return currentUserWorker ? (
+                    <Button
+                      variant="outline"
+                      colorPalette="red"
+                      onClick={() => handleRemoveClick(currentUserWorker.id)}
+                      disabled={processingId === currentUserWorker.id}
+                    >
+                      <HStack gap={2}>
+                        <Icon as={LuLogOut} />
+                        <Trans>Zapusti prodajalnico</Trans>
+                      </HStack>
+                    </Button>
+                  ) : null;
+                })()}
+                {isOwner && (
+                  <Button
+                    colorPalette="blue"
+                    onClick={() => setShowInviteModal(true)}
+                  >
+                    <HStack gap={2}>
+                      <Icon as={LuUserPlus} />
+                      <Trans>Dodaj delavca</Trans>
+                    </HStack>
+                  </Button>
+                )}
+              </HStack>
             </HStack>
 
             {/* Dealership Info */}
@@ -463,6 +560,7 @@ export function DealershipManagementPage() {
                   {activeWorkers.length}
                 </Badge>
               </HStack>
+              
             </HStack>
 
             {isLoadingWorkers ? (
@@ -522,7 +620,9 @@ export function DealershipManagementPage() {
                     isOwner={!!isOwner}
                     currentUserId={currentUser?.id || ""}
                     onPromote={handlePromote}
+                    onDemote={handleDemote}
                     onRemove={handleRemoveClick}
+                    onTransferOwnership={handleTransferOwnershipClick}
                     isProcessing={processingId === worker.id}
                   />
                 ))}
@@ -750,6 +850,8 @@ export function DealershipManagementPage() {
                     <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
                       {workerToRemove.status === "Pending" 
                         ? <Trans>Prekliči povabilo</Trans>
+                        : workerToRemove.userId === currentUser?.id
+                        ? <Trans>Zapusti prodajalnico</Trans>
                         : <Trans>Odstrani delavca</Trans>}
                     </Heading>
                     <IconButton
@@ -764,6 +866,8 @@ export function DealershipManagementPage() {
                   <Text color={{ base: "gray.600", _dark: "gray.400" }}>
                     {workerToRemove.status === "Pending" ? (
                       <Trans>Ali ste prepričani, da želite preklicati povabilo za {workerToRemove.userName} {workerToRemove.userSurname}?</Trans>
+                    ) : workerToRemove.userId === currentUser?.id ? (
+                      <Trans>Ali ste prepričani, da želite zapustiti to prodajalnico?</Trans>
                     ) : (
                       <Trans>Ali ste prepričani, da želite odstraniti tega delavca?</Trans>
                     )}
@@ -784,7 +888,70 @@ export function DealershipManagementPage() {
                     >
                       {workerToRemove.status === "Pending" 
                         ? <Trans>Prekliči povabilo</Trans>
+                        : workerToRemove.userId === currentUser?.id
+                        ? <Trans>Zapusti</Trans>
                         : <Trans>Odstrani</Trans>}
+                    </Button>
+                  </HStack>
+                </VStack>
+              </CardBody>
+            </Card.Root>
+          </Box>
+        </Portal>
+      )}
+
+      {/* Transfer Ownership Confirmation Modal */}
+      {workerToTransferTo && (
+        <Portal>
+          <Box
+            position="fixed"
+            inset={0}
+            zIndex={10000}
+            bg="blackAlpha.600"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            onClick={() => setWorkerToTransferTo(null)}
+          >
+            <Card.Root
+              maxW="md"
+              w="full"
+              mx={4}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <CardBody p={6}>
+                <VStack align="stretch" gap={4}>
+                  <HStack justify="space-between" align="center">
+                    <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
+                      <Trans>Prenesi lastništvo</Trans>
+                    </Heading>
+                    <IconButton
+                      variant="ghost"
+                      aria-label={t`Close`}
+                      onClick={() => setWorkerToTransferTo(null)}
+                      disabled={processingId === workerToTransferTo.id}
+                    >
+                      <Icon as={LuX} />
+                    </IconButton>
+                  </HStack>
+                  <Text color={{ base: "gray.600", _dark: "gray.400" }}>
+                    <Trans>Ali ste prepričani, da želite prenesti lastništvo prodajalnice na {workerToTransferTo.userName} {workerToTransferTo.userSurname}? Po prenosu ne boste več lastnik in boste lahko zapustili prodajalnico.</Trans>
+                  </Text>
+                  <HStack gap={3} justify="flex-end">
+                    <Button
+                      variant="ghost"
+                      onClick={() => setWorkerToTransferTo(null)}
+                      disabled={processingId === workerToTransferTo.id}
+                    >
+                      <Trans>Prekliči</Trans>
+                    </Button>
+                    <Button
+                      colorPalette="orange"
+                      onClick={handleTransferOwnershipConfirm}
+                      disabled={processingId === workerToTransferTo.id}
+                      loading={processingId === workerToTransferTo.id}
+                    >
+                      <Trans>Prenesi lastništvo</Trans>
                     </Button>
                   </HStack>
                 </VStack>

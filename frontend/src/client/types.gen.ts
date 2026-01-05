@@ -86,6 +86,10 @@ export type SendFriendRequestRequest = {
     addresseeId: string;
 };
 
+export type TransferOwnershipRequest = {
+    newOwnerId: string;
+};
+
 export type UpdateCarRequest = {
     makeId: string;
     modelId: string;
@@ -788,6 +792,22 @@ export type PutApiDealershipsWorkersByWorkerIdRoleData = {
 };
 
 export type PutApiDealershipsWorkersByWorkerIdRoleResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiDealershipsByIdTransferOwnershipData = {
+    body?: TransferOwnershipRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/dealerships/{id}/transfer-ownership';
+};
+
+export type PostApiDealershipsByIdTransferOwnershipResponses = {
     /**
      * Success
      */

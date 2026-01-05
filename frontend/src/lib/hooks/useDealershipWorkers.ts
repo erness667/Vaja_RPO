@@ -7,6 +7,7 @@ import {
   putApiDealershipsWorkersByWorkerIdRole,
   deleteApiDealershipsWorkersByWorkerId,
   postApiDealershipsWorkersByWorkerIdRespond,
+  postApiDealershipsByIdTransferOwnership,
 } from "@/client";
 import { extractValidationErrors } from "@/lib/utils/error-utils";
 import "@/lib/api-client";
@@ -247,6 +248,47 @@ export function useDealershipWorkers(dealershipId: number | null) {
     }
   }, []);
 
+  const transferOwnership = useCallback(async (
+    newOwnerId: string
+  ): Promise<boolean> => {
+    if (!dealershipId) {
+      setError("No dealership selected");
+      return false;
+    }
+
+    setError(null);
+
+    try {
+      const response = await postApiDealershipsByIdTransferOwnership({
+        path: { id: dealershipId },
+        body: {
+          newOwnerId,
+        },
+      });
+
+      if (response.error || (response.response && !response.response.ok)) {
+        let errorData: unknown = response.error;
+        if (!errorData && response.response) {
+          try {
+            const text = await response.response.text();
+            errorData = JSON.parse(text);
+          } catch {
+            errorData = { message: "Failed to transfer ownership" };
+          }
+        }
+        const errorMessage = extractValidationErrors(errorData);
+        setError(errorMessage);
+        return false;
+      }
+
+      return true;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred.";
+      setError(errorMessage);
+      return false;
+    }
+  }, [dealershipId]);
+
   return {
     workers,
     isLoading,
@@ -256,6 +298,7 @@ export function useDealershipWorkers(dealershipId: number | null) {
     updateWorkerRole,
     removeWorker,
     respondToInvitation,
+    transferOwnership,
     setError,
   };
 }

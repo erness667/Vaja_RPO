@@ -23,7 +23,7 @@ import {
   MenuItem,
   Portal,
 } from "@chakra-ui/react";
-import { LuUsers, LuChevronRight, LuChevronLeft, LuUserPlus, LuMail, LuHeart, LuGitCompare, LuLanguages } from "react-icons/lu";
+import { LuUsers, LuChevronRight, LuChevronLeft, LuUserPlus, LuMail, LuHeart, LuGitCompare, LuLanguages, LuBuilding2 } from "react-icons/lu";
 import { HiSun, HiMoon } from "react-icons/hi";
 import { useFriends } from "@/lib/hooks/useFriends";
 import { useFriendRequests } from "@/lib/hooks/useFriendRequests";
@@ -32,6 +32,7 @@ import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import { useFriendHub } from "@/lib/hooks/useFriendHub";
 import { useAcceptFriendRequest } from "@/lib/hooks/useAcceptFriendRequest";
 import { useRejectFriendRequest } from "@/lib/hooks/useRejectFriendRequest";
+import { useUserDealership } from "@/lib/hooks/useUserDealership";
 import { useColorMode } from "@/components/ui/color-mode";
 import { useAppLocale } from "@/components/i18n/LinguiProvider";
 import { Trans, t } from "@lingui/macro";
@@ -223,6 +224,7 @@ export function FriendsSidebar() {
   const { friends, isLoading: isLoadingFriends, refetch: refetchFriends } = useFriends();
   const { requests, refetch: refetchRequests } = useFriendRequests();
   const { conversations, refetch: refetchConversations } = useConversations();
+  const { dealership } = useUserDealership();
 
   // Set up real-time friend updates
   useFriendHub(
@@ -679,6 +681,20 @@ export function FriendsSidebar() {
                       </MenuContent>
                     </MenuPositioner>
                   </MenuRoot>
+                  {dealership && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      colorPalette="blue"
+                      onClick={() => router.push("/dealerships/manage")}
+                      width="100%"
+                    >
+                      <HStack gap={2} justify="center">
+                        <Icon as={LuBuilding2} />
+                        <Text><Trans>Moja prodajalnica</Trans></Text>
+                      </HStack>
+                    </Button>
+                  )}
                   {user && (
                     <Button
                       size="sm"
@@ -834,6 +850,18 @@ export function FriendsSidebar() {
                   </MenuPositioner>
                 </Portal>
               </MenuRoot>
+              {dealership && (
+                <Link href="/dealerships/manage">
+                  <IconButton
+                    variant="ghost"
+                    colorPalette="blue"
+                    aria-label="My Dealership"
+                    title={t`Moja prodajalnica`}
+                  >
+                    <Icon as={LuBuilding2} />
+                  </IconButton>
+                </Link>
+              )}
               {user && (
                 <IconButton
                   variant="ghost"

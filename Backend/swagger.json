@@ -1202,6 +1202,18 @@
         }
       }
     },
+    "/api/dealerships/my/worker": {
+      "get": {
+        "tags": [
+          "Dealership"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/dealerships/workers/{workerId}/role": {
       "put": {
         "tags": [
@@ -2092,6 +2104,11 @@
             "type": "string",
             "format": "uri",
             "nullable": true
+          },
+          "taxNumber": {
+            "maxLength": 20,
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2388,6 +2405,11 @@
             "maxLength": 500,
             "type": "string",
             "format": "uri",
+            "nullable": true
+          },
+          "taxNumber": {
+            "maxLength": 20,
+            "type": "string",
             "nullable": true
           }
         },

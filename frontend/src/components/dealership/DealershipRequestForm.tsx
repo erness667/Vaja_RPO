@@ -29,6 +29,7 @@ import {
   LuMail,
   LuGlobe,
 } from "react-icons/lu";
+import { DealershipInvitationsList } from "./DealershipInvitationsList";
 
 export function DealershipRequestForm() {
   const router = useRouter();
@@ -121,6 +122,11 @@ export function DealershipRequestForm() {
                 </Trans>
               </Text>
             </VStack>
+
+            {/* Pending Invitations */}
+            <Box>
+              <DealershipInvitationsList />
+            </Box>
 
             {/* Success Message */}
             {success && (

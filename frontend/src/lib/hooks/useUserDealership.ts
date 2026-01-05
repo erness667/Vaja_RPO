@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from "react";
-import { getApiDealerships } from "@/client";
+import { getApiDealerships, getApiDealershipsById, getApiDealershipsMyWorker } from "@/client";
 import { extractValidationErrors } from "@/lib/utils/error-utils";
 import "@/lib/api-client";
 import { getStoredUser } from "@/lib/utils/auth-storage";
@@ -46,38 +46,35 @@ export function useUserDealership() {
         return;
       }
 
-      // Get approved dealership for current user as owner
-      const response = await getApiDealerships({
+      // First try to get approved dealership for current user as owner
+      const ownerResponse = await getApiDealerships({
         query: {
           status: "Approved",
           ownerId: user.id,
         },
       });
 
-      if (response.error || (response.response && !response.response.ok)) {
-        let errorData: unknown = response.error;
-        if (!errorData && response.response) {
-          try {
-            const text = await response.response.text();
-            errorData = JSON.parse(text);
-          } catch {
-            errorData = { message: "Failed to fetch dealership" };
-          }
+      if (!ownerResponse.error && ownerResponse.response && ownerResponse.response.ok && ownerResponse.data) {
+        const data = Array.isArray(ownerResponse.data) ? ownerResponse.data as UserDealership[] : [];
+        if (data.length > 0) {
+          // User owns a dealership, use that
+          setDealership(data[0]);
+          setIsLoading(false);
+          return data[0];
         }
-        const errorMessage = extractValidationErrors(errorData);
-        setError(errorMessage);
-        setDealership(null);
-        setIsLoading(false);
-        return null;
       }
 
-      if (response.data) {
-        const data = Array.isArray(response.data) ? response.data as UserDealership[] : [];
-        // User should only have one approved dealership
-        const approvedDealership = data.length > 0 ? data[0] : null;
-        setDealership(approvedDealership);
-        setIsLoading(false);
-        return approvedDealership;
+      // If user doesn't own a dealership, check if they're a worker
+      const workerResponse = await getApiDealershipsMyWorker({});
+
+      if (!workerResponse.error && workerResponse.response && workerResponse.response.ok && workerResponse.data) {
+        const workerDealerships = Array.isArray(workerResponse.data) ? workerResponse.data as UserDealership[] : [];
+        if (workerDealerships.length > 0) {
+          // User is a worker in at least one dealership, use the first one
+          setDealership(workerDealerships[0]);
+          setIsLoading(false);
+          return workerDealerships[0];
+        }
       }
 
       setDealership(null);

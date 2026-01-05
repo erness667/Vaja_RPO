@@ -63,11 +63,10 @@ function WorkerCard({
   onRemove: (workerId: number) => void;
   isProcessing: boolean;
 }) {
-  const [showMenu, setShowMenu] = useState(false);
   const isAdmin = worker.role === "Admin";
   const isPending = worker.status === "Pending";
   const isActive = worker.status === "Active";
-  const canManage = isOwner && isActive;
+  const canManage = isOwner && (isActive || isPending);
 
   return (
     <Card.Root>
@@ -139,7 +138,7 @@ function WorkerCard({
               </MenuTrigger>
               <MenuPositioner>
                 <MenuContent>
-                  {!isAdmin && (
+                  {!isAdmin && isActive && (
                     <MenuItem
                       value="promote"
                       onClick={() => onPromote(worker.id)}
@@ -159,7 +158,7 @@ function WorkerCard({
                   >
                     <HStack gap={2}>
                       <Icon as={LuX} boxSize={4} />
-                      <Trans>Odstrani</Trans>
+                      <Trans>{isPending ? t`Prekliči povabilo` : t`Odstrani`}</Trans>
                     </HStack>
                   </MenuItem>
                 </MenuContent>
@@ -194,6 +193,7 @@ export function DealershipManagementPage() {
   const [inviteRole, setInviteRole] = useState<"Worker" | "Admin">("Worker");
   const [processingId, setProcessingId] = useState<number | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [workerToRemove, setWorkerToRemove] = useState<DealershipWorker | null>(null);
 
   // Fetch workers when dealership is available
   useEffect(() => {
@@ -249,19 +249,25 @@ export function DealershipManagementPage() {
     }
   }, [updateWorkerRole, fetchWorkers]);
 
-  const handleRemove = useCallback(async (workerId: number) => {
-    if (!confirm(t`Ali ste prepričani, da želite odstraniti tega delavca?`)) {
-      return;
+  const handleRemoveClick = useCallback((workerId: number) => {
+    const worker = workers.find(w => w.id === workerId);
+    if (worker) {
+      setWorkerToRemove(worker);
     }
+  }, [workers]);
 
-    setProcessingId(workerId);
-    const result = await removeWorker(workerId);
+  const handleRemoveConfirm = useCallback(async () => {
+    if (!workerToRemove) return;
+
+    setProcessingId(workerToRemove.id);
+    const result = await removeWorker(workerToRemove.id);
     setProcessingId(null);
+    setWorkerToRemove(null);
 
     if (result) {
       await fetchWorkers();
     }
-  }, [removeWorker, fetchWorkers]);
+  }, [workerToRemove, removeWorker, fetchWorkers]);
 
   const isOwner = dealership && currentUser?.id === dealership.ownerId;
 
@@ -513,10 +519,10 @@ export function DealershipManagementPage() {
                   <WorkerCard
                     key={worker.id}
                     worker={worker}
-                    isOwner={isOwner}
+                    isOwner={!!isOwner}
                     currentUserId={currentUser?.id || ""}
                     onPromote={handlePromote}
-                    onRemove={handleRemove}
+                    onRemove={handleRemoveClick}
                     isProcessing={processingId === worker.id}
                   />
                 ))}
@@ -710,6 +716,75 @@ export function DealershipManagementPage() {
                       loading={processingId === -1}
                     >
                       <Trans>Pošlji povabilo</Trans>
+                    </Button>
+                  </HStack>
+                </VStack>
+              </CardBody>
+            </Card.Root>
+          </Box>
+        </Portal>
+      )}
+
+      {/* Remove Worker Confirmation Modal */}
+      {workerToRemove && (
+        <Portal>
+          <Box
+            position="fixed"
+            inset={0}
+            zIndex={10000}
+            bg="blackAlpha.600"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            onClick={() => setWorkerToRemove(null)}
+          >
+            <Card.Root
+              maxW="md"
+              w="full"
+              mx={4}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <CardBody p={6}>
+                <VStack align="stretch" gap={4}>
+                  <HStack justify="space-between" align="center">
+                    <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
+                      {workerToRemove.status === "Pending" 
+                        ? <Trans>Prekliči povabilo</Trans>
+                        : <Trans>Odstrani delavca</Trans>}
+                    </Heading>
+                    <IconButton
+                      variant="ghost"
+                      aria-label={t`Close`}
+                      onClick={() => setWorkerToRemove(null)}
+                      disabled={processingId === workerToRemove.id}
+                    >
+                      <Icon as={LuX} />
+                    </IconButton>
+                  </HStack>
+                  <Text color={{ base: "gray.600", _dark: "gray.400" }}>
+                    {workerToRemove.status === "Pending" ? (
+                      <Trans>Ali ste prepričani, da želite preklicati povabilo za {workerToRemove.userName} {workerToRemove.userSurname}?</Trans>
+                    ) : (
+                      <Trans>Ali ste prepričani, da želite odstraniti tega delavca?</Trans>
+                    )}
+                  </Text>
+                  <HStack gap={3} justify="flex-end">
+                    <Button
+                      variant="ghost"
+                      onClick={() => setWorkerToRemove(null)}
+                      disabled={processingId === workerToRemove.id}
+                    >
+                      <Trans>Prekliči</Trans>
+                    </Button>
+                    <Button
+                      colorPalette="red"
+                      onClick={handleRemoveConfirm}
+                      disabled={processingId === workerToRemove.id}
+                      loading={processingId === workerToRemove.id}
+                    >
+                      {workerToRemove.status === "Pending" 
+                        ? <Trans>Prekliči povabilo</Trans>
+                        : <Trans>Odstrani</Trans>}
                     </Button>
                   </HStack>
                 </VStack>

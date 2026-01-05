@@ -419,7 +419,7 @@ namespace Backend.Controllers
 
                 var workerDto = MapWorkerToDto(worker);
 
-                return CreatedAtAction(nameof(GetWorker), new { id = worker.Id }, workerDto);
+                return CreatedAtAction(nameof(GetWorker), new { workerId = worker.Id }, workerDto);
             }
             catch (Exception ex)
             {
@@ -585,6 +585,41 @@ namespace Backend.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Failed to fetch pending invitations", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Get dealerships where the current user is an active worker
+        /// </summary>
+        [HttpGet("my/worker")]
+        [Authorize]
+        public async Task<IActionResult> GetMyWorkerDealerships()
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+                {
+                    return Unauthorized(new { message = "Invalid user token." });
+                }
+
+                var workerDealerships = await _dbContext.DealershipWorkers
+                    .Include(w => w.Dealership)
+                        .ThenInclude(d => d.Owner)
+                    .Where(w => w.UserId == userId && w.Status == DealershipWorkerStatus.Active)
+                    .Select(w => w.Dealership)
+                    .Where(d => d.Status == DealershipStatus.Approved)
+                    .Distinct()
+                    .OrderByDescending(d => d.CreatedAt)
+                    .ToListAsync();
+
+                var dealershipDtos = workerDealerships.Select(d => MapToDto(d)).ToList();
+
+                return Ok(dealershipDtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to fetch worker dealerships", error = ex.Message });
             }
         }
 

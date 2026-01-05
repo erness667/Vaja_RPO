@@ -41,6 +41,7 @@ export type CreateDealershipRequest = {
     phoneNumber: string;
     email?: string | null;
     website?: string | null;
+    taxNumber?: string | null;
 };
 
 export type ForgotPasswordRequest = {
@@ -112,6 +113,7 @@ export type UpdateDealershipRequest = {
     phoneNumber?: string | null;
     email?: string | null;
     website?: string | null;
+    taxNumber?: string | null;
 };
 
 export type UpdateProfileRequest = {
@@ -756,6 +758,20 @@ export type GetApiDealershipsWorkersInvitationsPendingData = {
 };
 
 export type GetApiDealershipsWorkersInvitationsPendingResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiDealershipsMyWorkerData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/dealerships/my/worker';
+};
+
+export type GetApiDealershipsMyWorkerResponses = {
     /**
      * Success
      */

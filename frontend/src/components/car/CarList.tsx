@@ -8,6 +8,7 @@ import {
   Text,
   VStack,
   HStack,
+  Button,
 } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -15,6 +16,7 @@ import { useCars, type UseCarsFilters } from "@/lib/hooks/useCars";
 import { CarCard } from "./CarCard";
 import { SortBar, SortOption } from "../layout/SortBar";
 import { Trans } from "@lingui/macro";
+import { CarPriceStats } from "./CarPriceStats";
 
 export function CarList() {
   const searchParams = useSearchParams();
@@ -36,6 +38,7 @@ export function CarList() {
 
   const { cars, isLoading, error, refetch } = useCars(filters);
   const [sort, setSort] = useState<SortOption>("newest");
+  const [showPriceStats, setShowPriceStats] = useState(false);
 
   useEffect(() => {
     void refetch();
@@ -102,8 +105,22 @@ export function CarList() {
             >
               {renderHeading()}
             </Heading>
-            <SortBar value={sort} onChange={setSort} />
+            <HStack gap={3}>
+              <Button
+                size="sm"
+                onClick={() => setShowPriceStats(!showPriceStats)}
+                colorScheme="blue"
+                variant={showPriceStats ? "solid" : "outline"}
+              >
+                {showPriceStats ? "Hide" : "Show"} Price Stats
+              </Button>
+              <SortBar value={sort} onChange={setSort} />
+            </HStack>
           </HStack>
+
+          {showPriceStats && !isLoading && !error && sortedCars.length > 0 && (
+            <CarPriceStats cars={sortedCars} />
+          )}
 
         {isLoading && (
           <Box display="flex" justifyContent="center" py={10}>

@@ -2,6 +2,40 @@
 
 A modern web application for buying and selling used cars, similar to avto.net and mobile.de. This platform provides a forum-style marketplace where users can browse, search, and list their vehicles for sale.
 
+## 📑 Kazalo
+
+- [Screenshots](#-screenshots)
+- [Features](#-features)
+- [Tech Stack](#️-tech-stack)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+  - [DevOps & Infrastructure](#devops--infrastructure)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Quick Start](#quick-start)
+  - [Detailed Setup Instructions](#detailed-setup-instructions)
+  - [Authentication & Authorization](#authentication--authorization)
+  - [Database Models](#database-models)
+  - [Running Both Services](#running-both-services)
+  - [Verifying the Setup](#verifying-the-setup)
+  - [Troubleshooting](#troubleshooting)
+- [API Endpoints](#-api-endpoints)
+  - [Authentication](#-authentication-apiauth)
+  - [Cars](#-cars-apicars)
+  - [Car Catalog](#-car-catalog-apicar-catalog)
+  - [User](#-user-apiuser)
+  - [Admin Endpoints](#-admin-endpoints-apiuseradmin)
+  - [Comments](#-comments-apicarscaridcomments)
+  - [Favourites](#-favourites-apifavourites)
+  - [View History](#-view-history-apiview-history)
+  - [Dealership Management](#-dealership-management-apidealerships)
+- [Testing](#-testing)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Support](#-support)
+- [Acknowledgments](#-acknowledgments)
+
 ## 📸 Screenshots
 
 ![Car Search Interface](docs/images/screenshot.png)

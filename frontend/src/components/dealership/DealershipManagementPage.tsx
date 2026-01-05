@@ -239,6 +239,12 @@ export function DealershipManagementPage() {
 
   // Handle search with debouncing
   useEffect(() => {
+    // Don't search if user is already selected and input matches their username
+    if (selectedUser && searchInput === selectedUser.username) {
+      setShowSuggestions(false);
+      return;
+    }
+
     if (searchInput.trim().length >= 2) {
       const timer = setTimeout(() => {
         searchUsers(searchInput.trim());
@@ -249,7 +255,7 @@ export function DealershipManagementPage() {
       clearResults();
       setShowSuggestions(false);
     }
-  }, [searchInput, searchUsers, clearResults]);
+  }, [searchInput, selectedUser, searchUsers, clearResults]);
 
   const handleSelectUser = (user: UserInfo) => {
     setSelectedUser(user);

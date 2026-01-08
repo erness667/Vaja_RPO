@@ -27,6 +27,7 @@ export type CreateCarRequest = {
     color: string;
     equipmentAndDetails?: string | null;
     price: number;
+    dealershipId?: number | null;
 };
 
 export type CreateCommentRequest = {

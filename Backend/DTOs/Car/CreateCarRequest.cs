@@ -46,6 +46,9 @@ namespace Backend.DTOs.Car
         [Required]
         [Range(0, double.MaxValue, ErrorMessage = "Price must be greater than or equal to 0")]
         public decimal Price { get; set; }
+
+        // Optional dealership ID if posting as a dealership
+        public int? DealershipId { get; set; }
     }
 }
 

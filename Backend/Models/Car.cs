@@ -11,6 +11,10 @@ namespace SuperCarsApi.Models
         public Guid SellerId { get; set; }
         public User Seller { get; set; } = null!;
 
+        // Relationship to the dealership (if posted as dealership)
+        public int? DealershipId { get; set; }
+        public CarDealership? Dealership { get; set; }
+
         // Basic car information
         [Required, MaxLength(100)]
         public string Brand { get; set; } = string.Empty;

@@ -51,6 +51,11 @@ public class ApplicationDbContext : DbContext
                 .HasForeignKey(c => c.SellerId)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of user if they have cars listed
 
+            entity.HasOne(c => c.Dealership)
+                .WithMany()
+                .HasForeignKey(c => c.DealershipId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of dealership if they have cars listed
+
             // Configure Price with proper precision for currency
             entity.Property(c => c.Price)
                 .HasPrecision(18, 2); // 18 total digits, 2 decimal places

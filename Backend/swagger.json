@@ -2083,6 +2083,11 @@
             "minimum": 0,
             "type": "number",
             "format": "double"
+          },
+          "dealershipId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false

@@ -51,6 +51,39 @@ namespace Backend.Controllers
                     return Unauthorized(new { message = "User not found." });
                 }
 
+                // If DealershipId is provided, verify user has permission to post as that dealership
+                if (request.DealershipId.HasValue)
+                {
+                    var dealership = await _dbContext.CarDealerships
+                        .Include(d => d.Workers)
+                        .FirstOrDefaultAsync(d => d.Id == request.DealershipId.Value);
+
+                    if (dealership == null)
+                    {
+                        return BadRequest(new { message = "Dealership not found." });
+                    }
+
+                    // Only approved dealerships can post cars
+                    if (dealership.Status != DealershipStatus.Approved)
+                    {
+                        return BadRequest(new { message = "Only approved dealerships can post cars." });
+                    }
+
+                    // Check if user is owner, or an active worker of the dealership (all workers can post)
+                    bool isOwner = dealership.OwnerId == userId;
+                    bool isWorker = dealership.Workers.Any(w => 
+                        w.UserId == userId && 
+                        w.Status == DealershipWorkerStatus.Active);
+
+                    // Allow admin role users too
+                    bool isSystemAdmin = AuthorizationHelper.IsAdmin(User);
+
+                    if (!isOwner && !isWorker && !isSystemAdmin)
+                    {
+                        return StatusCode(403, new { message = "You do not have permission to post cars for this dealership." });
+                    }
+                }
+
                 // Get make and model names from IDs
                 var make = _carDataService.GetMakeById(request.MakeId);
                 var model = _carDataService.GetModelById(request.MakeId, request.ModelId);
@@ -64,6 +97,7 @@ namespace Backend.Controllers
                 var car = new Car
                 {
                     SellerId = userId,
+                    DealershipId = request.DealershipId,
                     Brand = make.Name ?? string.Empty,
                     Model = model.Name ?? string.Empty,
                     Year = request.Year,
@@ -83,6 +117,14 @@ namespace Backend.Controllers
 
                 _dbContext.Cars.Add(car);
                 await _dbContext.SaveChangesAsync();
+
+                // Load dealership if exists
+                if (car.DealershipId.HasValue)
+                {
+                    await _dbContext.Entry(car)
+                        .Reference(c => c.Dealership)
+                        .LoadAsync();
+                }
 
                 // Return the created car as DTO
                 var carDto = new CarDto
@@ -107,7 +149,16 @@ namespace Backend.Controllers
                     UpdatedAt = car.UpdatedAt,
                     MainImageUrl = null,
                     ImageUrls = new List<string>(),
-                    Images = new List<CarImageInfo>()
+                    Images = new List<CarImageInfo>(),
+                    DealershipId = car.DealershipId,
+                    Dealership = car.Dealership != null ? new DealershipInfo
+                    {
+                        Id = car.Dealership.Id,
+                        Name = car.Dealership.Name,
+                        Address = car.Dealership.Address,
+                        City = car.Dealership.City,
+                        PhoneNumber = car.Dealership.PhoneNumber
+                    } : null
                 };
 
                 return CreatedAtAction(nameof(GetCar), new { id = car.Id }, carDto);
@@ -142,6 +193,7 @@ namespace Backend.Controllers
                 // Find the car
                 var car = await _dbContext.Cars
                     .Include(c => c.Images)
+                    .Include(c => c.Dealership)
                     .FirstOrDefaultAsync(c => c.Id == id);
 
                 if (car == null)
@@ -149,8 +201,11 @@ namespace Backend.Controllers
                     return NotFound(new { message = "Car not found." });
                 }
 
-                // Verify the user is the owner of the car or an admin
-                if (!AuthorizationHelper.IsAdminOrOwner(User, car.SellerId))
+                // Verify the user can manage this car (owner, admin, or dealership admin)
+                var canManage = await AuthorizationHelper.CanManageDealershipCarAsync(
+                    User, _dbContext, car.DealershipId, car.SellerId);
+                
+                if (!canManage)
                 {
                     return Forbid();
                 }
@@ -216,7 +271,16 @@ namespace Backend.Controllers
                         Id = i.Id,
                         Url = i.Url,
                         IsMain = i.IsMain
-                    }).ToList()
+                    }).ToList(),
+                    DealershipId = car.DealershipId,
+                    Dealership = car.Dealership != null ? new DealershipInfo
+                    {
+                        Id = car.Dealership.Id,
+                        Name = car.Dealership.Name,
+                        Address = car.Dealership.Address,
+                        City = car.Dealership.City,
+                        PhoneNumber = car.Dealership.PhoneNumber
+                    } : null
                 };
 
                 return Ok(carDto);
@@ -247,6 +311,7 @@ namespace Backend.Controllers
 
             var car = await _dbContext.Cars
                 .Include(c => c.Images)
+                .Include(c => c.Dealership)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (car == null)
@@ -254,7 +319,10 @@ namespace Backend.Controllers
                 return NotFound(new { message = "Car not found." });
             }
 
-            if (!AuthorizationHelper.IsAdminOrOwner(User, car.SellerId))
+            var canManage = await AuthorizationHelper.CanManageDealershipCarAsync(
+                User, _dbContext, car.DealershipId, car.SellerId);
+            
+            if (!canManage)
             {
                 return Forbid();
             }
@@ -348,7 +416,16 @@ namespace Backend.Controllers
                     Id = i.Id,
                     Url = i.Url,
                     IsMain = i.IsMain
-                }).ToList()
+                }).ToList(),
+                DealershipId = car.DealershipId,
+                Dealership = car.Dealership != null ? new DealershipInfo
+                {
+                    Id = car.Dealership.Id,
+                    Name = car.Dealership.Name,
+                    Address = car.Dealership.Address,
+                    City = car.Dealership.City,
+                    PhoneNumber = car.Dealership.PhoneNumber
+                } : null
             };
 
             return Ok(carDto);
@@ -369,6 +446,7 @@ namespace Backend.Controllers
 
             var car = await _dbContext.Cars
                 .Include(c => c.Images)
+                .Include(c => c.Dealership)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (car == null)
@@ -376,7 +454,10 @@ namespace Backend.Controllers
                 return NotFound(new { message = "Car not found." });
             }
 
-            if (!AuthorizationHelper.IsAdminOrOwner(User, car.SellerId))
+            var canManage = await AuthorizationHelper.CanManageDealershipCarAsync(
+                User, _dbContext, car.DealershipId, car.SellerId);
+            
+            if (!canManage)
             {
                 return Forbid();
             }
@@ -445,7 +526,16 @@ namespace Backend.Controllers
                     Id = i.Id,
                     Url = i.Url,
                     IsMain = i.IsMain
-                }).ToList()
+                }).ToList(),
+                DealershipId = car.DealershipId,
+                Dealership = car.Dealership != null ? new DealershipInfo
+                {
+                    Id = car.Dealership.Id,
+                    Name = car.Dealership.Name,
+                    Address = car.Dealership.Address,
+                    City = car.Dealership.City,
+                    PhoneNumber = car.Dealership.PhoneNumber
+                } : null
             };
 
             return Ok(carDto);
@@ -466,6 +556,7 @@ namespace Backend.Controllers
 
             var car = await _dbContext.Cars
                 .Include(c => c.Images)
+                .Include(c => c.Dealership)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (car == null)
@@ -473,7 +564,10 @@ namespace Backend.Controllers
                 return NotFound(new { message = "Car not found." });
             }
 
-            if (!AuthorizationHelper.IsAdminOrOwner(User, car.SellerId))
+            var canManage = await AuthorizationHelper.CanManageDealershipCarAsync(
+                User, _dbContext, car.DealershipId, car.SellerId);
+            
+            if (!canManage)
             {
                 return Forbid();
             }
@@ -517,7 +611,16 @@ namespace Backend.Controllers
                     Id = i.Id,
                     Url = i.Url,
                     IsMain = i.IsMain
-                }).ToList()
+                }).ToList(),
+                DealershipId = car.DealershipId,
+                Dealership = car.Dealership != null ? new DealershipInfo
+                {
+                    Id = car.Dealership.Id,
+                    Name = car.Dealership.Name,
+                    Address = car.Dealership.Address,
+                    City = car.Dealership.City,
+                    PhoneNumber = car.Dealership.PhoneNumber
+                } : null
             };
 
             return Ok(carDto);
@@ -533,6 +636,7 @@ namespace Backend.Controllers
             {
                 var car = await _dbContext.Cars
                     .Include(c => c.Seller)
+                    .Include(c => c.Dealership)
                     .Include(c => c.Images)
                     .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -627,6 +731,15 @@ namespace Backend.Controllers
                         Surname = car.Seller.Surname,
                         PhoneNumber = car.Seller.PhoneNumber,
                         AvatarImageUrl = car.Seller.AvatarImageUrl
+                    } : null,
+                    DealershipId = car.DealershipId,
+                    Dealership = car.Dealership != null ? new DealershipInfo
+                    {
+                        Id = car.Dealership.Id,
+                        Name = car.Dealership.Name,
+                        Address = car.Dealership.Address,
+                        City = car.Dealership.City,
+                        PhoneNumber = car.Dealership.PhoneNumber
                     } : null
                 };
 
@@ -658,7 +771,10 @@ namespace Backend.Controllers
         {
             try
             {
-                var query = _dbContext.Cars.AsQueryable();
+                var query = _dbContext.Cars
+                    .Include(c => c.Images)
+                    .Include(c => c.Dealership)
+                    .AsQueryable();
 
                 // Apply filters
                 if (!string.IsNullOrEmpty(makeId))
@@ -762,7 +878,16 @@ namespace Backend.Controllers
                             .Select(i => i.Url)
                             .FirstOrDefault()
                             ?? c.Images.Select(i => i.Url).FirstOrDefault(),
-                        ImageUrls = c.Images.Select(i => i.Url).ToList()
+                        ImageUrls = c.Images.Select(i => i.Url).ToList(),
+                        DealershipId = c.DealershipId,
+                        Dealership = c.Dealership != null ? new DealershipInfo
+                        {
+                            Id = c.Dealership.Id,
+                            Name = c.Dealership.Name,
+                            Address = c.Dealership.Address,
+                            City = c.Dealership.City,
+                            PhoneNumber = c.Dealership.PhoneNumber
+                        } : null
                     })
                     .ToListAsync();
 
@@ -798,6 +923,7 @@ namespace Backend.Controllers
 
                 var car = await _dbContext.Cars
                     .Include(c => c.Images)
+                    .Include(c => c.Dealership)
                     .FirstOrDefaultAsync(c => c.Id == id);
 
                 if (car == null)
@@ -805,8 +931,11 @@ namespace Backend.Controllers
                     return NotFound(new { message = "Car not found." });
                 }
 
-                // Verify the user is the owner of the car or an admin
-                if (!AuthorizationHelper.IsAdminOrOwner(User, car.SellerId))
+                // Verify the user can manage this car (owner, admin, or dealership admin)
+                var canManage = await AuthorizationHelper.CanManageDealershipCarAsync(
+                    User, _dbContext, car.DealershipId, car.SellerId);
+                
+                if (!canManage)
                 {
                     return Forbid();
                 }

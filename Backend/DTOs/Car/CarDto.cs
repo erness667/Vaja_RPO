@@ -44,6 +44,16 @@ namespace Backend.DTOs.Car
         /// Seller information (only included in detail view).
         /// </summary>
         public SellerInfo? Seller { get; set; }
+
+        /// <summary>
+        /// Dealership ID if this car is posted by a dealership (nullable).
+        /// </summary>
+        public int? DealershipId { get; set; }
+
+        /// <summary>
+        /// Dealership information if this car is posted by a dealership (nullable).
+        /// </summary>
+        public DealershipInfo? Dealership { get; set; }
     }
 
     public class SellerInfo
@@ -59,6 +69,15 @@ namespace Backend.DTOs.Car
         public int Id { get; set; }
         public string Url { get; set; } = string.Empty;
         public bool IsMain { get; set; }
+    }
+
+    public class DealershipInfo
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? Address { get; set; }
+        public string? City { get; set; }
+        public string? PhoneNumber { get; set; }
     }
 }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
 import {
   Box,
@@ -19,6 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { LuUpload, LuX, LuImage, LuStar } from "react-icons/lu";
 import { useCreateCar } from "@/lib/hooks/useCreateCar";
+import { useUserDealerships } from "@/lib/hooks/useUserDealerships";
 import { MakeDropdown } from "../ui/MakeDropdown";
 import { ModelDropdown } from "../ui/ModelDropdown";
 import type { CreateCarRequest } from "@/client/types.gen";
@@ -31,6 +32,7 @@ import {
 
 export function CarCreateForm() {
   const { createCar, isLoading, error, setError } = useCreateCar();
+  const { dealerships, isLoading: dealershipsLoading } = useUserDealerships();
 
   const [formData, setFormData] = useState<CreateCarRequest>({
     makeId: "",
@@ -45,6 +47,7 @@ export function CarCreateForm() {
     color: "",
     equipmentAndDetails: "",
     price: 0,
+    dealershipId: null,
   });
 
   const [images, setImages] = useState<File[]>([]);
@@ -81,7 +84,25 @@ export function CarCreateForm() {
     itemToString: (item) => item.label,
   });
 
-  const handleChange = useCallback((field: keyof CreateCarRequest, value: string | number) => {
+  // Dealership options for Select - update when dealerships change
+  const dealershipItems = useMemo(() => {
+    return [
+      { value: "", label: "Zasebna oseba" },
+      ...dealerships.map((d) => ({ value: String(d.id), label: d.name })),
+    ];
+  }, [dealerships]);
+  
+  const dealershipList = useListCollection({
+    initialItems: dealershipItems,
+    itemToString: (item) => item.label,
+  });
+
+  // Update collection when dealerships change (use list.set() like MakeDropdown and ModelDropdown)
+  useEffect(() => {
+    dealershipList.set(dealershipItems);
+  }, [dealershipItems, dealershipList]);
+
+  const handleChange = useCallback((field: keyof CreateCarRequest, value: string | number | number | null) => {
     setFormData((prev) => {
       const newData = { ...prev, [field]: value };
       // Reset model when make changes
@@ -561,13 +582,15 @@ export function CarCreateForm() {
                 size="sm"
                 colorPalette="blue"
                 variant="outline"
-                leftIcon={<LuUpload />}
                 onClick={(e) => {
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
               >
-                Izberi slike
+                <HStack gap={2}>
+                  <LuUpload />
+                  <Text>Izberi slike</Text>
+                </HStack>
               </Button>
             </VStack>
             
@@ -770,6 +793,93 @@ export function CarCreateForm() {
           />
           </Field.Root>
         </Box>
+
+        {/* Dealership Selection Section */}
+        {!dealershipsLoading && (
+          <Box
+            pt={6}
+            borderTopWidth="1px"
+            borderTopColor={{ base: "gray.200", _dark: "gray.700" }}
+          >
+            <Heading
+              size="lg"
+              color={{ base: "gray.800", _dark: "gray.100" }}
+              mb={4}
+              pb={3}
+              borderBottomWidth="2px"
+              borderBottomColor={{ base: "blue.200", _dark: "blue.700" }}
+            >
+              Objava kot trgovec
+            </Heading>
+            {dealerships.length > 0 ? (
+              <>
+                <Text
+                  fontSize="sm"
+                  color={{ base: "gray.600", _dark: "gray.400" }}
+                  mb={4}
+                >
+                  Izberite, ali želite oglas objaviti kot zasebna oseba ali kot trgovec. Če izberete trgovec, bo oglas objavljen pod vašo trgovsko dejavnostjo.
+                </Text>
+                <Field.Root>
+                  <Field.Label
+                    fontSize="sm"
+                    fontWeight="medium"
+                    color={{ base: "gray.700", _dark: "gray.300" }}
+                  >
+                    Objava kot
+                  </Field.Label>
+                  <Select.Root
+                    collection={dealershipList.collection}
+                    value={formData.dealershipId ? [String(formData.dealershipId)] : [""]}
+                    onValueChange={(details) => {
+                      const selectedValue = details.value[0] || "";
+                      const selectedDealershipId = selectedValue === "" 
+                        ? null 
+                        : parseInt(selectedValue);
+                      handleChange("dealershipId", selectedDealershipId);
+                    }}
+                  >
+                    <Select.Control>
+                      <Select.Trigger>
+                        <Select.ValueText placeholder="Zasebna oseba" />
+                      </Select.Trigger>
+                      <Select.IndicatorGroup>
+                        <Select.Indicator />
+                        <Select.ClearTrigger onClick={() => handleChange("dealershipId", null)} />
+                      </Select.IndicatorGroup>
+                    </Select.Control>
+                    <Select.Positioner>
+                      <Select.Content>
+                        {dealershipList.collection.items.map((item) => (
+                          <Select.Item key={item.value} item={item}>
+                            <Select.ItemText>{item.label}</Select.ItemText>
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select.Positioner>
+                  </Select.Root>
+                  {formData.dealershipId && (
+                    <Field.HelperText
+                      fontSize="xs"
+                      color={{ base: "blue.600", _dark: "blue.400" }}
+                      mt={1}
+                    >
+                      Oglas bo objavljen pod izbranim trgovskim dejavnostjo
+                    </Field.HelperText>
+                  )}
+                </Field.Root>
+              </>
+            ) : (
+              <Text
+                fontSize="sm"
+                color={{ base: "gray.600", _dark: "gray.400" }}
+                mb={4}
+              >
+                Oglas bo objavljen kot zasebna oseba. Če ste lastnik ali administrator odobrene trgovske dejavnosti, boste lahko izbrali, da oglas objavite kot trgovec.
+              </Text>
+            )}
+          </Box>
+        )}
 
         {/* Submit Button */}
         <Box

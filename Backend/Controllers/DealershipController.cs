@@ -603,12 +603,14 @@ namespace Backend.Controllers
                     return Unauthorized(new { message = "Invalid user token." });
                 }
 
+                // Get dealerships where user is an active worker (any worker can post cars, admins can edit them)
+                // Return all active worker dealerships, backend will validate approval on post
                 var workerDealerships = await _dbContext.DealershipWorkers
                     .Include(w => w.Dealership)
                         .ThenInclude(d => d.Owner)
-                    .Where(w => w.UserId == userId && w.Status == DealershipWorkerStatus.Active)
+                    .Where(w => w.UserId == userId 
+                        && w.Status == DealershipWorkerStatus.Active)
                     .Select(w => w.Dealership)
-                    .Where(d => d.Status == DealershipStatus.Approved)
                     .Distinct()
                     .OrderByDescending(d => d.CreatedAt)
                     .ToListAsync();

@@ -528,7 +528,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
               </HStack>
               </VStack>
 
-              {/* Seller Info */}
+              {/* Seller/Dealership Info */}
             {car.seller && (
               <Card.Root
                 borderRadius="xl"
@@ -539,10 +539,10 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                 <CardBody p={6}>
                   <VStack align="stretch" gap={4}>
                     <Heading size="sm" color={{ base: "gray.800", _dark: "gray.100" }}>
-                      <Trans>Prodajalec</Trans>
+                      {car.dealershipId ? <Trans>Salon</Trans> : <Trans>Prodajalec</Trans>}
                     </Heading>
                     <HStack gap={4} align="center">
-                      {/* Seller Avatar */}
+                      {/* Seller/Dealership Avatar */}
                       {car.seller.avatarImageUrl ? (
                         <Box
                           width="64px"
@@ -556,7 +556,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                         >
                           <Image
                             src={car.seller.avatarImageUrl}
-                            alt={`${car.seller.name} ${car.seller.surname}`}
+                            alt={car.dealershipId ? car.seller.name : `${car.seller.name} ${car.seller.surname}`}
                             width={64}
                             height={64}
                             unoptimized
@@ -584,18 +584,30 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                           borderColor={{ base: "blue.300", _dark: "blue.600" }}
                           flexShrink={0}
                         >
-                          {car.seller.name[0]}{car.seller.surname[0]}
+                          {car.dealershipId 
+                            ? car.seller.name.substring(0, 2).toUpperCase()
+                            : `${car.seller.name[0]}${car.seller.surname?.[0] || ''}`}
                         </Box>
                       )}
                       
-                      {/* Seller Details */}
+                      {/* Seller/Dealership Details */}
                       <VStack align="start" gap={2} flex={1}>
                         <HStack gap={2}>
                           <Icon as={LuUser} boxSize={4} color={{ base: "blue.500", _dark: "blue.400" }} />
                           <Text fontWeight="semibold" color={{ base: "gray.800", _dark: "gray.100" }}>
-                            {car.seller.name} {car.seller.surname}
+                            {car.dealershipId 
+                              ? car.seller.name 
+                              : `${car.seller.name} ${car.seller.surname || ''}`.trim()}
                           </Text>
                         </HStack>
+                        {car.dealership && (car.dealership.address || car.dealership.city) && (
+                          <HStack gap={2}>
+                            <Icon as={LuUser} boxSize={4} color={{ base: "gray.400", _dark: "gray.500" }} />
+                            <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
+                              {[car.dealership.address, car.dealership.city].filter(Boolean).join(", ")}
+                            </Text>
+                          </HStack>
+                        )}
                         <HStack gap={2}>
                           <Icon as={LuPhone} boxSize={4} color={{ base: "blue.500", _dark: "blue.400" }} />
                           <Text

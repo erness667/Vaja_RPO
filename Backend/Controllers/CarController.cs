@@ -725,13 +725,23 @@ namespace Backend.Controllers
                         Url = i.Url,
                         IsMain = i.IsMain
                     }).ToList(),
-                    Seller = car.Seller != null ? new SellerInfo
-                    {
-                        Name = car.Seller.Name,
-                        Surname = car.Seller.Surname,
-                        PhoneNumber = car.Seller.PhoneNumber,
-                        AvatarImageUrl = car.Seller.AvatarImageUrl
-                    } : null,
+                    // If car is posted by a dealership, populate SellerInfo with dealership info
+                    // Otherwise, use the user's (seller's) info
+                    Seller = car.DealershipId.HasValue && car.Dealership != null
+                        ? new SellerInfo
+                        {
+                            Name = car.Dealership.Name,
+                            Surname = "", // Dealerships don't have surnames
+                            PhoneNumber = car.Dealership.PhoneNumber,
+                            AvatarImageUrl = null // Dealerships don't have avatars
+                        }
+                        : (car.Seller != null ? new SellerInfo
+                        {
+                            Name = car.Seller.Name,
+                            Surname = car.Seller.Surname,
+                            PhoneNumber = car.Seller.PhoneNumber,
+                            AvatarImageUrl = car.Seller.AvatarImageUrl
+                        } : null),
                     DealershipId = car.DealershipId,
                     Dealership = car.Dealership != null ? new DealershipInfo
                     {
@@ -774,6 +784,7 @@ namespace Backend.Controllers
                 var query = _dbContext.Cars
                     .Include(c => c.Images)
                     .Include(c => c.Dealership)
+                    .Include(c => c.Seller)
                     .AsQueryable();
 
                 // Apply filters
@@ -879,6 +890,23 @@ namespace Backend.Controllers
                             .FirstOrDefault()
                             ?? c.Images.Select(i => i.Url).FirstOrDefault(),
                         ImageUrls = c.Images.Select(i => i.Url).ToList(),
+                        // If car is posted by a dealership, populate SellerInfo with dealership info
+                        // Otherwise, use the user's (seller's) info
+                        Seller = c.DealershipId.HasValue && c.Dealership != null
+                            ? new SellerInfo
+                            {
+                                Name = c.Dealership.Name,
+                                Surname = "", // Dealerships don't have surnames
+                                PhoneNumber = c.Dealership.PhoneNumber,
+                                AvatarImageUrl = null // Dealerships don't have avatars
+                            }
+                            : (c.Seller != null ? new SellerInfo
+                            {
+                                Name = c.Seller.Name,
+                                Surname = c.Seller.Surname,
+                                PhoneNumber = c.Seller.PhoneNumber,
+                                AvatarImageUrl = c.Seller.AvatarImageUrl
+                            } : null),
                         DealershipId = c.DealershipId,
                         Dealership = c.Dealership != null ? new DealershipInfo
                         {

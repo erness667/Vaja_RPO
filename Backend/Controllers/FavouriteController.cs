@@ -36,6 +36,10 @@ namespace Backend.Controllers
                 .Where(f => f.UserId == userId)
                 .Include(f => f.Car)
                     .ThenInclude(c => c.Images)
+                .Include(f => f.Car)
+                    .ThenInclude(c => c.Seller)
+                .Include(f => f.Car)
+                    .ThenInclude(c => c.Dealership)
                 .OrderByDescending(f => f.CreatedAt)
                 .Select(f => new FavouriteDto
                 {
@@ -72,7 +76,33 @@ namespace Backend.Controllers
                             .OrderByDescending(i => i.IsMain)
                             .ThenBy(i => i.Id)
                             .Select(i => i.Url)
-                            .ToList()
+                            .ToList(),
+                        // If car is posted by a dealership, populate SellerInfo with dealership info
+                        // Otherwise, use the user's (seller's) info
+                        Seller = f.Car.DealershipId.HasValue && f.Car.Dealership != null
+                            ? new SellerInfo
+                            {
+                                Name = f.Car.Dealership.Name,
+                                Surname = "", // Dealerships don't have surnames
+                                PhoneNumber = f.Car.Dealership.PhoneNumber,
+                                AvatarImageUrl = null // Dealerships don't have avatars
+                            }
+                            : (f.Car.Seller != null ? new SellerInfo
+                            {
+                                Name = f.Car.Seller.Name,
+                                Surname = f.Car.Seller.Surname,
+                                PhoneNumber = f.Car.Seller.PhoneNumber,
+                                AvatarImageUrl = f.Car.Seller.AvatarImageUrl
+                            } : null),
+                        DealershipId = f.Car.DealershipId,
+                        Dealership = f.Car.Dealership != null ? new DealershipInfo
+                        {
+                            Id = f.Car.Dealership.Id,
+                            Name = f.Car.Dealership.Name,
+                            Address = f.Car.Dealership.Address,
+                            City = f.Car.Dealership.City,
+                            PhoneNumber = f.Car.Dealership.PhoneNumber
+                        } : null
                     }
                 })
                 .ToListAsync();
@@ -95,6 +125,8 @@ namespace Backend.Controllers
             // Check if car exists
             var car = await _dbContext.Cars
                 .Include(c => c.Images)
+                .Include(c => c.Seller)
+                .Include(c => c.Dealership)
                 .FirstOrDefaultAsync(c => c.Id == carId);
 
             if (car == null)
@@ -156,7 +188,33 @@ namespace Backend.Controllers
                         .OrderByDescending(i => i.IsMain)
                         .ThenBy(i => i.Id)
                         .Select(i => i.Url)
-                        .ToList()
+                        .ToList(),
+                    // If car is posted by a dealership, populate SellerInfo with dealership info
+                    // Otherwise, use the user's (seller's) info
+                    Seller = car.DealershipId.HasValue && car.Dealership != null
+                        ? new SellerInfo
+                        {
+                            Name = car.Dealership.Name,
+                            Surname = "", // Dealerships don't have surnames
+                            PhoneNumber = car.Dealership.PhoneNumber,
+                            AvatarImageUrl = null // Dealerships don't have avatars
+                        }
+                        : (car.Seller != null ? new SellerInfo
+                        {
+                            Name = car.Seller.Name,
+                            Surname = car.Seller.Surname,
+                            PhoneNumber = car.Seller.PhoneNumber,
+                            AvatarImageUrl = car.Seller.AvatarImageUrl
+                        } : null),
+                    DealershipId = car.DealershipId,
+                    Dealership = car.Dealership != null ? new DealershipInfo
+                    {
+                        Id = car.Dealership.Id,
+                        Name = car.Dealership.Name,
+                        Address = car.Dealership.Address,
+                        City = car.Dealership.City,
+                        PhoneNumber = car.Dealership.PhoneNumber
+                    } : null
                 }
             };
 

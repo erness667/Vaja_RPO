@@ -38,6 +38,7 @@ namespace Backend.Controllers
                 .Take(10)
                 .Include(vh => vh.Car)!.ThenInclude(c => c.Images)
                 .Include(vh => vh.Car)!.ThenInclude(c => c.Seller)
+                .Include(vh => vh.Car)!.ThenInclude(c => c.Dealership)
                 .ToListAsync();
 
             var dtos = items.Select(vh =>
@@ -70,13 +71,32 @@ namespace Backend.Controllers
                         MainImageUrl = mainImage?.Url,
                         ImageUrls = vh.Car.Images?.Select(i => i.Url).ToList() ?? new List<string>(),
                         ViewCount = vh.Car.ViewCount,
-                        Seller = vh.Car.Seller == null ? null : new SellerInfo
+                        // If car is posted by a dealership, populate SellerInfo with dealership info
+                        // Otherwise, use the user's (seller's) info
+                        Seller = vh.Car.DealershipId.HasValue && vh.Car.Dealership != null
+                            ? new SellerInfo
+                            {
+                                Name = vh.Car.Dealership.Name,
+                                Surname = "", // Dealerships don't have surnames
+                                PhoneNumber = vh.Car.Dealership.PhoneNumber,
+                                AvatarImageUrl = null // Dealerships don't have avatars
+                            }
+                            : (vh.Car.Seller != null ? new SellerInfo
+                            {
+                                Name = vh.Car.Seller.Name,
+                                Surname = vh.Car.Seller.Surname,
+                                PhoneNumber = vh.Car.Seller.PhoneNumber,
+                                AvatarImageUrl = vh.Car.Seller.AvatarImageUrl
+                            } : null),
+                        DealershipId = vh.Car.DealershipId,
+                        Dealership = vh.Car.Dealership != null ? new DealershipInfo
                         {
-                            Name = vh.Car.Seller.Name,
-                            Surname = vh.Car.Seller.Surname,
-                            PhoneNumber = vh.Car.Seller.PhoneNumber,
-                            AvatarImageUrl = vh.Car.Seller.AvatarImageUrl
-                        }
+                            Id = vh.Car.Dealership.Id,
+                            Name = vh.Car.Dealership.Name,
+                            Address = vh.Car.Dealership.Address,
+                            City = vh.Car.Dealership.City,
+                            PhoneNumber = vh.Car.Dealership.PhoneNumber
+                        } : null
                     };
                 }
 

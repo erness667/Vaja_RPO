@@ -27,6 +27,16 @@ export interface Car {
   imageUrls?: string[];
   images?: CarImageInfo[];
   seller?: SellerInfo | null;
+  dealershipId?: number | null;
+  dealership?: DealershipInfo | null;
+}
+
+export interface DealershipInfo {
+  id: number;
+  name: string;
+  address?: string | null;
+  city?: string | null;
+  phoneNumber?: string | null;
 }
 
 export interface SellerInfo {

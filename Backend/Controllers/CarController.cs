@@ -777,7 +777,8 @@ namespace Backend.Controllers
             [FromQuery] int? mileageTo = null,
             [FromQuery] string? fuelType = null,
             [FromQuery] string? search = null,
-            [FromQuery] string? sellerId = null)
+            [FromQuery] string? sellerId = null,
+            [FromQuery] int? dealershipId = null)
         {
             try
             {
@@ -854,6 +855,12 @@ namespace Backend.Controllers
                     {
                         query = query.Where(c => c.SellerId == sellerGuid);
                     }
+                }
+
+                // Filter by dealership ID
+                if (dealershipId.HasValue)
+                {
+                    query = query.Where(c => c.DealershipId == dealershipId.Value);
                 }
 
                 // Get total count

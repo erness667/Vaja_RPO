@@ -983,6 +983,27 @@
             "description": "Success"
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Dealership"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
     "/api/dealerships/pending": {
@@ -1579,6 +1600,55 @@
             "schema": {
               "type": "string",
               "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/geocoding/autocomplete": {
+      "get": {
+        "tags": [
+          "Geocoding"
+        ],
+        "parameters": [
+          {
+            "name": "input",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/geocoding/place-details": {
+      "get": {
+        "tags": [
+          "Geocoding"
+        ],
+        "parameters": [
+          {
+            "name": "placeId",
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -2516,6 +2586,16 @@
           "city": {
             "maxLength": 50,
             "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double",
             "nullable": true
           },
           "phoneNumber": {

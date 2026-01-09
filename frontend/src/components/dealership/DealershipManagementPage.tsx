@@ -44,10 +44,12 @@ import {
   LuLogOut,
   LuArrowRightLeft,
   LuPencil,
+  LuTrash2,
 } from "react-icons/lu";
 import { useUserDealership } from "@/lib/hooks/useUserDealership";
 import { useDealershipWorkers, type DealershipWorker } from "@/lib/hooks/useDealershipWorkers";
 import { useSearchUsers } from "@/lib/hooks/useSearchUsers";
+import { useDeleteDealership } from "@/lib/hooks/useDeleteDealership";
 import { getStoredUser } from "@/lib/utils/auth-storage";
 import type { UserInfo } from "@/lib/types/friend";
 import { DealershipMap } from "./DealershipMap";
@@ -222,6 +224,7 @@ export function DealershipManagementPage() {
     setError,
   } = useDealershipWorkers(dealership?.id ?? null);
   const { users: searchResults, isLoading: isSearching, searchUsers, clearResults } = useSearchUsers();
+  const { deleteDealership, isLoading: isDeletingDealership, error: deleteError, setError: setDeleteError } = useDeleteDealership();
 
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [searchInput, setSearchInput] = useState("");
@@ -231,6 +234,8 @@ export function DealershipManagementPage() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [workerToRemove, setWorkerToRemove] = useState<DealershipWorker | null>(null);
   const [workerToTransferTo, setWorkerToTransferTo] = useState<DealershipWorker | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   // Fetch workers when dealership is available
   useEffect(() => {
@@ -354,7 +359,19 @@ export function DealershipManagementPage() {
     }
   }, [dealership, workerToTransferTo, transferOwnership, fetchWorkers, fetchUserDealership]);
 
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!dealership) return;
+
+    const result = await deleteDealership(dealership.id);
+    if (result) {
+      // Redirect to home after successful deletion
+      router.push("/");
+    }
+  }, [dealership, deleteDealership, router]);
+
   const isOwner = dealership && currentUser?.id === dealership.ownerId;
+  const activeWorkers = workers.filter(w => w.status === "Active");
+  const pendingWorkers = workers.filter(w => w.status === "Pending");
   const isDealershipAdmin = useMemo(() => {
     if (!dealership || !currentUser) return false;
     const currentUserWorker = workers.find(
@@ -363,6 +380,13 @@ export function DealershipManagementPage() {
     return !!currentUserWorker;
   }, [dealership, currentUser, workers]);
   const canEdit = isOwner || isDealershipAdmin;
+  // Check if user is alone (only owner, no active workers)
+  const isAlone = useMemo(() => {
+    if (!isOwner) return false;
+    return activeWorkers.length === 0;
+  }, [isOwner, activeWorkers.length]);
+  // Total count includes owner (1) + active workers
+  const totalMembersCount = 1 + activeWorkers.length;
 
   if (isLoadingDealership) {
     return (
@@ -423,9 +447,6 @@ export function DealershipManagementPage() {
     );
   }
 
-  const activeWorkers = workers.filter(w => w.status === "Active");
-  const pendingWorkers = workers.filter(w => w.status === "Pending");
-
   return (
     <Box
       suppressHydrationWarning
@@ -456,9 +477,31 @@ export function DealershipManagementPage() {
                     {dealership.name}
                   </Heading>
                 </HStack>
-                <Badge colorPalette="green" size="lg">
-                  <Trans>Odobreno</Trans>
-                </Badge>
+                <HStack gap={3}>
+                  <Badge colorPalette="green" size="lg">
+                    <Trans>Odobreno</Trans>
+                  </Badge>
+                  <MenuRoot positioning={{ placement: "bottom-start", offset: { mainAxis: 6 } }}>
+                    <MenuTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <HStack gap={2}>
+                          <Icon as={LuFileText} boxSize={4} />
+                          <Trans>Meni</Trans>
+                        </HStack>
+                      </Button>
+                    </MenuTrigger>
+                    <MenuPositioner>
+                      <MenuContent>
+                        <MenuItem value="cars" onClick={() => router.push("/dealerships/manage/cars")}>
+                          <HStack gap={2}>
+                            <Icon as={LuFileText} boxSize={4} />
+                            <Trans>Objavljeni avtomobili</Trans>
+                          </HStack>
+                        </MenuItem>
+                      </MenuContent>
+                    </MenuPositioner>
+                  </MenuRoot>
+                </HStack>
               </VStack>
               <HStack gap={2}>
                 {canEdit && (
@@ -470,6 +513,19 @@ export function DealershipManagementPage() {
                     <HStack gap={2}>
                       <Icon as={LuPencil} />
                       <Trans>Uredi prodajalnico</Trans>
+                    </HStack>
+                  </Button>
+                )}
+                {isAlone && (
+                  <Button
+                    variant="outline"
+                    colorPalette="red"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    disabled={isDeletingDealership}
+                  >
+                    <HStack gap={2}>
+                      <Icon as={LuTrash2} />
+                      <Trans>Izbriši prodajalnico</Trans>
                     </HStack>
                   </Button>
                 )}
@@ -507,10 +563,22 @@ export function DealershipManagementPage() {
             <Card.Root>
               <CardBody p={4}>
                 <VStack align="stretch" gap={3}>
-                  <HStack gap={3}>
-                    <Icon as={LuMapPin} boxSize={4} color={{ base: "gray.600", _dark: "gray.400" }} />
-                    <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-                      {dealership.address}, {dealership.city}
+                  <HStack gap={3} justify="space-between">
+                    <HStack gap={3} flex={1}>
+                      <Icon as={LuMapPin} boxSize={4} color={{ base: "gray.600", _dark: "gray.400" }} />
+                      <Text color={{ base: "gray.600", _dark: "gray.400" }}>
+                        {dealership.address}, {dealership.city}
+                      </Text>
+                    </HStack>
+                    <Text
+                      as="button"
+                      fontSize="sm"
+                      color="blue.500"
+                      _hover={{ textDecoration: "underline" }}
+                      onClick={() => setShowMap(!showMap)}
+                      cursor="pointer"
+                    >
+                      {showMap ? <Trans>Skrij zemljevid</Trans> : <Trans>Prikaži zemljevid</Trans>}
                     </Text>
                   </HStack>
                   <HStack gap={3}>
@@ -555,22 +623,24 @@ export function DealershipManagementPage() {
             </Card.Root>
 
             {/* Map Section */}
-            <VStack align="stretch" gap={3}>
-              <Text
-                fontSize="sm"
-                fontWeight="medium"
-                color={{ base: "gray.700", _dark: "gray.300" }}
-              >
-                <Trans>Lokacija na zemljevidu</Trans>
-              </Text>
+            {showMap && (
+              <VStack align="stretch" gap={3}>
+                <Text
+                  fontSize="sm"
+                  fontWeight="medium"
+                  color={{ base: "gray.700", _dark: "gray.300" }}
+                >
+                  <Trans>Lokacija na zemljevidu</Trans>
+                </Text>
 
-              <DealershipMap
-                key={`${dealership.id}-${dealership.latitude}-${dealership.longitude}`}
-                latitude={dealership.latitude ?? null}
-                longitude={dealership.longitude ?? null}
-                address={dealership.address && dealership.city ? `${dealership.address}, ${dealership.city}` : dealership.address}
-              />
-            </VStack>
+                <DealershipMap
+                  key={`${dealership.id}-${dealership.latitude}-${dealership.longitude}`}
+                  latitude={dealership.latitude ?? null}
+                  longitude={dealership.longitude ?? null}
+                  address={dealership.address && dealership.city ? `${dealership.address}, ${dealership.city}` : dealership.address}
+                />
+              </VStack>
+            )}
           </VStack>
 
           {/* Error Message */}
@@ -594,6 +664,27 @@ export function DealershipManagementPage() {
             </Box>
           )}
 
+          {/* Delete Error Message */}
+          {deleteError && (
+            <Box
+              p={4}
+              borderRadius="lg"
+              bg={{ base: "red.50", _dark: "red.900" }}
+              borderWidth="1px"
+              borderColor={{ base: "red.200", _dark: "red.700" }}
+            >
+              <Text color={{ base: "red.800", _dark: "red.200" }}>{deleteError}</Text>
+              <Button
+                mt={2}
+                size="sm"
+                variant="ghost"
+                onClick={() => setDeleteError(null)}
+              >
+                <Trans>Zapri</Trans>
+              </Button>
+            </Box>
+          )}
+
           {/* Workers Section */}
           <Box>
             <HStack justify="space-between" align="center" mb={4}>
@@ -603,7 +694,7 @@ export function DealershipManagementPage() {
                   <Trans>Delavci</Trans>
                 </Heading>
                 <Badge colorPalette="blue" size="sm">
-                  {activeWorkers.length}
+                  {totalMembersCount}
                 </Badge>
               </HStack>
               
@@ -613,17 +704,6 @@ export function DealershipManagementPage() {
               <Box display="flex" justifyContent="center" py={8}>
                 <Spinner size="lg" color="blue.500" />
               </Box>
-            ) : workers.length === 0 ? (
-              <Card.Root>
-                <CardBody p={8}>
-                  <VStack gap={4}>
-                    <Icon as={LuUsers} boxSize={12} color={{ base: "gray.400", _dark: "gray.500" }} />
-                    <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-                      <Trans>Ni delavcev</Trans>
-                    </Text>
-                  </VStack>
-                </CardBody>
-              </Card.Root>
             ) : (
               <VStack gap={3} align="stretch">
                 {/* Owner Card */}
@@ -998,6 +1078,69 @@ export function DealershipManagementPage() {
                       loading={processingId === workerToTransferTo.id}
                     >
                       <Trans>Prenesi lastništvo</Trans>
+                    </Button>
+                  </HStack>
+                </VStack>
+              </CardBody>
+            </Card.Root>
+          </Box>
+        </Portal>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <Portal>
+          <Box
+            position="fixed"
+            inset={0}
+            zIndex={10000}
+            bg="blackAlpha.600"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            onClick={() => setShowDeleteConfirm(false)}
+          >
+            <Card.Root
+              maxW="md"
+              w="full"
+              mx={4}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <CardBody p={6}>
+                <VStack align="stretch" gap={4}>
+                  <HStack justify="space-between" align="center">
+                    <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
+                      <Trans>Izbriši prodajalnico</Trans>
+                    </Heading>
+                    <IconButton
+                      variant="ghost"
+                      aria-label={t`Close`}
+                      onClick={() => setShowDeleteConfirm(false)}
+                      disabled={isDeletingDealership}
+                    >
+                      <Icon as={LuX} />
+                    </IconButton>
+                  </HStack>
+                  <Text color={{ base: "gray.600", _dark: "gray.400" }}>
+                    <Trans>
+                      Ali ste prepričani, da želite izbrisati to prodajalnico? Ta akcija bo izbrisala vse objavljene avtomobile prodajalnice in ne more biti razveljavljena.
+                    </Trans>
+                  </Text>
+                  <HStack gap={3} justify="flex-end">
+                    <Button
+                      variant="ghost"
+                      onClick={() => setShowDeleteConfirm(false)}
+                      disabled={isDeletingDealership}
+                    >
+                      <Trans>Prekliči</Trans>
+                    </Button>
+                    <Button
+                      colorPalette="red"
+                      onClick={handleDeleteConfirm}
+                      disabled={isDeletingDealership}
+                      loading={isDeletingDealership}
+                    >
+                      <Trans>Izbriši</Trans>
                     </Button>
                   </HStack>
                 </VStack>

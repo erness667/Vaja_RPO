@@ -15,6 +15,7 @@ export interface UseCarsFilters {
   mileageTo?: string | null;
   fuelType?: string | null;
   sellerId?: string | null;
+  dealershipId?: number | null;
 }
 
 export function useCars(filters?: UseCarsFilters) {
@@ -83,6 +84,10 @@ export function useCars(filters?: UseCarsFilters) {
 
       if (filters?.sellerId) {
         query.sellerId = filters.sellerId;
+      }
+
+      if (filters?.dealershipId !== undefined && filters.dealershipId !== null) {
+        query.dealershipId = filters.dealershipId;
       }
 
       const response = await getApiCars({

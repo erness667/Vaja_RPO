@@ -239,6 +239,7 @@ export type GetApiCarsData = {
         fuelType?: string;
         search?: string;
         sellerId?: string;
+        dealershipId?: number;
     };
     url: '/api/cars';
 };
@@ -611,6 +612,22 @@ export type PostApiDealershipsData = {
 };
 
 export type PostApiDealershipsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type DeleteApiDealershipsByIdData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/dealerships/{id}';
+};
+
+export type DeleteApiDealershipsByIdResponses = {
     /**
      * Success
      */
@@ -1013,6 +1030,39 @@ export type DeleteApiFriendsByFriendIdData = {
 };
 
 export type DeleteApiFriendsByFriendIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiGeocodingAutocompleteData = {
+    body?: never;
+    path?: never;
+    query?: {
+        input?: string;
+        city?: string;
+    };
+    url: '/api/geocoding/autocomplete';
+};
+
+export type GetApiGeocodingAutocompleteResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiGeocodingPlaceDetailsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        placeId?: string;
+    };
+    url: '/api/geocoding/place-details';
+};
+
+export type GetApiGeocodingPlaceDetailsResponses = {
     /**
      * Success
      */

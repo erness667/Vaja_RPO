@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SuperCarsApi.Models;
+using System.IO;
 
 namespace Backend.Controllers
 {
@@ -946,6 +947,98 @@ namespace Backend.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Failed to update worker status", error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Delete a dealership (owner only, and only if no active workers)
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteDealership(int id)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+                {
+                    return Unauthorized(new { message = "Invalid user token." });
+                }
+
+                var dealership = await _dbContext.CarDealerships
+                    .Include(d => d.Workers)
+                    .FirstOrDefaultAsync(d => d.Id == id);
+
+                if (dealership == null)
+                {
+                    return NotFound(new { message = "Dealership not found." });
+                }
+
+                // Only owner can delete
+                if (dealership.OwnerId != userId)
+                {
+                    return Forbid();
+                }
+
+                // Check if there are any active workers (excluding owner)
+                var hasActiveWorkers = await _dbContext.DealershipWorkers
+                    .AnyAsync(w => w.DealershipId == id && w.Status == DealershipWorkerStatus.Active);
+
+                if (hasActiveWorkers)
+                {
+                    return BadRequest(new { message = "Cannot delete dealership with active workers. Please remove all workers first." });
+                }
+
+                // Get all cars associated with this dealership
+                var dealershipCars = await _dbContext.Cars
+                    .Include(c => c.Images)
+                    .Where(c => c.DealershipId == id)
+                    .ToListAsync();
+
+                // Delete all car images from filesystem and then delete cars
+                foreach (var car in dealershipCars)
+                {
+                    foreach (var image in car.Images)
+                    {
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(image.Url) && image.Url.StartsWith("http"))
+                            {
+                                var uri = new Uri(image.Url);
+                                var fileName = Path.GetFileName(uri.LocalPath);
+                                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "cars", fileName);
+                                
+                                if (System.IO.File.Exists(filePath))
+                                {
+                                    System.IO.File.Delete(filePath);
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            // Continue even if file deletion fails
+                        }
+                    }
+                }
+
+                // Delete all cars associated with the dealership
+                _dbContext.Cars.RemoveRange(dealershipCars);
+
+                // Delete all workers (cascade should handle this, but being explicit)
+                var allWorkers = await _dbContext.DealershipWorkers
+                    .Where(w => w.DealershipId == id)
+                    .ToListAsync();
+                _dbContext.DealershipWorkers.RemoveRange(allWorkers);
+
+                // Delete the dealership
+                _dbContext.CarDealerships.Remove(dealership);
+                await _dbContext.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to delete dealership", error = ex.Message });
             }
         }
 

@@ -39,6 +39,8 @@ export type CreateDealershipRequest = {
     description?: string | null;
     address: string;
     city: string;
+    latitude?: number | null;
+    longitude?: number | null;
     phoneNumber: string;
     email?: string | null;
     website?: string | null;
@@ -1009,6 +1011,40 @@ export type DeleteApiFriendsByFriendIdData = {
 };
 
 export type DeleteApiFriendsByFriendIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiGeocodingGeocodeData = {
+    body?: never;
+    path?: never;
+    query?: {
+        address?: string;
+        city?: string;
+    };
+    url: '/api/geocoding/geocode';
+};
+
+export type GetApiGeocodingGeocodeResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type GetApiGeocodingReverseData = {
+    body?: never;
+    path?: never;
+    query?: {
+        latitude?: number;
+        longitude?: number;
+    };
+    url: '/api/geocoding/reverse';
+};
+
+export type GetApiGeocodingReverseResponses = {
     /**
      * Success
      */

@@ -40,9 +40,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>() ?? throw new InvalidOperationException("JWT configuration missing.");
 
+// Google Maps configuration
+builder.Services.Configure<GoogleMapsSettings>(builder.Configuration.GetSection("GoogleMaps"));
+
 // Car data service configuration (loads from cars.json)
 builder.Services.AddSingleton<CarDataService>();
 builder.Services.AddScoped<CarCatalogService>();
+
+// Geocoding service for address lookup
+builder.Services.AddHttpClient<GeocodingService>();
+builder.Services.AddScoped<GeocodingService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

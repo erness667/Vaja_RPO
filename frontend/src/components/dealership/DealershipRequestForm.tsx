@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   Box,
@@ -16,8 +16,12 @@ import {
   Card,
   CardBody,
   Icon,
+  Spinner,
 } from "@chakra-ui/react";
 import { useCreateDealership } from "@/lib/hooks/useCreateDealership";
+import { useGeocoding } from "@/lib/hooks/useGeocoding";
+import { useAddressAutocomplete } from "@/lib/hooks/useAddressAutocomplete";
+import { DealershipMap } from "./DealershipMap";
 import type { CreateDealershipRequest } from "@/client/types.gen";
 import "@/lib/api-client";
 import { Trans, t } from "@lingui/macro";
@@ -34,7 +38,14 @@ import { DealershipInvitationsList } from "./DealershipInvitationsList";
 export function DealershipRequestForm() {
   const router = useRouter();
   const { createDealership, isLoading, error, setError } = useCreateDealership();
+  const { geocodeAddress } = useGeocoding();
+  const { suggestions, isLoading: isSearchingAddress, searchAddress, getPlaceDetails, clearSuggestions } = useAddressAutocomplete();
   const [success, setSuccess] = useState(false);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+  const addressInputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
   
   const [formData, setFormData] = useState<CreateDealershipRequest>({
     name: "",
@@ -55,16 +66,117 @@ export function DealershipRequestForm() {
     }));
     if (error) setError(null);
     if (success) setSuccess(false);
-  }, [error, setError, success]);
+    // Clear coordinates when address or city changes
+    if (name === "address" || name === "city") {
+      setLatitude(null);
+      setLongitude(null);
+    }
+    // Trigger address autocomplete for address field
+    if (name === "address") {
+      searchAddress(value, formData.city);
+      setShowAddressSuggestions(true);
+    }
+  }, [error, setError, success, searchAddress, formData.city]);
+
+  const handleAddressSelect = useCallback(async (suggestion: { description: string; placeId: string }) => {
+    // Get place details from place_id
+    const placeDetails = await getPlaceDetails(suggestion.placeId);
+    
+    if (!placeDetails) {
+      // Fallback: use description if place details not available
+      const parts = suggestion.description.split(",");
+      setFormData((prev) => ({
+        ...prev,
+        address: parts[0]?.trim() || suggestion.description,
+        city: parts[1]?.trim() || prev.city,
+      }));
+      setShowAddressSuggestions(false);
+      clearSuggestions();
+      return;
+    }
+
+    // Build address from place details
+    let addressText = "";
+    if (placeDetails.streetName) {
+      addressText = placeDetails.streetName;
+      if (placeDetails.streetNumber) {
+        addressText += ` ${placeDetails.streetNumber}`;
+      }
+    } else {
+      // Fallback: use formatted address and extract first part
+      const parts = placeDetails.formattedAddress.split(",");
+      addressText = parts[0]?.trim() || placeDetails.formattedAddress;
+    }
+    
+    const city = placeDetails.city || formData.city;
+    
+    setFormData((prev) => ({
+      ...prev,
+      address: addressText.trim(),
+      city: city || prev.city,
+    }));
+    
+    // Set coordinates from place details
+    if (placeDetails.latitude && placeDetails.longitude) {
+      setLatitude(placeDetails.latitude);
+      setLongitude(placeDetails.longitude);
+    }
+    
+    setShowAddressSuggestions(false);
+    clearSuggestions();
+    
+    // Focus back on input
+    if (addressInputRef.current) {
+      addressInputRef.current.focus();
+    }
+  }, [formData.city, getPlaceDetails, clearSuggestions]);
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node) &&
+        addressInputRef.current &&
+        !addressInputRef.current.contains(event.target as Node)
+      ) {
+        setShowAddressSuggestions(false);
+      }
+    };
+
+    if (showAddressSuggestions) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [showAddressSuggestions]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Auto-geocode if coordinates not set
+    let finalLatitude = latitude;
+    let finalLongitude = longitude;
+    
+    if (!finalLatitude || !finalLongitude) {
+      const geocodeResult = await geocodeAddress(formData.address, formData.city);
+      if (geocodeResult) {
+        finalLatitude = geocodeResult.latitude;
+        finalLongitude = geocodeResult.longitude;
+        setLatitude(finalLatitude);
+        setLongitude(finalLongitude);
+      }
+    }
+
     const result = await createDealership({
       ...formData,
       description: formData.description || null,
       email: formData.email || null,
       website: formData.website || null,
       taxNumber: formData.taxNumber || null,
+      latitude: finalLatitude || undefined,
+      longitude: finalLongitude || undefined,
     });
     
     if (result.success) {
@@ -81,11 +193,13 @@ export function DealershipRequestForm() {
           website: "",
           taxNumber: "",
         });
+        setLatitude(null);
+        setLongitude(null);
         setSuccess(false);
         router.push("/profile");
       }, 3000);
     }
-  }, [formData, createDealership, router]);
+  }, [formData, latitude, longitude, geocodeAddress, createDealership, router]);
 
   return (
     <Box
@@ -221,15 +335,73 @@ export function DealershipRequestForm() {
                       <Trans>Naslov</Trans>
                     </HStack>
                   </Field.Label>
-                  <Input
-                    id="address"
-                    name="address"
-                    type="text"
-                    value={formData.address}
-                    onChange={handleChange}
-                    placeholder={t`Vnesite naslov prodajalnice`}
-                    disabled={isLoading || success}
-                  />
+                  <Box position="relative" width="100%">
+                    <Input
+                      ref={addressInputRef}
+                      id="address"
+                      name="address"
+                      type="text"
+                      value={formData.address}
+                      onChange={handleChange}
+                      onFocus={() => {
+                        if (suggestions.length > 0) {
+                          setShowAddressSuggestions(true);
+                        }
+                      }}
+                      onBlur={() => {
+                        // Delay hiding suggestions to allow click
+                        setTimeout(() => setShowAddressSuggestions(false), 200);
+                      }}
+                      placeholder={t`Vnesite naslov prodajalnice`}
+                      disabled={isLoading || success}
+                      width="100%"
+                    />
+                    {showAddressSuggestions && suggestions.length > 0 && (
+                      <Box
+                        ref={suggestionsRef}
+                        position="absolute"
+                        top="100%"
+                        left={0}
+                        right={0}
+                        mt={1}
+                        bg={{ base: "white", _dark: "gray.800" }}
+                        borderWidth="1px"
+                        borderColor={{ base: "gray.200", _dark: "gray.700" }}
+                        borderRadius="md"
+                        boxShadow="lg"
+                        zIndex={1000}
+                        maxH="300px"
+                        overflowY="auto"
+                      >
+                        {isSearchingAddress && (
+                          <Box p={3} textAlign="center">
+                            <Spinner size="sm" />
+                          </Box>
+                        )}
+                        {!isSearchingAddress && suggestions.map((suggestion, index) => (
+                          <Box
+                            key={suggestion.placeId || index}
+                            p={3}
+                            cursor="pointer"
+                            _hover={{
+                              bg: { base: "gray.100", _dark: "gray.700" },
+                            }}
+                            onClick={() => handleAddressSelect(suggestion)}
+                            borderBottomWidth={index < suggestions.length - 1 ? "1px" : "0"}
+                            borderColor={{ base: "gray.100", _dark: "gray.700" }}
+                          >
+                            <Text
+                              fontSize="sm"
+                              color={{ base: "gray.800", _dark: "gray.100" }}
+                              lineClamp={2}
+                            >
+                              {suggestion.description}
+                            </Text>
+                          </Box>
+                        ))}
+                      </Box>
+                    )}
+                  </Box>
                 </Field.Root>
 
                 <Field.Root required>
@@ -253,6 +425,23 @@ export function DealershipRequestForm() {
                     disabled={isLoading || success}
                   />
                 </Field.Root>
+
+                {/* Map Section */}
+                <VStack align="stretch" gap={3}>
+                  <Text
+                    fontSize="sm"
+                    fontWeight="medium"
+                    color={{ base: "gray.700", _dark: "gray.300" }}
+                  >
+                    <Trans>Lokacija na zemljevidu</Trans>
+                  </Text>
+
+                  <DealershipMap
+                    latitude={latitude}
+                    longitude={longitude}
+                    address={formData.address && formData.city ? `${formData.address}, ${formData.city}` : formData.address}
+                  />
+                </VStack>
 
                 <Field.Root required>
                   <Field.Label

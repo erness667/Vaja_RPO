@@ -13,10 +13,12 @@ namespace Backend.Controllers
     public class DealershipController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly Services.GeocodingService _geocodingService;
 
-        public DealershipController(ApplicationDbContext dbContext)
+        public DealershipController(ApplicationDbContext dbContext, Services.GeocodingService geocodingService)
         {
             _dbContext = dbContext;
+            _geocodingService = geocodingService;
         }
 
         /// <summary>
@@ -48,6 +50,17 @@ namespace Backend.Controllers
                     return BadRequest(new { message = "You already have a dealership." });
                 }
 
+                // Geocode address if coordinates not provided
+                double? latitude = request.Latitude;
+                double? longitude = request.Longitude;
+                
+                if (!latitude.HasValue || !longitude.HasValue)
+                {
+                    var (geocodedLat, geocodedLon) = await _geocodingService.GeocodeAddressAsync(request.Address, request.City);
+                    latitude = geocodedLat;
+                    longitude = geocodedLon;
+                }
+
                 // Create the dealership
                 var dealership = new CarDealership
                 {
@@ -60,6 +73,8 @@ namespace Backend.Controllers
                     Email = request.Email,
                     Website = request.Website,
                     TaxNumber = request.TaxNumber,
+                    Latitude = latitude,
+                    Longitude = longitude,
                     Status = DealershipStatus.Pending,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow

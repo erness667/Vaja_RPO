@@ -19,6 +19,10 @@ namespace Backend.DTOs.Dealership
         [MaxLength(50)]
         public string City { get; set; } = string.Empty;
 
+        // Geographic coordinates (optional, can be auto-filled from address)
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+
         [Required]
         [MaxLength(20)]
         public string PhoneNumber { get; set; } = string.Empty;

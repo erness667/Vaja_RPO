@@ -24,6 +24,10 @@ namespace SuperCarsApi.Models
         [Required, MaxLength(50)]
         public string City { get; set; } = string.Empty;
 
+        // Geographic coordinates for map display
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+
         [Required, MaxLength(20)]
         public string PhoneNumber { get; set; } = string.Empty;
 

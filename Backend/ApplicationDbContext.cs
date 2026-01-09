@@ -19,9 +19,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<Message> Messages { get; set; }
     public DbSet<CarDealership> CarDealerships { get; set; }
     public DbSet<DealershipWorker> DealershipWorkers { get; set; }
-    public DbSet<GroupChat> GroupChats { get; set; }
-    public DbSet<GroupChatMessage> GroupChatMessages { get; set; }
-    public DbSet<GroupChatParticipant> GroupChatParticipants { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -201,58 +198,6 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(dw => dw.UserId);
             entity.HasIndex(dw => dw.DealershipId);
             entity.HasIndex(dw => dw.Status);
-        });
-
-        modelBuilder.Entity<GroupChat>(entity =>
-        {
-            // One group chat per dealership (unique constraint)
-            entity.HasIndex(gc => gc.DealershipId).IsUnique();
-
-            entity.HasOne(gc => gc.Dealership)
-                .WithMany()
-                .HasForeignKey(gc => gc.DealershipId)
-                .OnDelete(DeleteBehavior.Cascade); // Delete group chat when dealership is deleted
-
-            // Index for faster queries
-            entity.HasIndex(gc => gc.DealershipId);
-        });
-
-        modelBuilder.Entity<GroupChatMessage>(entity =>
-        {
-            entity.HasOne(gcm => gcm.GroupChat)
-                .WithMany(gc => gc.Messages)
-                .HasForeignKey(gcm => gcm.GroupChatId)
-                .OnDelete(DeleteBehavior.Cascade); // Delete messages when group chat is deleted
-
-            entity.HasOne(gcm => gcm.Sender)
-                .WithMany()
-                .HasForeignKey(gcm => gcm.SenderId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if user has sent messages
-
-            // Indexes for faster queries
-            entity.HasIndex(gcm => new { gcm.GroupChatId, gcm.SentAt });
-            entity.HasIndex(gcm => gcm.SenderId);
-        });
-
-        modelBuilder.Entity<GroupChatParticipant>(entity =>
-        {
-            // Unique constraint: a user can only be a participant in a group chat once
-            entity.HasIndex(gcp => new { gcp.GroupChatId, gcp.UserId }).IsUnique();
-
-            entity.HasOne(gcp => gcp.GroupChat)
-                .WithMany(gc => gc.Participants)
-                .HasForeignKey(gcp => gcp.GroupChatId)
-                .OnDelete(DeleteBehavior.Cascade); // Delete participants when group chat is deleted
-
-            entity.HasOne(gcp => gcp.User)
-                .WithMany()
-                .HasForeignKey(gcp => gcp.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if user is a participant
-
-            // Indexes for faster queries
-            entity.HasIndex(gcp => gcp.GroupChatId);
-            entity.HasIndex(gcp => gcp.UserId);
-            entity.HasIndex(gcp => new { gcp.GroupChatId, gcp.HasLeft });
         });
     }
 }

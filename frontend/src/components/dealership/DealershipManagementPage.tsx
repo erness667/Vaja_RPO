@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
@@ -43,12 +43,14 @@ import {
   LuEllipsisVertical,
   LuLogOut,
   LuArrowRightLeft,
+  LuPencil,
 } from "react-icons/lu";
 import { useUserDealership } from "@/lib/hooks/useUserDealership";
 import { useDealershipWorkers, type DealershipWorker } from "@/lib/hooks/useDealershipWorkers";
 import { useSearchUsers } from "@/lib/hooks/useSearchUsers";
 import { getStoredUser } from "@/lib/utils/auth-storage";
 import type { UserInfo } from "@/lib/types/friend";
+import { DealershipMap } from "./DealershipMap";
 
 function WorkerCard({
   worker,
@@ -353,6 +355,14 @@ export function DealershipManagementPage() {
   }, [dealership, workerToTransferTo, transferOwnership, fetchWorkers, fetchUserDealership]);
 
   const isOwner = dealership && currentUser?.id === dealership.ownerId;
+  const isDealershipAdmin = useMemo(() => {
+    if (!dealership || !currentUser) return false;
+    const currentUserWorker = workers.find(
+      w => w.userId === currentUser.id && w.status === "Active" && w.role === "Admin"
+    );
+    return !!currentUserWorker;
+  }, [dealership, currentUser, workers]);
+  const canEdit = isOwner || isDealershipAdmin;
 
   if (isLoadingDealership) {
     return (
@@ -451,6 +461,18 @@ export function DealershipManagementPage() {
                 </Badge>
               </VStack>
               <HStack gap={2}>
+                {canEdit && (
+                  <Button
+                    variant="outline"
+                    colorPalette="blue"
+                    onClick={() => router.push("/dealerships/edit")}
+                  >
+                    <HStack gap={2}>
+                      <Icon as={LuPencil} />
+                      <Trans>Uredi prodajalnico</Trans>
+                    </HStack>
+                  </Button>
+                )}
                 {!isOwner && currentUser && (() => {
                   const currentUserWorker = workers.find(w => w.userId === currentUser.id && w.status === "Active");
                   return currentUserWorker ? (
@@ -531,6 +553,24 @@ export function DealershipManagementPage() {
                 </VStack>
               </CardBody>
             </Card.Root>
+
+            {/* Map Section */}
+            <VStack align="stretch" gap={3}>
+              <Text
+                fontSize="sm"
+                fontWeight="medium"
+                color={{ base: "gray.700", _dark: "gray.300" }}
+              >
+                <Trans>Lokacija na zemljevidu</Trans>
+              </Text>
+
+              <DealershipMap
+                key={`${dealership.id}-${dealership.latitude}-${dealership.longitude}`}
+                latitude={dealership.latitude ?? null}
+                longitude={dealership.longitude ?? null}
+                address={dealership.address && dealership.city ? `${dealership.address}, ${dealership.city}` : dealership.address}
+              />
+            </VStack>
           </VStack>
 
           {/* Error Message */}

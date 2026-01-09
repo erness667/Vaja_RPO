@@ -280,17 +280,21 @@ namespace Backend.Controllers
                     return NotFound(new { message = "Dealership not found." });
                 }
 
-                // Only owner or admin can update
-                if (!AuthorizationHelper.IsAdminOrOwner(User, dealership.OwnerId))
+                // Only owner or dealership admin can update
+                if (!await IsDealershipOwnerOrAdmin(userId, id))
                 {
                     return Forbid();
                 }
 
-                // Only approved dealerships can be updated (unless admin)
+                // Only approved dealerships can be updated (unless system admin)
                 if (dealership.Status != DealershipStatus.Approved && !AuthorizationHelper.IsAdmin(User))
                 {
                     return BadRequest(new { message = "Only approved dealerships can be updated." });
                 }
+
+                // Track if address changed for geocoding
+                bool addressChanged = (!string.IsNullOrEmpty(request.Address) && request.Address != dealership.Address) ||
+                                     (!string.IsNullOrEmpty(request.City) && request.City != dealership.City);
 
                 // Update fields if provided
                 if (!string.IsNullOrEmpty(request.Name))
@@ -309,6 +313,20 @@ namespace Backend.Controllers
                     dealership.Website = request.Website;
                 if (request.TaxNumber != null)
                     dealership.TaxNumber = request.TaxNumber;
+
+                // Handle coordinates: use provided ones, or geocode if address changed and no coordinates provided
+                if (request.Latitude.HasValue && request.Longitude.HasValue)
+                {
+                    dealership.Latitude = request.Latitude;
+                    dealership.Longitude = request.Longitude;
+                }
+                else if (addressChanged && (!request.Latitude.HasValue || !request.Longitude.HasValue))
+                {
+                    // Geocode the new address
+                    var (geocodedLat, geocodedLon) = await _geocodingService.GeocodeAddressAsync(dealership.Address, dealership.City);
+                    dealership.Latitude = geocodedLat;
+                    dealership.Longitude = geocodedLon;
+                }
 
                 dealership.UpdatedAt = DateTime.UtcNow;
 
@@ -973,6 +991,8 @@ namespace Backend.Controllers
                 Description = dealership.Description,
                 Address = dealership.Address,
                 City = dealership.City,
+                Latitude = dealership.Latitude,
+                Longitude = dealership.Longitude,
                 PhoneNumber = dealership.PhoneNumber,
                 Email = dealership.Email,
                 Website = dealership.Website,

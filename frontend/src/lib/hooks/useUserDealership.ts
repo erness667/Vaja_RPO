@@ -15,6 +15,8 @@ export interface UserDealership {
   description?: string | null;
   address: string;
   city: string;
+  latitude?: number | null;
+  longitude?: number | null;
   phoneNumber: string;
   email?: string | null;
   website?: string | null;

@@ -17,6 +17,7 @@ export function DealershipMap({ latitude, longitude, address, height = "400px" }
   const [isMounted, setIsMounted] = useState(false);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markerRef = useRef<google.maps.Marker | null>(null);
+  const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
 
   // Get API key from environment variable
@@ -65,15 +66,25 @@ export function DealershipMap({ latitude, longitude, address, height = "400px" }
           map: mapRef.current,
           title: address || "Dealership Location",
         });
+      }
 
-        if (address) {
-          const infoWindow = new google.maps.InfoWindow({
+      // Update or create info window
+      if (address) {
+        if (infoWindowRef.current) {
+          infoWindowRef.current.setContent(address);
+        } else {
+          infoWindowRef.current = new google.maps.InfoWindow({
             content: address,
           });
           markerRef.current.addListener("click", () => {
-            infoWindow.open(mapRef.current, markerRef.current);
+            if (infoWindowRef.current && mapRef.current && markerRef.current) {
+              infoWindowRef.current.open(mapRef.current, markerRef.current);
+            }
           });
-          infoWindow.open(mapRef.current, markerRef.current);
+        }
+        // Open info window
+        if (infoWindowRef.current && mapRef.current && markerRef.current) {
+          infoWindowRef.current.open(mapRef.current, markerRef.current);
         }
       }
 
@@ -86,6 +97,10 @@ export function DealershipMap({ latitude, longitude, address, height = "400px" }
       // Remove marker if coordinates are cleared
       markerRef.current.setMap(null);
       markerRef.current = null;
+      if (infoWindowRef.current) {
+        infoWindowRef.current.close();
+        infoWindowRef.current = null;
+      }
     }
   }, [isMounted, isLoaded, latitude, longitude, address]);
 

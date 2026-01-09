@@ -117,6 +117,8 @@ export type UpdateDealershipRequest = {
     description?: string | null;
     address?: string | null;
     city?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
     phoneNumber?: string | null;
     email?: string | null;
     website?: string | null;

@@ -45,6 +45,7 @@ import {
   LuArrowRightLeft,
   LuPencil,
   LuTrash2,
+  LuTrendingUp,
 } from "react-icons/lu";
 import { useUserDealership } from "@/lib/hooks/useUserDealership";
 import { useDealershipWorkers, type DealershipWorker } from "@/lib/hooks/useDealershipWorkers";
@@ -53,6 +54,7 @@ import { useDeleteDealership } from "@/lib/hooks/useDeleteDealership";
 import { getStoredUser } from "@/lib/utils/auth-storage";
 import type { UserInfo } from "@/lib/types/friend";
 import { DealershipMap } from "./DealershipMap";
+import { DealershipManageMenu } from "./DealershipManageMenu";
 
 function WorkerCard({
   worker,
@@ -481,26 +483,7 @@ export function DealershipManagementPage() {
                   <Badge colorPalette="green" size="lg">
                     <Trans>Odobreno</Trans>
                   </Badge>
-                  <MenuRoot positioning={{ placement: "bottom-start", offset: { mainAxis: 6 } }}>
-                    <MenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <HStack gap={2}>
-                          <Icon as={LuFileText} boxSize={4} />
-                          <Trans>Meni</Trans>
-                        </HStack>
-                      </Button>
-                    </MenuTrigger>
-                    <MenuPositioner>
-                      <MenuContent>
-                        <MenuItem value="cars" onClick={() => router.push("/dealerships/manage/cars")}>
-                          <HStack gap={2}>
-                            <Icon as={LuFileText} boxSize={4} />
-                            <Trans>Objavljeni avtomobili</Trans>
-                          </HStack>
-                        </MenuItem>
-                      </MenuContent>
-                    </MenuPositioner>
-                  </MenuRoot>
+                  <DealershipManageMenu />
                 </HStack>
               </VStack>
               <HStack gap={2}>

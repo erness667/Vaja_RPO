@@ -1042,6 +1042,239 @@ namespace Backend.Controllers
             }
         }
 
+        /// <summary>
+        /// Get analytics for a dealership (owner or dealership admin only)
+        /// </summary>
+        [HttpGet("{id}/analytics")]
+        [Authorize]
+        public async Task<IActionResult> GetDealershipAnalytics(int id)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+                {
+                    return Unauthorized(new { message = "Invalid user token." });
+                }
+
+                // Check if dealership exists
+                var dealership = await _dbContext.CarDealerships
+                    .FirstOrDefaultAsync(d => d.Id == id);
+
+                if (dealership == null)
+                {
+                    return NotFound(new { message = "Dealership not found." });
+                }
+
+                // Check if user is owner or dealership admin
+                var canAccess = await AuthorizationHelper.CanManageDealershipAsync(User, _dbContext, id);
+                if (!canAccess)
+                {
+                    return Forbid();
+                }
+
+                // Get all cars for this dealership
+                var cars = await _dbContext.Cars
+                    .Where(c => c.DealershipId == id)
+                    .ToListAsync();
+
+                // Get view history for dealership cars
+                var carIds = cars.Select(c => c.Id).ToList();
+                var viewHistory = await _dbContext.ViewHistories
+                    .Where(vh => carIds.Contains(vh.CarId))
+                    .ToListAsync();
+
+                // Get favourites for dealership cars
+                var favourites = await _dbContext.Favourites
+                    .Where(f => carIds.Contains(f.CarId))
+                    .ToListAsync();
+
+                // Get workers for activity stats
+                var workers = await _dbContext.DealershipWorkers
+                    .Include(w => w.User)
+                    .Where(w => w.DealershipId == id && w.Status == DealershipWorkerStatus.Active)
+                    .ToListAsync();
+
+                // Calculate overview statistics
+                var overview = new OverviewStatsDto
+                {
+                    TotalCars = cars.Count,
+                    TotalValue = cars.Sum(c => c.Price),
+                    AveragePrice = cars.Any() ? cars.Average(c => c.Price) : 0,
+                    MinPrice = cars.Any() ? cars.Min(c => c.Price) : 0,
+                    MaxPrice = cars.Any() ? cars.Max(c => c.Price) : 0,
+                    TotalViews = cars.Sum(c => c.ViewCount),
+                    TotalFavourites = favourites.Count,
+                    AverageDaysOnMarket = cars.Any() 
+                        ? cars.Average(c => (DateTime.UtcNow - c.CreatedAt).TotalDays) 
+                        : 0
+                };
+
+                // Calculate monthly statistics (last 12 months)
+                var monthlyStats = new List<MonthlyStatsDto>();
+                var now = DateTime.UtcNow;
+                for (int i = 11; i >= 0; i--)
+                {
+                    var monthStart = new DateTime(now.Year, now.Month, 1).AddMonths(-i);
+                    var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+                    
+                    var monthCars = cars.Where(c => c.CreatedAt >= monthStart && c.CreatedAt <= monthEnd).ToList();
+                    var monthViews = viewHistory.Where(vh => vh.ViewedAt >= monthStart && vh.ViewedAt <= monthEnd).Count();
+                    
+                    monthlyStats.Add(new MonthlyStatsDto
+                    {
+                        Year = monthStart.Year,
+                        Month = monthStart.Month,
+                        CarsCount = monthCars.Count,
+                        TotalValue = monthCars.Sum(c => c.Price),
+                        AveragePrice = monthCars.Any() ? monthCars.Average(c => c.Price) : 0,
+                        ViewsCount = monthViews
+                    });
+                }
+
+                // Top viewed cars
+                var topViewedCars = cars
+                    .OrderByDescending(c => c.ViewCount)
+                    .Take(10)
+                    .Select(c => new TopCarDto
+                    {
+                        CarId = c.Id,
+                        Brand = c.Brand,
+                        Model = c.Model,
+                        Year = c.Year,
+                        Price = c.Price,
+                        ViewCount = viewHistory.Count(vh => vh.CarId == c.Id), // Authenticated views only
+                        TotalViewCount = c.ViewCount, // Total views including anonymous
+                        FavouriteCount = favourites.Count(f => f.CarId == c.Id),
+                        CreatedAt = c.CreatedAt
+                    })
+                    .ToList();
+
+                // Top favourite cars
+                var topFavouriteCars = cars
+                    .Select(c => new
+                    {
+                        Car = c,
+                        FavouriteCount = favourites.Count(f => f.CarId == c.Id)
+                    })
+                    .OrderByDescending(x => x.FavouriteCount)
+                    .Take(10)
+                    .Select(x => new TopCarDto
+                    {
+                        CarId = x.Car.Id,
+                        Brand = x.Car.Brand,
+                        Model = x.Car.Model,
+                        Year = x.Car.Year,
+                        Price = x.Car.Price,
+                        ViewCount = x.Car.ViewCount,
+                        FavouriteCount = x.FavouriteCount,
+                        CreatedAt = x.Car.CreatedAt
+                    })
+                    .ToList();
+
+                // Brand distribution
+                var brandDistribution = cars
+                    .GroupBy(c => c.Brand)
+                    .Select(g => new BrandDistributionDto
+                    {
+                        Brand = g.Key,
+                        Count = g.Count(),
+                        TotalValue = g.Sum(c => c.Price),
+                        AveragePrice = g.Average(c => c.Price)
+                    })
+                    .OrderByDescending(b => b.Count)
+                    .ToList();
+
+                // Fuel type distribution
+                var fuelTypeDistribution = cars
+                    .GroupBy(c => c.FuelType)
+                    .Select(g => new FuelTypeDistributionDto
+                    {
+                        FuelType = g.Key,
+                        Count = g.Count(),
+                        TotalValue = g.Sum(c => c.Price),
+                        AveragePrice = g.Average(c => c.Price)
+                    })
+                    .OrderByDescending(f => f.Count)
+                    .ToList();
+
+                // Worker activity
+                var workerActivity = new List<WorkerActivityDto>();
+                
+                // Add owner
+                var owner = await _dbContext.Users.FindAsync(dealership.OwnerId);
+                if (owner != null)
+                {
+                    var ownerCars = cars.Where(c => c.SellerId == dealership.OwnerId).ToList();
+                    workerActivity.Add(new WorkerActivityDto
+                    {
+                        UserId = owner.Id,
+                        UserName = owner.Name,
+                        UserSurname = owner.Surname,
+                        Role = "Owner",
+                        CarsPosted = ownerCars.Count,
+                        TotalValuePosted = ownerCars.Sum(c => c.Price)
+                    });
+                }
+
+                // Add workers
+                foreach (var worker in workers)
+                {
+                    var workerCars = cars.Where(c => c.SellerId == worker.UserId).ToList();
+                    workerActivity.Add(new WorkerActivityDto
+                    {
+                        UserId = worker.UserId,
+                        UserName = worker.User?.Name ?? string.Empty,
+                        UserSurname = worker.User?.Surname ?? string.Empty,
+                        Role = worker.Role.ToString(),
+                        CarsPosted = workerCars.Count,
+                        TotalValuePosted = workerCars.Sum(c => c.Price)
+                    });
+                }
+
+                workerActivity = workerActivity
+                    .OrderByDescending(w => w.CarsPosted)
+                    .ToList();
+
+                // Views over time (last 12 months)
+                var viewsOverTime = new List<MonthlyViewsDto>();
+                for (int i = 11; i >= 0; i--)
+                {
+                    var monthStart = new DateTime(now.Year, now.Month, 1).AddMonths(-i);
+                    var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+                    
+                    var monthViews = viewHistory
+                        .Where(vh => vh.ViewedAt >= monthStart && vh.ViewedAt <= monthEnd)
+                        .Count();
+                    
+                    viewsOverTime.Add(new MonthlyViewsDto
+                    {
+                        Year = monthStart.Year,
+                        Month = monthStart.Month,
+                        ViewsCount = monthViews
+                    });
+                }
+
+                var analytics = new DealershipAnalyticsDto
+                {
+                    Overview = overview,
+                    MonthlyStats = monthlyStats,
+                    TopViewedCars = topViewedCars,
+                    TopFavouriteCars = topFavouriteCars,
+                    BrandDistribution = brandDistribution,
+                    FuelTypeDistribution = fuelTypeDistribution,
+                    WorkerActivity = workerActivity,
+                    ViewsOverTime = viewsOverTime
+                };
+
+                return Ok(analytics);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to fetch dealership analytics", error = ex.Message });
+            }
+        }
+
         // Helper methods
 
         private async Task<bool> IsDealershipOwnerOrAdmin(Guid userId, int dealershipId)

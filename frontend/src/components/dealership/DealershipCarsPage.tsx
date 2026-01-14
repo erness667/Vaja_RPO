@@ -21,6 +21,7 @@ import { useUserDealership } from "@/lib/hooks/useUserDealership";
 import { CarCard } from "../car/CarCard";
 import { SortBar, type SortOption } from "../layout/SortBar";
 import { Trans } from "@lingui/macro";
+import { DealershipManageMenu } from "./DealershipManageMenu";
 
 export function DealershipCarsPage() {
   const router = useRouter();
@@ -122,6 +123,7 @@ export function DealershipCarsPage() {
                 <Trans>Prodajalnica: {dealership.name}</Trans>
               </Text>
             </VStack>
+            <DealershipManageMenu />
           </HStack>
         </VStack>
 

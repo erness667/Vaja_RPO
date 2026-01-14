@@ -91,6 +91,51 @@ namespace Backend.Helpers
 
             return worker != null;
         }
+
+        /// <summary>
+        /// Checks if the current user can manage a dealership (admin, dealership owner, or dealership admin)
+        /// </summary>
+        public static async Task<bool> CanManageDealershipAsync(
+            ClaimsPrincipal user,
+            ApplicationDbContext dbContext,
+            int dealershipId)
+        {
+            // If admin, allow
+            if (IsAdmin(user))
+            {
+                return true;
+            }
+
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return false;
+            }
+
+            // Check if user is owner of the dealership
+            var dealership = await dbContext.CarDealerships
+                .FirstOrDefaultAsync(d => d.Id == dealershipId);
+
+            if (dealership == null)
+            {
+                return false;
+            }
+
+            if (dealership.OwnerId == userId)
+            {
+                return true;
+            }
+
+            // Check if user is an active admin of the dealership
+            var worker = await dbContext.DealershipWorkers
+                .FirstOrDefaultAsync(w =>
+                    w.DealershipId == dealershipId &&
+                    w.UserId == userId &&
+                    w.Status == DealershipWorkerStatus.Active &&
+                    w.Role == DealershipWorkerRole.Admin);
+
+            return worker != null;
+        }
     }
 }
 

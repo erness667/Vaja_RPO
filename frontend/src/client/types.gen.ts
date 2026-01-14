@@ -852,6 +852,22 @@ export type PutApiDealershipsWorkersByWorkerIdStatusResponses = {
     200: unknown;
 };
 
+export type GetApiDealershipsByIdAnalyticsData = {
+    body?: never;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/dealerships/{id}/analytics';
+};
+
+export type GetApiDealershipsByIdAnalyticsResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
 export type GetApiFavouritesData = {
     body?: never;
     path?: never;

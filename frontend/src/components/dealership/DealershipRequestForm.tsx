@@ -226,12 +226,12 @@ export function DealershipRequestForm() {
               <HStack gap={3}>
                 <Icon as={LuBuilding2} boxSize={8} color="blue.500" />
                 <Heading size="xl" color={{ base: "gray.900", _dark: "gray.100" }}>
-                  <Trans>Zahteva za prodajalnico</Trans>
+                  <Trans>Zahteva za avtohišo</Trans>
                 </Heading>
               </HStack>
               <Text color={{ base: "gray.600", _dark: "gray.400" }}>
                 <Trans>
-                  Izpolnite spodnji obrazec za zahtevo za registracijo prodajalnice. 
+                  Izpolnite spodnji obrazec za zahtevo za registracijo avtohiše. 
                   Vaša zahteva bo pregledana in odobrena s strani administratorja.
                 </Trans>
               </Text>
@@ -252,7 +252,7 @@ export function DealershipRequestForm() {
                     </Text>
                     <Text fontSize="sm" color={{ base: "green.700", _dark: "green.300" }}>
                       <Trans>
-                        Vaša zahteva za prodajalnico je bila uspešno oddana. 
+                        Vaša zahteva za avtohišo je bila uspešno oddana. 
                         Administrator bo pregledal vašo zahtevo in vas bo obvestil o odločitvi.
                       </Trans>
                     </Text>
@@ -285,7 +285,7 @@ export function DealershipRequestForm() {
                   >
                     <HStack gap={2}>
                       <Icon as={LuBuilding2} boxSize={4} />
-                      <Trans>Ime prodajalnice</Trans>
+                      <Trans>Ime avtohiše</Trans>
                     </HStack>
                   </Field.Label>
                   <Input
@@ -294,7 +294,7 @@ export function DealershipRequestForm() {
                     type="text"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder={t`Vnesite ime prodajalnice`}
+                    placeholder={t`Vnesite ime avtohiše`}
                     disabled={isLoading || success}
                   />
                 </Field.Root>
@@ -318,7 +318,7 @@ export function DealershipRequestForm() {
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    placeholder={t`Dodajte opis prodajalnice...`}
+                    placeholder={t`Dodajte opis avtohiše...`}
                     rows={4}
                     disabled={isLoading || success}
                   />
@@ -352,7 +352,7 @@ export function DealershipRequestForm() {
                         // Delay hiding suggestions to allow click
                         setTimeout(() => setShowAddressSuggestions(false), 200);
                       }}
-                      placeholder={t`Vnesite naslov prodajalnice`}
+                      placeholder={t`Vnesite naslov avtohiše`}
                       disabled={isLoading || success}
                       width="100%"
                     />

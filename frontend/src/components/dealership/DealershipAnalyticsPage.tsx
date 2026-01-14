@@ -66,7 +66,7 @@ export function DealershipAnalyticsPage() {
       <VStack gap={6} align="stretch">
         <HStack justify="space-between" align="center" wrap="wrap" gap={3}>
           <Heading size="xl" color={{ base: "gray.800", _dark: "gray.100" }}>
-            <Trans>Analitika prodajalnice</Trans>
+            <Trans>Analitika avtohiše</Trans>
           </Heading>
           <DealershipManageMenu />
         </HStack>

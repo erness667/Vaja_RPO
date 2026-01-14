@@ -81,11 +81,11 @@ export function DealershipCarsPage() {
         <VStack gap={4} align="center" py={8}>
           <Icon as={LuFileText} boxSize={16} color={{ base: "gray.400", _dark: "gray.500" }} />
           <Heading size="lg" color={{ base: "gray.700", _dark: "gray.300" }}>
-            <Trans>Ni prodajalnice</Trans>
+              <Trans>Ni avtohiše</Trans>
           </Heading>
           <Text color={{ base: "gray.600", _dark: "gray.400" }} textAlign="center">
             <Trans>
-              Nimate odobrene prodajalnice.
+              Nimate odobrene avtohiše.
             </Trans>
           </Text>
           <Button
@@ -120,7 +120,7 @@ export function DealershipCarsPage() {
                 <Trans>Objavljeni avtomobili</Trans>
               </Heading>
               <Text fontSize="sm" color={{ base: "gray.600", _dark: "gray.400" }}>
-                <Trans>Prodajalnica: {dealership.name}</Trans>
+                <Trans>Avtohiša: {dealership.name}</Trans>
               </Text>
             </VStack>
             <DealershipManageMenu />
@@ -158,7 +158,7 @@ export function DealershipCarsPage() {
               <Trans>Ni objavljenih avtomobilov</Trans>
             </Heading>
             <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-              <Trans>Ta prodajalnica še ni objavila nobenega avtomobila.</Trans>
+              <Trans>Ta avtohiša še ni objavila nobenega avtomobila.</Trans>
             </Text>
           </Box>
         ) : (

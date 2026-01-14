@@ -620,7 +620,7 @@ export function Navbar() {
                       >
                         <HStack gap={2}>
                           <Icon as={LuBuilding2} boxSize={4} />
-                          <Trans>Moja prodajalnica</Trans>
+                          <Trans>Moja avtohiša</Trans>
                         </HStack>
                       </MenuItem>
                     )}
@@ -635,7 +635,7 @@ export function Navbar() {
                       >
                         <HStack gap={2}>
                           <Icon as={LuBuilding2} boxSize={4} />
-                          <Trans>Zahtevaj prodajalnico</Trans>
+                          <Trans>Zahtevaj avtohišo</Trans>
                         </HStack>
                       </MenuItem>
                     )}

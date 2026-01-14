@@ -174,7 +174,7 @@ export function DealershipInvitationsList() {
       >
         <Icon as={LuBuilding2} boxSize={8} color={{ base: "gray.400", _dark: "gray.500" }} mb={2} />
         <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-          <Trans>Nimate čakajočih povabil za prodajalnice.</Trans>
+          <Trans>Nimate čakajočih povabil za avtohiše.</Trans>
         </Text>
       </Box>
     );
@@ -183,7 +183,7 @@ export function DealershipInvitationsList() {
   return (
     <VStack align="stretch" gap={4}>
       <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
-        <Trans>Povabila za prodajalnice</Trans>
+        <Trans>Povabila za avtohiše</Trans>
       </Heading>
       {invitations.map((invitation) => (
         <InvitationCard

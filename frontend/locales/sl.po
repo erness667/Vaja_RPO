@@ -13,9 +13,128 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);\n"
 
-#: src/components/car/CarDetailPage.tsx:577
+#: src/components/car/CarDetailPage.tsx:881
+msgid "."
+msgstr "."
+
+#: src/components/layout/ImpersonationBanner.tsx:110
+msgid "(Admin:"
+msgstr "(Admin:"
+
+#. placeholder {0}: isPending ? t`Prekliči povabilo` : t`Odstrani`
+#: src/components/dealership/DealershipManagementPage.tsx:200
+msgid "{0}"
+msgstr "{0}"
+
+#: src/components/dealership/DealershipManagementPage.tsx:147
+msgid "Actions"
+msgstr "Actions"
+
+#: src/components/admin/AdminUsersPage.tsx:571
+#: src/components/admin/AdminUsersPage.tsx:587
+#: src/components/dealership/DealershipInvitationsList.tsx:67
+#: src/components/dealership/DealershipManagementPage.tsx:121
+#: src/components/dealership/DealershipManagementPage.tsx:904
+msgid "Admin"
+msgstr "Admin"
+
+#: src/components/dealership/analytics/WorkerActivityChart.tsx:33
+msgid "Aktivnost delavcev"
+msgstr "Aktivnost delavcev"
+
+#: src/components/car/CarDetailPage.tsx:1285
+msgid "Ali ste prepričani, da želite izbrisati ta oglas? To dejanje ni mogoče razveljaviti."
+msgstr "Ali ste prepričani, da želite izbrisati ta oglas? To dejanje ni mogoče razveljaviti."
+
+#: src/components/admin/AdminUsersPage.tsx:715
+msgid "Ali ste prepričani, da želite izbrisati tega uporabnika? To dejanje ni mogoče razveljaviti."
+msgstr "Ali ste prepričani, da želite izbrisati tega uporabnika? To dejanje ni mogoče razveljaviti."
+
+#: src/components/dealership/DealershipManagementPage.tsx:1108
+msgid "Ali ste prepričani, da želite izbrisati to avtohišo? Ta akcija bo izbrisala vse objavljene avtomobile avtohiše in ne more biti razveljavljena."
+msgstr "Ali ste prepričani, da želite izbrisati to avtohišo? Ta akcija bo izbrisala vse objavljene avtomobile avtohiše in ne more biti razveljavljena."
+
+#: src/components/dealership/DealershipManagementPage.tsx:1108
+#~ msgid "Ali ste prepričani, da želite izbrisati to prodajalnico? Ta akcija bo izbrisala vse objavljene avtomobile prodajalnice in ne more biti razveljavljena."
+#~ msgstr "Ali ste prepričani, da želite izbrisati to prodajalnico? Ta akcija bo izbrisala vse objavljene avtomobile prodajalnice in ne more biti razveljavljena."
+
+#: src/components/admin/AdminDealershipsPage.tsx:258
+msgid "Ali ste prepričani, da želite odobriti to avtohišo?"
+msgstr "Ali ste prepričani, da želite odobriti to avtohišo?"
+
+#: src/components/admin/AdminDealershipsPage.tsx:258
+#~ msgid "Ali ste prepričani, da želite odobriti to prodajalnico?"
+#~ msgstr "Ali ste prepričani, da želite odobriti to prodajalnico?"
+
+#: src/components/dealership/DealershipManagementPage.tsx:981
+msgid "Ali ste prepričani, da želite odstraniti tega delavca?"
+msgstr "Ali ste prepričani, da želite odstraniti tega delavca?"
+
+#. placeholder {0}: workerToRemove.userName
+#. placeholder {1}: workerToRemove.userSurname
+#: src/components/dealership/DealershipManagementPage.tsx:977
+msgid "Ali ste prepričani, da želite preklicati povabilo za {0} {1}?"
+msgstr "Ali ste prepričani, da želite preklicati povabilo za {0} {1}?"
+
+#. placeholder {0}: workerToTransferTo.userName
+#. placeholder {1}: workerToTransferTo.userSurname
+#: src/components/dealership/DealershipManagementPage.tsx:1047
+msgid "Ali ste prepričani, da želite prenesti lastništvo avtohiše na {0} {1}? Po prenosu ne boste več lastnik in boste lahko zapustili avtohišo."
+msgstr "Ali ste prepričani, da želite prenesti lastništvo avtohiše na {0} {1}? Po prenosu ne boste več lastnik in boste lahko zapustili avtohišo."
+
+#: src/components/dealership/DealershipManagementPage.tsx:1047
+#~ msgid "Ali ste prepričani, da želite prenesti lastništvo prodajalnice na {0} {1}? Po prenosu ne boste več lastnik in boste lahko zapustili prodajalnico."
+#~ msgstr "Ali ste prepričani, da želite prenesti lastništvo prodajalnice na {0} {1}? Po prenosu ne boste več lastnik in boste lahko zapustili prodajalnico."
+
+#: src/components/dealership/DealershipManagementPage.tsx:979
+msgid "Ali ste prepričani, da želite zapustiti to avtohišo?"
+msgstr "Ali ste prepričani, da želite zapustiti to avtohišo?"
+
+#: src/components/dealership/DealershipManagementPage.tsx:979
+#~ msgid "Ali ste prepričani, da želite zapustiti to prodajalnico?"
+#~ msgstr "Ali ste prepričani, da želite zapustiti to prodajalnico?"
+
+#: src/components/admin/AdminDealershipsPage.tsx:320
+msgid "Ali ste prepričani, da želite zavrniti to avtohišo?"
+msgstr "Ali ste prepričani, da želite zavrniti to avtohišo?"
+
+#: src/components/admin/AdminDealershipsPage.tsx:320
+#~ msgid "Ali ste prepričani, da želite zavrniti to prodajalnico?"
+#~ msgstr "Ali ste prepričani, da želite zavrniti to prodajalnico?"
+
+#: src/components/dealership/DealershipManageMenu.tsx:52
+msgid "Analitika"
+msgstr "Analitika"
+
+#: src/components/dealership/DealershipAnalyticsPage.tsx:69
+msgid "Analitika avtohiše"
+msgstr "Analitika avtohiše"
+
+#: src/components/dealership/DealershipAnalyticsPage.tsx:69
+#~ msgid "Analitika prodajalnice"
+#~ msgstr "Analitika prodajalnice"
+
+#. placeholder {0}: dealership.name
+#: src/components/dealership/DealershipCarsPage.tsx:123
+msgid "Avtohiša: {0}"
+msgstr "Avtohiša: {0}"
+
+#: src/components/car/CarComparisonPage.tsx:715
+#: src/components/car/CarDetailPage.tsx:752
 msgid "Barva"
 msgstr "Barva"
+
+#: src/components/car/CarEditForm.tsx:724
+msgid "Barva *"
+msgstr "Barva *"
+
+#: src/components/car/CarComparisonPage.tsx:720
+msgid "Cena"
+msgstr "Cena"
+
+#: src/components/car/CarEditForm.tsx:760
+msgid "Cena (€) *"
+msgstr "Cena (€) *"
 
 #: src/components/car/CarSearch.tsx:211
 msgid "Cena do"
@@ -25,67 +144,189 @@ msgstr "Cena do"
 msgid "Cena od"
 msgstr "Cena od"
 
-#: src/components/auth/RegisterForm.tsx:177
+#: src/components/auth/RegisterForm.tsx:178
 msgid "Choose a username"
 msgstr "Izberite uporabniško ime"
 
-#: src/components/auth/RegisterForm.tsx:197
+#: src/components/layout/Navbar.tsx:354
+msgid "Clear search"
+msgstr "Clear search"
+
+#: src/components/dealership/DealershipManagementPage.tsx:776
+#: src/components/dealership/DealershipManagementPage.tsx:968
+#: src/components/dealership/DealershipManagementPage.tsx:1039
+#: src/components/dealership/DealershipManagementPage.tsx:1100
+msgid "Close"
+msgstr "Close"
+
+#: src/components/auth/ResetPasswordForm.tsx:158
+msgid "Confirm Password"
+msgstr "Confirm Password"
+
+#: src/components/auth/ResetPasswordForm.tsx:165
+msgid "Confirm your new password"
+msgstr "Confirm your new password"
+
+#: src/components/auth/RegisterForm.tsx:198
 msgid "Create a password"
 msgstr "Ustvarite geslo"
 
-#: src/components/auth/RegisterForm.tsx:56
+#: src/components/auth/RegisterForm.tsx:57
 msgid "Create account"
 msgstr "Ustvarite račun"
 
-#: src/components/car/CarDetailPage.tsx:369
+#: src/components/dealership/DealershipEditForm.tsx:474
+#: src/components/dealership/DealershipRequestForm.tsx:476
+msgid "Davčna številka"
+msgstr "Davčna številka"
+
+#: src/components/admin/AdminDealershipsPage.tsx:160
+#: src/components/dealership/DealershipManagementPage.tsx:600
+msgid "Davčna številka:"
+msgstr "Davčna številka:"
+
+#: src/components/dealership/DealershipManagementPage.tsx:677
+msgid "Delavci"
+msgstr "Delavci"
+
+#: src/components/dealership/DealershipManagementPage.tsx:896
+msgid "Delavec"
+msgstr "Delavec"
+
+#: src/components/dealership/DealershipAnalyticsPage.tsx:147
+msgid "dni na trgu"
+msgstr "dni na trgu"
+
+#: src/components/dealership/DealershipManagementPage.tsx:538
+#: src/components/dealership/DealershipManagementPage.tsx:772
+msgid "Dodaj delavca"
+msgstr "Dodaj delavca"
+
+#: src/components/car/CarDetailPage.tsx:485
 msgid "Dodaj med priljubljene"
 msgstr "Dodaj med priljubljene"
 
-#: src/components/profile/ProfilePage.tsx:627
+#: src/components/car/CarDetailPage.tsx:464
+msgid "Dodaj v primerjavo"
+msgstr "Dodaj v primerjavo"
+
+#: src/components/car/CarComparisonPage.tsx:450
+msgid "Dodaj vozilo"
+msgstr "Dodaj vozilo"
+
+#: src/components/car/CarEditForm.tsx:934
+msgid "Dodajte nove slike"
+msgstr "Dodajte nove slike"
+
+#: src/components/dealership/DealershipEditForm.tsx:319
+#: src/components/dealership/DealershipRequestForm.tsx:321
+msgid "Dodajte opis avtohiše..."
+msgstr "Dodajte opis avtohiše..."
+
+#: src/components/dealership/DealershipEditForm.tsx:319
+#: src/components/dealership/DealershipRequestForm.tsx:321
+#~ msgid "Dodajte opis prodajalnice..."
+#~ msgstr "Dodajte opis prodajalnice..."
+
+#: src/components/admin/AdminDealershipsPage.tsx:265
+msgid "Dodajte opombe..."
+msgstr "Dodajte opombe..."
+
+#: src/components/admin/AdminDealershipsPage.tsx:327
+msgid "Dodajte razlog zavrnitve..."
+msgstr "Dodajte razlog zavrnitve..."
+
+#: src/components/admin/AdminDealershipsPage.tsx:434
+#: src/components/admin/AdminUsersPage.tsx:273
+msgid "Dostop zavrnjen"
+msgstr "Dostop zavrnjen"
+
+#: src/components/profile/ProfilePage.tsx:681
 msgid "E-pošta"
 msgstr "E-pošta"
 
-#: src/components/profile/ProfilePage.tsx:639
+#: src/components/profile/ProfilePage.tsx:693
 msgid "E-pošte ni mogoče spremeniti"
 msgstr "E-pošte ni mogoče spremeniti"
 
-#: src/components/auth/RegisterForm.tsx:128
+#: src/components/dealership/DealershipEditForm.tsx:499
+#: src/components/dealership/DealershipRequestForm.tsx:501
+msgid "E-poštni naslov"
+msgstr "E-poštni naslov"
+
+#: src/components/admin/AdminUsersPage.tsx:367
+msgid "Email"
+msgstr "Email"
+
+#: src/components/auth/ForgotPasswordForm.tsx:97
+#: src/components/auth/RegisterForm.tsx:129
 msgid "Email Address"
 msgstr "E-poštni naslov"
 
-#: src/components/profile/ProfilePage.tsx:316
+#: src/components/layout/FriendsSidebar.tsx:677
+#: src/components/layout/FriendsSidebar.tsx:845
+#: src/components/profile/ProfilePage.tsx:315
 msgid "English"
 msgstr "Angleščina"
 
-#: src/components/auth/LoginForm.tsx:57
+#: src/components/auth/LoginForm.tsx:59
 msgid "Enter your credentials to access your account."
 msgstr "Vnesite svoje podatke za dostop do računa."
 
-#: src/components/auth/RegisterForm.tsx:137
+#: src/components/auth/ForgotPasswordForm.tsx:104
+#: src/components/auth/RegisterForm.tsx:138
 msgid "Enter your email"
 msgstr "Vnesite svoj e-poštni naslov"
 
-#: src/components/auth/RegisterForm.tsx:97
+#: src/components/auth/ForgotPasswordForm.tsx:57
+msgid "Enter your email address and we'll send you a link to reset your password."
+msgstr "Enter your email address and we'll send you a link to reset your password."
+
+#: src/components/auth/RegisterForm.tsx:98
 msgid "Enter your name"
 msgstr "Vnesite svoje ime"
 
-#: src/components/auth/LoginForm.tsx:110
+#: src/components/auth/ResetPasswordForm.tsx:141
+msgid "Enter your new password"
+msgstr "Enter your new password"
+
+#: src/components/auth/ResetPasswordForm.tsx:93
+msgid "Enter your new password below."
+msgstr "Enter your new password below."
+
+#: src/components/auth/LoginForm.tsx:112
 msgid "Enter your password"
 msgstr "Vnesite svoje geslo"
 
-#: src/components/auth/RegisterForm.tsx:157
+#: src/components/auth/RegisterForm.tsx:158
 msgid "Enter your phone number"
 msgstr "Vnesite svojo telefonsko številko"
 
-#: src/components/auth/RegisterForm.tsx:117
+#: src/components/auth/RegisterForm.tsx:118
 msgid "Enter your surname"
 msgstr "Vnesite svoj priimek"
 
-#: src/components/auth/LoginForm.tsx:90
+#: src/components/auth/LoginForm.tsx:92
 msgid "Enter your username or email"
 msgstr "Vnesite svoje uporabniško ime ali e-poštni naslov"
 
-#: src/components/car/CarDetailPage.tsx:541
+#: src/components/auth/ForgotPasswordForm.tsx:51
+msgid "Forgot Password"
+msgstr "Forgot Password"
+
+#: src/components/auth/LoginForm.tsx:122
+msgid "Forgot password?"
+msgstr "Forgot password?"
+
+#: src/components/car/CarEditForm.tsx:821
+msgid "Fotografije vozila"
+msgstr "Fotografije vozila"
+
+#: src/components/car/CarEditForm.tsx:916
+msgid "Glavna"
+msgstr "Glavna"
+
+#: src/components/car/CarDetailPage.tsx:716
 #: src/components/car/CarSearch.tsx:91
 #: src/components/car/CarSearch.tsx:368
 msgid "Gorivo"
@@ -95,29 +336,153 @@ msgstr "Gorivo"
 msgid "Hitro iskanje osebnih vozil"
 msgstr "Hitro iskanje osebnih vozil"
 
-#: src/components/profile/ProfilePage.tsx:665
+#: src/components/dealership/DealershipEditForm.tsx:536
+#: src/components/dealership/DealershipRequestForm.tsx:538
+msgid "https://example.com"
+msgstr "https://example.com"
+
+#: src/components/auth/ForgotPasswordForm.tsx:85
+msgid "If an account with that email exists, a password reset link has been sent. Please check your email (or the console for testing)."
+msgstr "If an account with that email exists, a password reset link has been sent. Please check your email (or the console for testing)."
+
+#: src/components/admin/AdminUsersPage.tsx:467
+#: src/components/profile/ProfilePage.tsx:719
 msgid "Ime"
 msgstr "Ime"
+
+#: src/components/dealership/DealershipEditForm.tsx:286
+#: src/components/dealership/DealershipRequestForm.tsx:288
+msgid "Ime avtohiše"
+msgstr "Ime avtohiše"
+
+#: src/components/dealership/DealershipEditForm.tsx:286
+#: src/components/dealership/DealershipRequestForm.tsx:288
+#~ msgid "Ime prodajalnice"
+#~ msgstr "Ime prodajalnice"
+
+#: src/components/admin/AdminUsersPage.tsx:642
+msgid "Impersoniraj"
+msgstr "Impersoniraj"
+
+#: src/components/layout/ImpersonationBanner.tsx:103
+msgid "Impersoniranje: Ste prijavljeni kot"
+msgstr "Impersoniranje: Ste prijavljeni kot"
+
+#: src/components/messages/MessagesPage.tsx:968
+msgid "Išči uporabnika"
+msgstr "Išči uporabnika"
+
+#: src/components/dealership/DealershipManagementPage.tsx:790
+msgid "Išči uporabnika po uporabniškem imenu..."
+msgstr "Išči uporabnika po uporabniškem imenu..."
+
+#: src/components/admin/AdminUsersPage.tsx:317
+msgid "Išči uporabnike..."
+msgstr "Išči uporabnike..."
+
+#: src/components/car/CarComparisonPage.tsx:256
+#: src/components/layout/Navbar.tsx:317
+msgid "Išči vozila..."
+msgstr "Išči vozila..."
 
 #: src/components/car/CarSearch.tsx:424
 msgid "Iskanje vozil"
 msgstr "Iskanje vozil"
 
-#: src/components/profile/ProfilePage.tsx:287
+#: src/components/layout/Navbar.tsx:387
+msgid "Iskanje..."
+msgstr "Iskanje..."
+
+#: src/components/car/CarEditForm.tsx:981
+msgid "Izberi slike"
+msgstr "Izberi slike"
+
+#: src/components/car/CarComparisonPage.tsx:250
+msgid "Izberi vozila"
+msgstr "Izberi vozila"
+
+#: src/components/car/CarComparisonPage.tsx:480
+msgid "Izberi vsaj 2 vozili za primerjavo"
+msgstr "Izberi vsaj 2 vozili za primerjavo"
+
+#: src/components/profile/ProfilePage.tsx:286
 msgid "Izberite jezik uporabniškega vmesnika"
 msgstr "Izberite jezik uporabniškega vmesnika"
 
-#: src/components/profile/ProfilePage.tsx:284
+#: src/components/messages/ChatView.tsx:274
+msgid "Izberite pogovor za ogled sporočil"
+msgstr "Izberite pogovor za ogled sporočil"
+
+#: src/components/profile/ProfilePage.tsx:341
+msgid "Izberite temno ali svetlo temo"
+msgstr "Izberite temno ali svetlo temo"
+
+#. placeholder {0}: selectedCarIds.length
+#: src/components/car/CarComparisonPage.tsx:419
+msgid "Izbrana vozila ({0}/{MAX_COMPARISON_CARS})"
+msgstr "Izbrana vozila ({0}/{MAX_COMPARISON_CARS})"
+
+#: src/components/admin/AdminUsersPage.tsx:650
+#: src/components/admin/AdminUsersPage.tsx:729
+#: src/components/car/CarDetailPage.tsx:1314
+#: src/components/dealership/DealershipManagementPage.tsx:1126
+msgid "Izbriši"
+msgstr "Izbriši"
+
+#: src/components/dealership/DealershipManagementPage.tsx:511
+#: src/components/dealership/DealershipManagementPage.tsx:1096
+msgid "Izbriši avtohišo"
+msgstr "Izbriši avtohišo"
+
+#: src/components/car/CarDetailPage.tsx:337
+msgid "Izbriši oglas"
+msgstr "Izbriši oglas"
+
+#: src/components/dealership/DealershipManagementPage.tsx:511
+#: src/components/dealership/DealershipManagementPage.tsx:1096
+#~ msgid "Izbriši prodajalnico"
+#~ msgstr "Izbriši prodajalnico"
+
+#: src/components/dealership/DealershipRequestForm.tsx:233
+msgid "Izpolnite spodnji obrazec za zahtevo za registracijo avtohiše. Vaša zahteva bo pregledana in odobrena s strani administratorja."
+msgstr "Izpolnite spodnji obrazec za zahtevo za registracijo avtohiše. Vaša zahteva bo pregledana in odobrena s strani administratorja."
+
+#: src/components/dealership/DealershipRequestForm.tsx:233
+#~ msgid "Izpolnite spodnji obrazec za zahtevo za registracijo prodajalnice. Vaša zahteva bo pregledana in odobrena s strani administratorja."
+#~ msgstr "Izpolnite spodnji obrazec za zahtevo za registracijo prodajalnice. Vaša zahteva bo pregledana in odobrena s strani administratorja."
+
+#: src/components/layout/FriendsSidebar.tsx:648
+#: src/components/layout/FriendsSidebar.tsx:813
+msgid "Jezik"
+msgstr "Jezik"
+
+#: src/components/profile/ProfilePage.tsx:283
 msgid "Jezik aplikacije"
 msgstr "Jezik aplikacije"
 
-#: src/components/car/CarDetailPage.tsx:296
+#: src/components/car/CarDetailPage.tsx:394
 msgid "Klikni za povečavo"
 msgstr "Klikni za povečavo"
 
-#: src/components/car/CarDetailPage.tsx:655
+#: src/components/car/CarEditForm.tsx:969
+msgid "Kliknite za izbiro slik"
+msgstr "Kliknite za izbiro slik"
+
+#: src/components/car/CarDetailPage.tsx:829
 msgid "Komentarji"
 msgstr "Komentarji"
+
+#: src/components/dealership/DealershipManagementPage.tsx:716
+msgid "Lastnik"
+msgstr "Lastnik"
+
+#: src/components/car/CarComparisonPage.tsx:680
+msgid "Letnik"
+msgstr "Letnik"
+
+#: src/components/car/CarEditForm.tsx:545
+msgid "Letnik *"
+msgstr "Letnik *"
 
 #: src/components/car/CarSearch.tsx:332
 msgid "Letnik do"
@@ -127,47 +492,117 @@ msgstr "Letnik do"
 msgid "Letnik od"
 msgstr "Letnik od"
 
-#: src/components/profile/ProfilePage.tsx:233
+#: src/components/profile/ProfilePage.tsx:232
 msgid "Loading profile..."
 msgstr "Nalaganje profila..."
 
-#: src/components/layout/Navbar.tsx:285
+#: src/components/layout/Navbar.tsx:653
 msgid "Log out"
 msgstr "Odjava"
 
-#: src/components/layout/Navbar.tsx:285
+#: src/components/layout/Navbar.tsx:653
 msgid "Logging out..."
 msgstr "Odjavljanje..."
 
-#: src/components/layout/Navbar.tsx:300
+#: src/components/layout/Navbar.tsx:669
 msgid "Login"
 msgstr "Prijava"
 
-#: src/components/car/CarDetailPage.tsx:565
+#: src/components/dealership/DealershipEditForm.tsx:433
+#: src/components/dealership/DealershipManagementPage.tsx:616
+#: src/components/dealership/DealershipRequestForm.tsx:436
+msgid "Lokacija na zemljevidu"
+msgstr "Lokacija na zemljevidu"
+
+#: src/components/auth/PasswordStrengthIndicator.tsx:56
+msgid "Medium"
+msgstr "Medium"
+
+#: src/components/dealership/DealershipManageMenu.tsx:29
+msgid "Meni"
+msgstr "Meni"
+
+#: src/components/car/CarComparisonPage.tsx:710
+#: src/components/car/CarDetailPage.tsx:740
 msgid "Menjalnik"
 msgstr "Menjalnik"
 
-#: src/components/car/CarDetailPage.tsx:553
+#: src/components/car/CarEditForm.tsx:688
+msgid "Menjalnik *"
+msgstr "Menjalnik *"
+
+#: src/components/admin/AdminUsersPage.tsx:624
+msgid "Menu opcij"
+msgstr "Menu opcij"
+
+#: src/components/dealership/DealershipEditForm.tsx:412
+#: src/components/dealership/DealershipRequestForm.tsx:415
+msgid "Mesto"
+msgstr "Mesto"
+
+#: src/components/car/CarComparisonPage.tsx:705
+#: src/components/car/CarDetailPage.tsx:728
 msgid "Moč motorja"
 msgstr "Moč motorja"
 
-#: src/components/profile/ProfilePage.tsx:265
+#: src/components/car/CarEditForm.tsx:671
+msgid "Moč motorja (kW) *"
+msgstr "Moč motorja (kW) *"
+
+#: src/components/profile/ProfilePage.tsx:264
 msgid "Moj profil"
 msgstr "Moj profil"
+
+#: src/components/layout/FriendsSidebar.tsx:694
+#: src/components/layout/FriendsSidebar.tsx:859
+#: src/components/layout/Navbar.tsx:623
+msgid "Moja avtohiša"
+msgstr "Moja avtohiša"
+
+#: src/components/layout/FriendsSidebar.tsx:694
+#: src/components/layout/FriendsSidebar.tsx:859
+#: src/components/layout/Navbar.tsx:623
+#~ msgid "Moja prodajalnica"
+#~ msgstr "Moja prodajalnica"
 
 #: src/components/favourites/FavouritesPage.tsx:78
 msgid "Moje priljubljene"
 msgstr "Moje priljubljene"
 
+#: src/components/car/MyPostsPage.tsx:99
+#: src/components/layout/Navbar.tsx:583
+msgid "Moji oglasi"
+msgstr "Moji oglasi"
+
+#: src/components/friends/FriendsPage.tsx:356
+msgid "Moji prijatelji"
+msgstr "Moji prijatelji"
+
+#: src/components/friends/FriendsPage.tsx:133
+msgid "Možnosti"
+msgstr "Možnosti"
+
+#: src/components/auth/ResetPasswordForm.tsx:148
+msgid "Must be at least 6 characters long"
+msgstr "Must be at least 6 characters long"
+
 #: src/components/history/ViewHistoryPage.tsx:96
 msgid "Na seznam vozil"
 msgstr "Na seznam vozil"
+
+#: src/components/dealership/DealershipAnalyticsPage.tsx:166
+msgid "Najbolj ogledani avtomobili"
+msgstr "Najbolj ogledani avtomobili"
+
+#: src/components/dealership/DealershipAnalyticsPage.tsx:194
+msgid "Najbolj priljubljeni avtomobili"
+msgstr "Najbolj priljubljeni avtomobili"
 
 #: src/components/layout/SortBar.tsx:58
 msgid "Najcenejši"
 msgstr "Najcenejši"
 
-#: src/components/car/CarList.tsx:51
+#: src/components/car/CarList.tsx:168
 msgid "Najcenejši oglasi"
 msgstr "Najcenejši oglasi"
 
@@ -175,7 +610,7 @@ msgstr "Najcenejši oglasi"
 msgid "Najdražji"
 msgstr "Najdražji"
 
-#: src/components/car/CarList.tsx:49
+#: src/components/car/CarList.tsx:166
 msgid "Najdražji oglasi"
 msgstr "Najdražji oglasi"
 
@@ -183,7 +618,7 @@ msgstr "Najdražji oglasi"
 msgid "Najnovejši"
 msgstr "Najnovejši"
 
-#: src/components/car/CarList.tsx:54
+#: src/components/car/CarList.tsx:171
 msgid "Najnovejši oglasi"
 msgstr "Najnovejši oglasi"
 
@@ -191,19 +626,31 @@ msgstr "Najnovejši oglasi"
 msgid "Najstarejši"
 msgstr "Najstarejši"
 
-#: src/components/car/CarList.tsx:47
+#: src/components/car/CarList.tsx:164
 msgid "Najstarejši oglasi"
 msgstr "Najstarejši oglasi"
 
-#: src/components/car/CarDetailPage.tsx:189
+#: src/components/car/CarComparisonPage.tsx:654
+msgid "Nalaganje podatkov..."
+msgstr "Nalaganje podatkov..."
+
+#: src/components/car/CarDetailPage.tsx:254
 msgid "Nalaganje podrobnosti vozila..."
 msgstr "Nalaganje podrobnosti vozila..."
 
-#: src/components/auth/RegisterForm.tsx:88
+#: src/components/car/CarEditForm.tsx:1058
+msgid "Nalaganje slik..."
+msgstr "Nalaganje slik..."
+
+#: src/components/auth/RegisterForm.tsx:89
 msgid "Name"
 msgstr "Ime"
 
-#: src/components/car/CarDetailPage.tsx:664
+#: src/components/car/CarEditForm.tsx:450
+msgid "Napaka pri nalaganju vozila"
+msgstr "Napaka pri nalaganju vozila"
+
+#: src/components/car/CarDetailPage.tsx:838
 msgid "Napišite komentar..."
 msgstr "Napišite komentar..."
 
@@ -211,8 +658,26 @@ msgstr "Napišite komentar..."
 msgid "Napredno iskanje z dodatnimi filtri"
 msgstr "Napredno iskanje z dodatnimi filtri"
 
-#: src/components/car/CarDetailPage.tsx:207
-#: src/components/car/CarDetailPage.tsx:248
+#: src/components/admin/AdminUsersPage.tsx:684
+msgid "Naslednja"
+msgstr "Naslednja"
+
+#: src/components/dealership/DealershipEditForm.tsx:333
+#: src/components/dealership/DealershipRequestForm.tsx:335
+msgid "Naslov"
+msgstr "Naslov"
+
+#: src/components/car/CarDetailPage.tsx:272
+#: src/components/car/CarDetailPage.tsx:313
+#: src/components/car/CarEditForm.tsx:456
+#: src/components/car/CarEditForm.tsx:475
+#: src/components/dealership/DealershipCarsPage.tsx:95
+#: src/components/dealership/DealershipCarsPage.tsx:113
+#: src/components/dealership/DealershipEditForm.tsx:214
+#: src/components/dealership/DealershipEditForm.tsx:257
+#: src/components/friends/FriendRequestsPage.tsx:270
+#: src/components/friends/FriendsPage.tsx:314
+#: src/components/messages/MessagesPage.tsx:283
 msgid "Nazaj"
 msgstr "Nazaj"
 
@@ -220,133 +685,533 @@ msgstr "Nazaj"
 msgid "Nazaj na iskanje"
 msgstr "Nazaj na iskanje"
 
+#: src/components/car/MyPostsPage.tsx:92
 #: src/components/favourites/FavouritesPage.tsx:71
 #: src/components/history/ViewHistoryPage.tsx:42
 msgid "Nazaj na seznam"
 msgstr "Nazaj na seznam"
 
-#: src/components/profile/ProfilePage.tsx:164
+#: src/components/dealership/DealershipManagementPage.tsx:131
+msgid "Neaktiven"
+msgstr "Neaktiven"
+
+#: src/components/auth/ResetPasswordForm.tsx:134
+msgid "New Password"
+msgstr "New Password"
+
+#: src/components/profile/ProfilePage.tsx:163
 msgid "New passwords do not match."
 msgstr "Novi gesli se ne ujemata."
 
+#: src/components/dealership/DealershipCarsPage.tsx:84
+#: src/components/dealership/DealershipEditForm.tsx:203
+#: src/components/dealership/DealershipManagementPage.tsx:433
+msgid "Ni avtohiše"
+msgstr "Ni avtohiše"
+
+#: src/components/admin/AdminUsersPage.tsx:356
+msgid "Ni najdenih uporabnikov."
+msgstr "Ni najdenih uporabnikov."
+
+#: src/components/dealership/DealershipCarsPage.tsx:158
+msgid "Ni objavljenih avtomobilov"
+msgstr "Ni objavljenih avtomobilov"
+
+#: src/components/dealership/analytics/WorkerActivityChart.tsx:50
+msgid "Ni podatkov o delavcih"
+msgstr "Ni podatkov o delavcih"
+
+#: src/components/dealership/DealershipAnalyticsPage.tsx:59
+msgid "Ni podatkov za analitiko"
+msgstr "Ni podatkov za analitiko"
+
+#: src/components/messages/MessagesPage.tsx:774
+msgid "Ni prijatelj"
+msgstr "Ni prijatelj"
+
+#: src/components/dealership/DealershipCarsPage.tsx:84
+#: src/components/dealership/DealershipEditForm.tsx:203
+#: src/components/dealership/DealershipManagementPage.tsx:433
+#~ msgid "Ni prodajalnice"
+#~ msgstr "Ni prodajalnice"
+
+#: src/components/car/CarComparisonPage.tsx:404
+#: src/components/layout/Navbar.tsx:513
+msgid "Ni rezultatov"
+msgstr "Ni rezultatov"
+
 #: src/components/car/CarCard.tsx:126
+#: src/components/car/CarComparisonPage.tsx:364
+#: src/components/car/CarComparisonPage.tsx:576
+#: src/components/car/CarComparisonPage.tsx:780
 msgid "Ni slike"
 msgstr "Ni slike"
 
-#: src/components/profile/ProfilePage.tsx:818
+#: src/components/messages/ChatView.tsx:372
+msgid "Ni sporočil. Začnite pogovor!"
+msgstr "Ni sporočil. Začnite pogovor!"
+
+#: src/components/admin/AdminDealershipsPage.tsx:499
+msgid "Ni zahtev za pregled."
+msgstr "Ni zahtev za pregled."
+
+#: src/components/dealership/DealershipInvitationsList.tsx:177
+msgid "Nimate čakajočih povabil za avtohiše."
+msgstr "Nimate čakajočih povabil za avtohiše."
+
+#: src/components/dealership/DealershipInvitationsList.tsx:177
+#~ msgid "Nimate čakajočih povabil za prodajalnice."
+#~ msgstr "Nimate čakajočih povabil za prodajalnice."
+
+#: src/components/dealership/DealershipCarsPage.tsx:87
+msgid "Nimate odobrene avtohiše."
+msgstr "Nimate odobrene avtohiše."
+
+#: src/components/dealership/DealershipEditForm.tsx:206
+#: src/components/dealership/DealershipManagementPage.tsx:436
+msgid "Nimate odobrene avtohiše. Prosimo, zahtevajte avtohišo in počakajte na odobritev."
+msgstr "Nimate odobrene avtohiše. Prosimo, zahtevajte avtohišo in počakajte na odobritev."
+
+#: src/components/dealership/DealershipCarsPage.tsx:87
+#~ msgid "Nimate odobrene prodajalnice."
+#~ msgstr "Nimate odobrene prodajalnice."
+
+#: src/components/dealership/DealershipEditForm.tsx:206
+#: src/components/dealership/DealershipManagementPage.tsx:436
+#~ msgid "Nimate odobrene prodajalnice. Prosimo, zahtevajte prodajalnico in počakajte na odobritev."
+#~ msgstr "Nimate odobrene prodajalnice. Prosimo, zahtevajte prodajalnico in počakajte na odobritev."
+
+#: src/components/messages/MessagesPage.tsx:662
+msgid "Nimate pogovorov"
+msgstr "Nimate pogovorov"
+
+#: src/components/admin/AdminDealershipsPage.tsx:437
+#: src/components/admin/AdminUsersPage.tsx:276
+msgid "Nimate pravic za dostop do te strani."
+msgstr "Nimate pravic za dostop do te strani."
+
+#: src/components/layout/FriendsSidebar.tsx:490
+msgid "Nimate prijateljev"
+msgstr "Nimate prijateljev"
+
+#: src/components/messages/MessagesPage.tsx:456
+msgid "Nimate zahtev za sporočila"
+msgstr "Nimate zahtev za sporočila"
+
+#: src/components/car/CarEditForm.tsx:1005
+msgid "Nove slike (bodo naložene ob shranjevanju)"
+msgstr "Nove slike (bodo naložene ob shranjevanju)"
+
+#: src/components/profile/ProfilePage.tsx:872
 msgid "Novo geslo"
 msgstr "Novo geslo"
 
-#: src/components/car/CarDetailPage.tsx:684
+#: src/components/car/CarDetailPage.tsx:858
 msgid "Objavi komentar"
 msgstr "Objavi komentar"
 
-#: src/components/layout/Navbar.tsx:198
+#: src/components/layout/Navbar.tsx:532
 msgid "Objavi oglas"
 msgstr "Objavi oglas"
 
-#: src/components/car/CarDetailPage.tsx:368
+#: src/components/car/MyPostsPage.tsx:140
+msgid "Objavi prvi oglas"
+msgstr "Objavi prvi oglas"
+
+#: src/components/dealership/DealershipCarsPage.tsx:120
+#: src/components/dealership/DealershipManageMenu.tsx:42
+msgid "Objavljeni avtomobili"
+msgstr "Objavljeni avtomobili"
+
+#. placeholder {0}: existingImages.length
+#: src/components/car/CarEditForm.tsx:833
+msgid "Obstoječe slike ({0})"
+msgstr "Obstoječe slike ({0})"
+
+#: src/components/dealership/DealershipRequestForm.tsx:552
+msgid "Oddaj zahtevo"
+msgstr "Oddaj zahtevo"
+
+#: src/components/dealership/DealershipRequestForm.tsx:549
+msgid "Oddajanje zahteve..."
+msgstr "Oddajanje zahteve..."
+
+#: src/components/dealership/DealershipManagementPage.tsx:484
+msgid "Odobreno"
+msgstr "Odobreno"
+
+#: src/components/admin/AdminDealershipsPage.tsx:208
+#: src/components/admin/AdminDealershipsPage.tsx:276
+msgid "Odobri"
+msgstr "Odobri"
+
+#: src/components/admin/AdminDealershipsPage.tsx:247
+msgid "Odobri avtohišo"
+msgstr "Odobri avtohišo"
+
+#: src/components/admin/AdminDealershipsPage.tsx:247
+#~ msgid "Odobri prodajalnico"
+#~ msgstr "Odobri prodajalnico"
+
+#: src/components/layout/FloatingSettingsMenu.tsx:156
+msgid "Odpri"
+msgstr "Odpri"
+
+#: src/components/car/CarComparisonPage.tsx:532
+#: src/components/dealership/DealershipManagementPage.tsx:200
+#: src/components/dealership/DealershipManagementPage.tsx:1002
+msgid "Odstrani"
+msgstr "Odstrani"
+
+#: src/components/dealership/DealershipManagementPage.tsx:175
+msgid "Odstrani admin pravice"
+msgstr "Odstrani admin pravice"
+
+#: src/components/dealership/DealershipManagementPage.tsx:964
+msgid "Odstrani delavca"
+msgstr "Odstrani delavca"
+
+#: src/components/car/CarDetailPage.tsx:484
 msgid "Odstrani iz priljubljenih"
 msgstr "Odstrani iz priljubljenih"
 
-#: src/components/car/CarCard.tsx:178
-#: src/components/car/CarDetailPage.tsx:401
+#: src/components/friends/FriendsPage.tsx:160
+msgid "Odstrani prijatelja"
+msgstr "Odstrani prijatelja"
+
+#: src/components/car/CarCard.tsx:201
+#: src/components/car/CarCard.tsx:218
+#: src/components/car/CarDetailPage.tsx:551
+#: src/components/dealership/DealershipAnalyticsPage.tsx:181
 msgid "ogledov"
 msgstr "ogledov"
 
-#: src/components/car/CarDetailPage.tsx:624
+#: src/components/admin/AdminDealershipsPage.tsx:131
+#: src/components/dealership/DealershipEditForm.tsx:308
+#: src/components/dealership/DealershipRequestForm.tsx:310
+msgid "Opis"
+msgstr "Opis"
+
+#: src/components/car/CarEditForm.tsx:796
+msgid "Opis opreme in dodatnih podatkov"
+msgstr "Opis opreme in dodatnih podatkov"
+
+#: src/components/admin/AdminDealershipsPage.tsx:262
+msgid "Opombe (neobvezno)"
+msgstr "Opombe (neobvezno)"
+
+#: src/components/car/CarDetailPage.tsx:799
+#: src/components/car/CarEditForm.tsx:787
 msgid "Oprema in dodatni podatki"
 msgstr "Oprema in dodatni podatki"
 
-#: src/components/auth/LoginForm.tsx:103
-#: src/components/auth/RegisterForm.tsx:188
+#: src/components/car/CarEditForm.tsx:520
+msgid "Osnovni podatki"
+msgstr "Osnovni podatki"
+
+#: src/components/auth/LoginForm.tsx:105
+#: src/components/auth/RegisterForm.tsx:189
 msgid "Password"
 msgstr "Geslo"
 
-#: src/components/auth/RegisterForm.tsx:148
+#: src/components/auth/ResetPasswordForm.tsx:121
+msgid "Password has been reset successfully! Redirecting to login..."
+msgstr "Password has been reset successfully! Redirecting to login..."
+
+#: src/components/auth/PasswordStrengthIndicator.tsx:86
+msgid "Password Strength:"
+msgstr "Password Strength:"
+
+#: src/components/auth/RegisterForm.tsx:149
 msgid "Phone Number"
 msgstr "Telefonska številka"
 
-#: src/components/profile/ProfilePage.tsx:194
+#: src/components/profile/ProfilePage.tsx:193
 msgid "Please select a file."
 msgstr "Izberite datoteko."
 
-#: src/components/car/CarCard.tsx:234
+#: src/components/car/CarCard.tsx:276
 msgid "Podrobnosti vozila"
 msgstr "Podrobnosti vozila"
 
-#: src/components/car/CarDetailPage.tsx:498
+#: src/components/friends/FriendsPage.tsx:389
+msgid "Poišči prijatelje"
+msgstr "Poišči prijatelje"
+
+#: src/components/car/CarDetailPage.tsx:672
 msgid "Pokliči prodajalca"
 msgstr "Pokliči prodajalca"
 
-#: src/components/profile/ProfilePage.tsx:739
+#: src/components/friends/FriendRequestsPage.tsx:333
+msgid "Poslane zahteve"
+msgstr "Poslane zahteve"
+
+#: src/components/friends/FriendRequestsPage.tsx:151
+msgid "Poslano"
+msgstr "Poslano"
+
+#: src/components/friends/FriendsPage.tsx:602
+msgid "Pošlji"
+msgstr "Pošlji"
+
+#: src/components/dealership/DealershipManagementPage.tsx:927
+msgid "Pošlji povabilo"
+msgstr "Pošlji povabilo"
+
+#: src/components/car/CarDetailPage.tsx:661
+msgid "Pošlji sporočilo"
+msgstr "Pošlji sporočilo"
+
+#: src/components/friends/FriendsPage.tsx:348
+msgid "Pošlji zahtevo"
+msgstr "Pošlji zahtevo"
+
+#: src/components/friends/FriendsPage.tsx:431
+msgid "Pošlji zahtevo za prijateljstvo"
+msgstr "Pošlji zahtevo za prijateljstvo"
+
+#: src/components/profile/ProfilePage.tsx:793
 msgid "Posodabljanje..."
 msgstr "Posodabljanje..."
 
-#: src/components/profile/ProfilePage.tsx:838
+#: src/components/profile/ProfilePage.tsx:893
 msgid "Potrdite novo geslo"
 msgstr "Potrdite novo geslo"
 
-#: src/components/profile/ProfilePage.tsx:847
+#: src/components/profile/ProfilePage.tsx:902
 msgid "Potrdite vaše novo geslo"
 msgstr "Potrdite vaše novo geslo"
 
-#: src/components/car/CarDetailPage.tsx:601
+#: src/components/admin/AdminUsersPage.tsx:712
+#: src/components/car/CarDetailPage.tsx:1282
+msgid "Potrditev brisanja"
+msgstr "Potrditev brisanja"
+
+#. placeholder {0}: invitation.invitedByName
+#: src/components/dealership/DealershipInvitationsList.tsx:72
+msgid "Povabil vam je {0}"
+msgstr "Povabil vam je {0}"
+
+#: src/components/dealership/DealershipInvitationsList.tsx:186
+msgid "Povabila za avtohiše"
+msgstr "Povabila za avtohiše"
+
+#: src/components/dealership/DealershipInvitationsList.tsx:186
+#~ msgid "Povabila za prodajalnice"
+#~ msgstr "Povabila za prodajalnice"
+
+#. placeholder {0}: analytics.overview.averagePrice.toLocaleString("sl-SI", { maximumFractionDigits: 0, })
+#: src/components/dealership/DealershipAnalyticsPage.tsx:107
+msgid "Povprečna cena: {0} €"
+msgstr "Povprečna cena: {0} €"
+
+#: src/components/dealership/DealershipAnalyticsPage.tsx:140
+msgid "Povprečni čas"
+msgstr "Povprečni čas"
+
+#: src/components/car/CarComparisonPage.tsx:695
+#: src/components/car/CarDetailPage.tsx:776
 msgid "Predhodnih lastnikov"
 msgstr "Predhodnih lastnikov"
 
-#: src/components/car/CarDetailPage.tsx:857
-#: src/components/profile/ProfilePage.tsx:616
-#: src/components/profile/ProfilePage.tsx:787
+#: src/components/car/CarEditForm.tsx:617
+msgid "Predhodnih lastnikov *"
+msgstr "Predhodnih lastnikov *"
+
+#: src/components/admin/AdminDealershipsPage.tsx:471
+msgid "Preglejte in odobrite ali zavrnite zahteve za registracijo prodajalnic."
+msgstr "Preglejte in odobrite ali zavrnite zahteve za registracijo prodajalnic."
+
+#: src/components/friends/FriendRequestsPage.tsx:314
+msgid "Prejete zahteve"
+msgstr "Prejete zahteve"
+
+#: src/components/friends/FriendRequestsPage.tsx:151
+msgid "Prejeto"
+msgstr "Prejeto"
+
+#: src/components/admin/AdminUsersPage.tsx:674
+msgid "Prejšnja"
+msgstr "Prejšnja"
+
+#: src/components/layout/ImpersonationBanner.tsx:126
+msgid "Prekini impersoniranje"
+msgstr "Prekini impersoniranje"
+
+#: src/components/admin/AdminDealershipsPage.tsx:273
+#: src/components/admin/AdminDealershipsPage.tsx:335
+#: src/components/admin/AdminUsersPage.tsx:722
+#: src/components/car/CarDetailPage.tsx:1062
+#: src/components/car/CarDetailPage.tsx:1306
+#: src/components/dealership/DealershipEditForm.tsx:547
+#: src/components/dealership/DealershipManagementPage.tsx:919
+#: src/components/dealership/DealershipManagementPage.tsx:990
+#: src/components/dealership/DealershipManagementPage.tsx:1055
+#: src/components/dealership/DealershipManagementPage.tsx:1118
+#: src/components/friends/FriendRequestsPage.tsx:205
+#: src/components/friends/FriendsPage.tsx:594
+#: src/components/profile/ProfilePage.tsx:670
+#: src/components/profile/ProfilePage.tsx:841
 msgid "Prekliči"
 msgstr "Prekliči"
 
-#: src/components/car/CarDetailPage.tsx:529
+#: src/components/dealership/DealershipManagementPage.tsx:200
+#: src/components/dealership/DealershipManagementPage.tsx:961
+#: src/components/dealership/DealershipManagementPage.tsx:999
+msgid "Prekliči povabilo"
+msgstr "Prekliči povabilo"
+
+#: src/components/dealership/DealershipManagementPage.tsx:188
+#: src/components/dealership/DealershipManagementPage.tsx:1035
+#: src/components/dealership/DealershipManagementPage.tsx:1063
+msgid "Prenesi lastništvo"
+msgstr "Prenesi lastništvo"
+
+#: src/components/car/CarComparisonPage.tsx:690
+#: src/components/car/CarDetailPage.tsx:704
 msgid "Prevoženih km"
 msgstr "Prevoženih km"
+
+#: src/components/car/CarEditForm.tsx:600
+msgid "Prevoženih km *"
+msgstr "Prevoženih km *"
 
 #: src/components/car/CarSearch.tsx:247
 msgid "Prevoženih km do"
 msgstr "Prevoženih km do"
 
-#: src/components/profile/ProfilePage.tsx:682
+#: src/components/admin/AdminUsersPage.tsx:474
+#: src/components/profile/ProfilePage.tsx:736
 msgid "Priimek"
 msgstr "Priimek"
 
-#: src/components/layout/Navbar.tsx:254
+#: src/components/friends/FriendsPage.tsx:125
+msgid "Prijatelja od"
+msgstr "Prijatelja od"
+
+#: src/components/layout/FriendsSidebar.tsx:467
+#: src/components/messages/MessagesPage.tsx:360
+msgid "Prijatelji"
+msgstr "Prijatelji"
+
+#: src/components/car/CarDetailPage.tsx:879
+msgid "prijaviti"
+msgstr "prijaviti"
+
+#. placeholder {0}: friendsList.length - 8
+#: src/components/layout/FriendsSidebar.tsx:609
+msgid "Prikaži več ({0})"
+msgstr "Prikaži več ({0})"
+
+#: src/components/dealership/DealershipManagementPage.tsx:564
+msgid "Prikaži zemljevid"
+msgstr "Prikaži zemljevid"
+
+#: src/components/layout/FriendsSidebar.tsx:708
+#: src/components/layout/FriendsSidebar.tsx:870
+#: src/components/layout/Navbar.tsx:570
 msgid "Priljubljene"
 msgstr "Priljubljene"
 
-#: src/components/car/CarDetailPage.tsx:417
+#. placeholder {0}: analytics.overview.totalFavourites
+#: src/components/dealership/DealershipAnalyticsPage.tsx:128
+msgid "Priljubljeni: {0}"
+msgstr "Priljubljeni: {0}"
+
+#: src/components/dealership/DealershipAnalyticsPage.tsx:209
+msgid "priljubljenih"
+msgstr "priljubljenih"
+
+#: src/components/car/CarDetailPage.tsx:470
+msgid "Primerjaj"
+msgstr "Primerjaj"
+
+#: src/components/car/CarComparisonPage.tsx:233
+msgid "Primerjaj do {MAX_COMPARISON_CARS} vozil med seboj in si oglej njihove specifikacije"
+msgstr "Primerjaj do {MAX_COMPARISON_CARS} vozil med seboj in si oglej njihove specifikacije"
+
+#: src/components/layout/FriendsSidebar.tsx:721
+#: src/components/layout/FriendsSidebar.tsx:880
+msgid "Primerjava"
+msgstr "Primerjava"
+
+#: src/components/car/CarComparisonPage.tsx:227
+msgid "Primerjava vozil"
+msgstr "Primerjava vozil"
+
+#: src/components/car/CarDetailPage.tsx:567
 msgid "Prodajalec"
 msgstr "Prodajalec"
 
-#: src/components/layout/Navbar.tsx:274
+#: src/components/dealership/DealershipCarsPage.tsx:123
+#~ msgid "Prodajalnica: {0}"
+#~ msgstr "Prodajalnica: {0}"
+
+#: src/components/layout/Navbar.tsx:609
 msgid "Profile"
 msgstr "Profil"
 
-#: src/components/profile/ProfilePage.tsx:341
+#: src/components/profile/ProfilePage.tsx:395
 msgid "Profilna slika"
 msgstr "Profilna slika"
 
-#: src/components/profile/ProfilePage.tsx:596
+#: src/components/profile/ProfilePage.tsx:650
 msgid "Profilne informacije"
 msgstr "Profilne informacije"
 
-#: src/components/car/CarDetailPage.tsx:589
+#: src/components/dealership/DealershipManagementPage.tsx:163
+msgid "Promoviraj v admina"
+msgstr "Promoviraj v admina"
+
+#: src/components/car/CarComparisonPage.tsx:685
+#: src/components/car/CarDetailPage.tsx:764
 msgid "Prva registracija"
 msgstr "Prva registracija"
+
+#: src/components/car/CarEditForm.tsx:584
+msgid "Prva registracija *"
+msgstr "Prva registracija *"
+
+#: src/components/admin/AdminDealershipsPage.tsx:324
+msgid "Razlog zavrnitve (priporočeno)"
+msgstr "Razlog zavrnitve (priporočeno)"
+
+#: src/components/dealership/analytics/FuelTypeDistributionChart.tsx:33
+msgid "Razporeditev po gorivih"
+msgstr "Razporeditev po gorivih"
+
+#: src/components/dealership/analytics/BrandDistributionChart.tsx:33
+msgid "Razporeditev po znamkah"
+msgstr "Razporeditev po znamkah"
 
 #: src/components/layout/SortBar.tsx:43
 msgid "Razvrsti"
 msgstr "Razvrsti"
 
-#: src/components/auth/RegisterForm.tsx:211
-#: src/components/layout/Navbar.tsx:310
+#: src/components/auth/RegisterForm.tsx:213
+#: src/components/layout/Navbar.tsx:679
 msgid "Register"
 msgstr "Registracija"
 
-#: src/components/car/CarDetailPage.tsx:743
+#: src/components/auth/ForgotPasswordForm.tsx:126
+#: src/components/auth/ResetPasswordForm.tsx:188
+msgid "Remember your password?"
+msgstr "Remember your password?"
+
+#: src/components/auth/ResetPasswordForm.tsx:87
+#: src/components/auth/ResetPasswordForm.tsx:180
+msgid "Reset Password"
+msgstr "Reset Password"
+
+#: src/components/auth/ResetPasswordForm.tsx:180
+msgid "Resetting..."
+msgstr "Resetting..."
+
+#: src/components/car/CarDetailPage.tsx:567
+msgid "Salon"
+msgstr "Salon"
+
+#: src/components/car/CarDetailPage.tsx:913
 msgid "Še ni komentarjev. Bodite prvi, ki komentirate!"
 msgstr "Še ni komentarjev. Bodite prvi, ki komentirate!"
 
@@ -354,155 +1219,516 @@ msgstr "Še ni komentarjev. Bodite prvi, ki komentirate!"
 msgid "Še nimate ogledov. Začnite z raziskovanjem ponudbe."
 msgstr "Še nimate ogledov. Začnite z raziskovanjem ponudbe."
 
-#: src/components/car/CarDetailPage.tsx:867
+#: src/components/auth/ForgotPasswordForm.tsx:119
+msgid "Send Reset Link"
+msgstr "Send Reset Link"
+
+#: src/components/auth/ForgotPasswordForm.tsx:119
+msgid "Sending..."
+msgstr "Sending..."
+
+#: src/components/car/CarDetailPage.tsx:1072
 msgid "Shrani"
 msgstr "Shrani"
 
-#: src/components/profile/ProfilePage.tsx:544
+#: src/components/profile/ProfilePage.tsx:598
 msgid "Shrani profilno sliko"
 msgstr "Shrani profilno sliko"
 
-#: src/components/profile/ProfilePage.tsx:744
+#: src/components/car/CarEditForm.tsx:1082
+#: src/components/dealership/DealershipEditForm.tsx:556
+#: src/components/profile/ProfilePage.tsx:798
 msgid "Shrani spremembe"
 msgstr "Shrani spremembe"
 
-#: src/components/auth/LoginForm.tsx:51
-#: src/components/auth/LoginForm.tsx:125
+#: src/components/dealership/DealershipEditForm.tsx:553
+msgid "Shranjevanje..."
+msgstr "Shranjevanje..."
+
+#: src/components/auth/ForgotPasswordForm.tsx:128
+#: src/components/auth/LoginForm.tsx:53
+#: src/components/auth/LoginForm.tsx:135
+#: src/components/auth/ResetPasswordForm.tsx:190
 msgid "Sign in"
 msgstr "Prijava"
 
-#: src/components/auth/RegisterForm.tsx:62
+#: src/components/auth/RegisterForm.tsx:63
 msgid "Sign up with a username and password to get started."
 msgstr "Za začetek se registrirajte z uporabniškim imenom in geslom."
 
-#: src/components/auth/LoginForm.tsx:125
+#: src/components/auth/LoginForm.tsx:135
 msgid "Signing in..."
 msgstr "Prijavljanje..."
 
-#: src/components/profile/ProfilePage.tsx:308
+#: src/components/dealership/DealershipManagementPage.tsx:564
+msgid "Skrij zemljevid"
+msgstr "Skrij zemljevid"
+
+#: src/components/dealership/DealershipAnalyticsPage.tsx:98
+msgid "Skupna vrednost"
+msgstr "Skupna vrednost"
+
+#: src/components/dealership/DealershipAnalyticsPage.tsx:121
+msgid "Skupni ogledi"
+msgstr "Skupni ogledi"
+
+#: src/components/dealership/DealershipAnalyticsPage.tsx:82
+msgid "Skupno avtomobilov"
+msgstr "Skupno avtomobilov"
+
+#: src/components/layout/FriendsSidebar.tsx:666
+#: src/components/layout/FriendsSidebar.tsx:834
+#: src/components/profile/ProfilePage.tsx:307
 msgid "Slovenščina"
 msgstr "Slovenščina"
 
-#: src/components/car/CarDetailPage.tsx:521
+#: src/components/car/CarComparisonPage.tsx:739
+msgid "Specifikacija"
+msgstr "Specifikacija"
+
+#: src/components/car/CarDetailPage.tsx:696
 msgid "Specifikacije"
 msgstr "Specifikacije"
 
-#: src/components/profile/ProfilePage.tsx:767
+#: src/components/dealership/DealershipEditForm.tsx:524
+#: src/components/dealership/DealershipRequestForm.tsx:526
+msgid "Spletna stran"
+msgstr "Spletna stran"
+
+#: src/components/dealership/DealershipInvitationsList.tsx:102
+#: src/components/friends/FriendRequestsPage.tsx:177
+#: src/components/layout/FriendsSidebar.tsx:186
+#: src/components/messages/MessagesPage.tsx:624
+msgid "Sprejmi"
+msgstr "Sprejmi"
+
+#: src/components/messages/ChatView.tsx:544
+msgid "Sprejmite ali zavrnite zahtevo, da začnete pogovor."
+msgstr "Sprejmite ali zavrnite zahtevo, da začnete pogovor."
+
+#: src/components/profile/ProfilePage.tsx:821
 msgid "Sprememba gesla"
 msgstr "Sprememba gesla"
 
-#: src/components/profile/ProfilePage.tsx:879
+#: src/components/admin/AdminUsersPage.tsx:451
+msgid "Spremeni"
+msgstr "Spremeni"
+
+#: src/components/profile/ProfilePage.tsx:934
 msgid "Spremeni geslo"
 msgstr "Spremeni geslo"
 
-#: src/components/profile/ProfilePage.tsx:875
+#: src/components/profile/ProfilePage.tsx:930
 msgid "Spreminjanje..."
 msgstr "Spreminjanje..."
 
-#: src/components/layout/Navbar.tsx:179
+#. placeholder {0}: pagination.totalPages
+#: src/components/admin/AdminUsersPage.tsx:677
+msgid "Stran {currentPage} od {0}"
+msgstr "Stran {currentPage} od {0}"
+
+#: src/components/auth/PasswordStrengthIndicator.tsx:62
+msgid "Strong"
+msgstr "Strong"
+
+#: src/components/layout/Navbar.tsx:297
 msgid "SUPERCARS Logo"
 msgstr "SUPERCARS Logo"
 
-#: src/components/auth/RegisterForm.tsx:108
+#: src/components/auth/RegisterForm.tsx:109
 msgid "Surname"
 msgstr "Priimek"
 
-#: src/components/profile/ProfilePage.tsx:701
+#: src/components/profile/ProfilePage.tsx:362
+#~ msgid "Svetel način"
+#~ msgstr "Svetel način"
+
+#: src/components/layout/FriendsSidebar.tsx:635
+#: src/components/layout/FriendsSidebar.tsx:801
+#: src/components/layout/FriendsSidebar.tsx:802
+#: src/components/profile/ProfilePage.tsx:351
+#: src/components/profile/ProfilePage.tsx:362
+msgid "Svetli način"
+msgstr "Svetli način"
+
+#: src/components/dealership/DealershipCarsPage.tsx:161
+msgid "Ta avtohiša še ni objavila nobenega avtomobila."
+msgstr "Ta avtohiša še ni objavila nobenega avtomobila."
+
+#: src/components/dealership/DealershipCarsPage.tsx:161
+#~ msgid "Ta prodajalnica še ni objavila nobenega avtomobila."
+#~ msgstr "Ta prodajalnica še ni objavila nobenega avtomobila."
+
+#: src/components/admin/AdminUsersPage.tsx:369
+#: src/components/admin/AdminUsersPage.tsx:543
+msgid "Telefon"
+msgstr "Telefon"
+
+#: src/components/dealership/DealershipEditForm.tsx:452
+#: src/components/dealership/DealershipRequestForm.tsx:454
+#: src/components/profile/ProfilePage.tsx:755
 msgid "Telefonska številka"
 msgstr "Telefonska številka"
 
-#: src/components/layout/Navbar.tsx:208
-msgid "Toggle dark mode"
-msgstr "Preklopi temni način"
+#: src/components/profile/ProfilePage.tsx:338
+msgid "Tema"
+msgstr "Tema"
 
-#: src/components/profile/ProfilePage.tsx:798
+#: src/components/layout/FriendsSidebar.tsx:635
+#: src/components/layout/FriendsSidebar.tsx:801
+#: src/components/layout/FriendsSidebar.tsx:802
+#: src/components/profile/ProfilePage.tsx:351
+#: src/components/profile/ProfilePage.tsx:370
+#~ msgid "Temen način"
+#~ msgstr "Temen način"
+
+#: src/components/layout/FriendsSidebar.tsx:635
+#: src/components/layout/FriendsSidebar.tsx:801
+#: src/components/layout/FriendsSidebar.tsx:802
+#: src/components/profile/ProfilePage.tsx:351
+#: src/components/profile/ProfilePage.tsx:370
+msgid "Temni način"
+msgstr "Temni način"
+
+#: src/components/layout/Navbar.tsx:208
+#~ msgid "Toggle dark mode"
+#~ msgstr "Preklopi temni način"
+
+#: src/components/profile/ProfilePage.tsx:852
 msgid "Trenutno geslo"
 msgstr "Trenutno geslo"
 
-#: src/components/car/CarList.tsx:136
+#: src/components/car/CarList.tsx:277
 msgid "Trenutno ni objavljenih vozil."
 msgstr "Trenutno ni objavljenih vozil."
+
+#: src/components/friends/FriendRequestsPage.tsx:305
+msgid "Trenutno nimate nobenih zahtev za prijateljstvo."
+msgstr "Trenutno nimate nobenih zahtev za prijateljstvo."
+
+#: src/components/car/MyPostsPage.tsx:137
+msgid "Trenutno nimate objavljenih oglasov."
+msgstr "Trenutno nimate objavljenih oglasov."
+
+#: src/components/friends/FriendsPage.tsx:385
+msgid "Trenutno nimate prijateljev."
+msgstr "Trenutno nimate prijateljev."
 
 #: src/components/favourites/FavouritesPage.tsx:116
 msgid "Trenutno nimate priljubljenih vozil."
 msgstr "Trenutno nimate priljubljenih vozil."
 
-#: src/components/profile/ProfilePage.tsx:659
+#: src/components/admin/AdminUsersPage.tsx:366
+#: src/components/admin/AdminUsersPage.tsx:571
+#: src/components/admin/AdminUsersPage.tsx:592
+msgid "Uporabnik"
+msgstr "Uporabnik"
+
+#: src/components/profile/ProfilePage.tsx:713
 msgid "Uporabniškega imena ni mogoče spremeniti"
 msgstr "Uporabniškega imena ni mogoče spremeniti"
 
-#: src/components/profile/ProfilePage.tsx:647
+#: src/components/admin/AdminUsersPage.tsx:368
+#: src/components/friends/FriendsPage.tsx:457
+#: src/components/profile/ProfilePage.tsx:701
 msgid "Uporabniško ime"
 msgstr "Uporabniško ime"
 
-#: src/components/profile/ProfilePage.tsx:268
+#: src/components/profile/ProfilePage.tsx:267
 msgid "Upravljajte svoje profilne informacije in nastavitve računa"
 msgstr "Upravljajte svoje profilne informacije in nastavitve računa"
 
-#: src/components/profile/ProfilePage.tsx:616
-#: src/components/profile/ProfilePage.tsx:787
+#: src/components/admin/AdminUsersPage.tsx:309
+msgid "Upravljajte uporabnike sistema, spreminjajte vloge in podatke."
+msgstr "Upravljajte uporabnike sistema, spreminjajte vloge in podatke."
+
+#: src/components/layout/FloatingSettingsMenu.tsx:82
+msgid "Upravljanje avtohiš"
+msgstr "Upravljanje avtohiš"
+
+#: src/components/layout/FloatingSettingsMenu.tsx:82
+#~ msgid "Upravljanje prodajalnic"
+#~ msgstr "Upravljanje prodajalnic"
+
+#: src/components/admin/AdminUsersPage.tsx:306
+#: src/components/layout/FloatingSettingsMenu.tsx:76
+msgid "Upravljanje uporabnikov"
+msgstr "Upravljanje uporabnikov"
+
+#: src/components/admin/AdminDealershipsPage.tsx:468
+msgid "Upravljanje zahtev za avtohiše"
+msgstr "Upravljanje zahtev za avtohiše"
+
+#: src/components/admin/AdminDealershipsPage.tsx:468
+#~ msgid "Upravljanje zahtev za prodajalnice"
+#~ msgstr "Upravljanje zahtev za prodajalnice"
+
+#: src/components/admin/AdminUsersPage.tsx:633
+#: src/components/profile/ProfilePage.tsx:670
+#: src/components/profile/ProfilePage.tsx:841
 msgid "Uredi"
 msgstr "Uredi"
 
-#: src/components/car/CarDetailPage.tsx:809
+#: src/components/dealership/DealershipEditForm.tsx:247
+#: src/components/dealership/DealershipManagementPage.tsx:498
+msgid "Uredi avtohišo"
+msgstr "Uredi avtohišo"
+
+#: src/components/car/CarDetailPage.tsx:324
+#: src/components/car/CarEditForm.tsx:479
+msgid "Uredi oglas"
+msgstr "Uredi oglas"
+
+#: src/components/dealership/DealershipEditForm.tsx:247
+#: src/components/dealership/DealershipManagementPage.tsx:498
+#~ msgid "Uredi prodajalnico"
+#~ msgstr "Uredi prodajalnico"
+
+#: src/components/car/CarDetailPage.tsx:1014
 msgid "urejeno"
 msgstr "urejeno"
 
-#: src/components/layout/Navbar.tsx:230
+#: src/components/layout/Navbar.tsx:544
 msgid "User menu"
 msgstr "Uporabniški meni"
 
-#: src/components/auth/RegisterForm.tsx:168
+#: src/components/auth/RegisterForm.tsx:169
 msgid "Username"
 msgstr "Uporabniško ime"
 
-#: src/components/auth/LoginForm.tsx:83
+#: src/components/auth/LoginForm.tsx:85
 msgid "Username or Email"
 msgstr "Uporabniško ime ali e-pošta"
 
-#: src/components/profile/ProfilePage.tsx:690
+#: src/components/admin/AdminDealershipsPage.tsx:195
+msgid "Ustvarjeno:"
+msgstr "Ustvarjeno:"
+
+#: src/components/admin/AdminDealershipsPage.tsx:106
+#: src/components/dealership/DealershipManagementPage.tsx:126
+msgid "V čakanju"
+msgstr "V čakanju"
+
+#: src/components/messages/ChatView.tsx:271
+msgid "Vaša sporočila"
+msgstr "Vaša sporočila"
+
+#: src/components/dealership/DealershipRequestForm.tsx:254
+msgid "Vaša zahteva za avtohišo je bila uspešno oddana. Administrator bo pregledal vašo zahtevo in vas bo obvestil o odločitvi."
+msgstr "Vaša zahteva za avtohišo je bila uspešno oddana. Administrator bo pregledal vašo zahtevo in vas bo obvestil o odločitvi."
+
+#: src/components/dealership/DealershipRequestForm.tsx:254
+#~ msgid "Vaša zahteva za prodajalnico je bila uspešno oddana. Administrator bo pregledal vašo zahtevo in vas bo obvestil o odločitvi."
+#~ msgstr "Vaša zahteva za prodajalnico je bila uspešno oddana. Administrator bo pregledal vašo zahtevo in vas bo obvestil o odločitvi."
+
+#: src/components/auth/PasswordStrengthIndicator.tsx:68
+msgid "Very Strong"
+msgstr "Very Strong"
+
+#: src/components/auth/PasswordStrengthIndicator.tsx:44
+msgid "Very Weak"
+msgstr "Very Weak"
+
+#: src/components/admin/AdminUsersPage.tsx:370
+#: src/components/dealership/DealershipManagementPage.tsx:887
+msgid "Vloga"
+msgstr "Vloga"
+
+#: src/components/dealership/DealershipEditForm.tsx:486
+#: src/components/dealership/DealershipRequestForm.tsx:488
+msgid "Vnesite davčno številko"
+msgstr "Vnesite davčno številko"
+
+#: src/components/dealership/DealershipEditForm.tsx:511
+#: src/components/dealership/DealershipRequestForm.tsx:513
+msgid "Vnesite e-poštni naslov"
+msgstr "Vnesite e-poštni naslov"
+
+#: src/components/dealership/DealershipEditForm.tsx:295
+#: src/components/dealership/DealershipRequestForm.tsx:297
+msgid "Vnesite ime avtohiše"
+msgstr "Vnesite ime avtohiše"
+
+#: src/components/dealership/DealershipEditForm.tsx:295
+#: src/components/dealership/DealershipRequestForm.tsx:297
+#~ msgid "Vnesite ime prodajalnice"
+#~ msgstr "Vnesite ime prodajalnice"
+
+#: src/components/dealership/DealershipEditForm.tsx:421
+#: src/components/dealership/DealershipRequestForm.tsx:424
+msgid "Vnesite mesto"
+msgstr "Vnesite mesto"
+
+#: src/components/dealership/DealershipEditForm.tsx:352
+#: src/components/dealership/DealershipRequestForm.tsx:355
+msgid "Vnesite naslov avtohiše"
+msgstr "Vnesite naslov avtohiše"
+
+#: src/components/dealership/DealershipEditForm.tsx:352
+#: src/components/dealership/DealershipRequestForm.tsx:355
+#~ msgid "Vnesite naslov prodajalnice"
+#~ msgstr "Vnesite naslov prodajalnice"
+
+#: src/components/dealership/DealershipEditForm.tsx:461
+#: src/components/dealership/DealershipRequestForm.tsx:463
+msgid "Vnesite telefonsko številko"
+msgstr "Vnesite telefonsko številko"
+
+#: src/components/friends/FriendsPage.tsx:476
+msgid "Vnesite uporabniško ime"
+msgstr "Vnesite uporabniško ime"
+
+#: src/components/profile/ProfilePage.tsx:744
 msgid "Vnesite vaš priimek"
 msgstr "Vnesite vaš priimek"
 
-#: src/components/profile/ProfilePage.tsx:673
+#: src/components/profile/ProfilePage.tsx:727
 msgid "Vnesite vaše ime"
 msgstr "Vnesite vaše ime"
 
-#: src/components/profile/ProfilePage.tsx:827
+#: src/components/profile/ProfilePage.tsx:881
 msgid "Vnesite vaše novo geslo"
 msgstr "Vnesite vaše novo geslo"
 
-#: src/components/profile/ProfilePage.tsx:807
+#: src/components/profile/ProfilePage.tsx:861
 msgid "Vnesite vaše trenutno geslo"
 msgstr "Vnesite vaše trenutno geslo"
 
-#: src/components/profile/ProfilePage.tsx:710
+#: src/components/profile/ProfilePage.tsx:764
 msgid "Vnesite vašo telefonsko številko"
 msgstr "Vnesite vašo telefonsko številko"
 
-#: src/components/car/CarDetailPage.tsx:217
+#: src/components/car/CarEditForm.tsx:453
+msgid "Vozilo ni bilo najdeno"
+msgstr "Vozilo ni bilo najdeno"
+
+#: src/components/car/CarDetailPage.tsx:282
 msgid "Vozilo ni bilo najdeno."
 msgstr "Vozilo ni bilo najdeno."
+
+#: src/components/car/CarComparisonPage.tsx:700
+msgid "Vrsta goriva"
+msgstr "Vrsta goriva"
+
+#: src/components/car/CarEditForm.tsx:635
+msgid "Vrsta goriva *"
+msgstr "Vrsta goriva *"
 
 #: src/components/favourites/FavouritesPage.tsx:81
 msgid "Vsa vozila, ki ste jih dodali med priljubljene."
 msgstr "Vsa vozila, ki ste jih dodali med priljubljene."
 
+#: src/components/car/MyPostsPage.tsx:102
+msgid "Vsa vozila, ki ste jih objavili."
+msgstr "Vsa vozila, ki ste jih objavili."
+
 #: src/components/car/CarSearch.tsx:81
 #: src/components/car/CarSearch.tsx:86
 #: src/components/car/CarSearch.tsx:88
+#: src/components/layout/FriendsSidebar.tsx:427
 msgid "Vse"
 msgstr "Vse"
 
+#: src/components/layout/FriendsSidebar.tsx:472
+msgid "Vsi"
+msgstr "Vsi"
+
+#: src/components/auth/PasswordStrengthIndicator.tsx:50
+msgid "Weak"
+msgstr "Weak"
+
+#: src/components/car/CarDetailPage.tsx:870
+msgid "Za komentiranje se morate "
+msgstr "Za komentiranje se morate "
+
 #: src/components/car/CarDetailPage.tsx:696
-msgid "Za komentiranje se morate <0>prijaviti</0>."
-msgstr "Za komentiranje se morate <0>prijaviti</0>."
+#~ msgid "Za komentiranje se morate <0>prijaviti</0>."
+#~ msgstr "Za komentiranje se morate <0>prijaviti</0>."
+
+#: src/components/friends/FriendsPage.tsx:485
+#: src/components/messages/MessagesPage.tsx:1096
+msgid "Začnite tipkati, da poiščete uporabnika"
+msgstr "Začnite tipkati, da poiščete uporabnika"
 
 #: src/components/history/ViewHistoryPage.tsx:58
 msgid "Zadnjih 10 vozil, ki ste jih odprli (najnovejše na vrhu)."
 msgstr "Zadnjih 10 vozil, ki ste jih odprli (najnovejše na vrhu)."
 
+#: src/components/dealership/DealershipRequestForm.tsx:251
+msgid "Zahteva uspešno oddana!"
+msgstr "Zahteva uspešno oddana!"
+
+#: src/components/dealership/DealershipRequestForm.tsx:229
+msgid "Zahteva za avtohišo"
+msgstr "Zahteva za avtohišo"
+
+#: src/components/dealership/DealershipRequestForm.tsx:229
+#~ msgid "Zahteva za prodajalnico"
+#~ msgstr "Zahteva za prodajalnico"
+
+#: src/components/dealership/DealershipManagementPage.tsx:444
+#: src/components/layout/Navbar.tsx:638
+msgid "Zahtevaj avtohišo"
+msgstr "Zahtevaj avtohišo"
+
+#: src/components/dealership/DealershipManagementPage.tsx:444
+#: src/components/layout/Navbar.tsx:638
+#~ msgid "Zahtevaj prodajalnico"
+#~ msgstr "Zahtevaj prodajalnico"
+
+#: src/components/friends/FriendsPage.tsx:324
+#: src/components/layout/FriendsSidebar.tsx:422
+#: src/components/messages/MessagesPage.tsx:377
+msgid "Zahteve"
+msgstr "Zahteve"
+
+#: src/components/friends/FriendRequestsPage.tsx:276
+msgid "Zahteve za prijateljstvo"
+msgstr "Zahteve za prijateljstvo"
+
+#: src/components/dealership/DealershipManagementPage.tsx:645
+#: src/components/dealership/DealershipManagementPage.tsx:666
+#: src/components/friends/FriendsPage.tsx:435
+#: src/components/layout/FloatingSettingsMenu.tsx:156
+msgid "Zapri"
+msgstr "Zapri"
+
+#: src/components/dealership/DealershipManagementPage.tsx:1001
+msgid "Zapusti"
+msgstr "Zapusti"
+
+#: src/components/dealership/DealershipManagementPage.tsx:526
+#: src/components/dealership/DealershipManagementPage.tsx:963
+msgid "Zapusti avtohišo"
+msgstr "Zapusti avtohišo"
+
+#: src/components/dealership/DealershipManagementPage.tsx:526
+#: src/components/dealership/DealershipManagementPage.tsx:963
+#~ msgid "Zapusti prodajalnico"
+#~ msgstr "Zapusti prodajalnico"
+
+#: src/components/admin/AdminDealershipsPage.tsx:217
+#: src/components/admin/AdminDealershipsPage.tsx:338
+#: src/components/dealership/DealershipInvitationsList.tsx:91
+#: src/components/friends/FriendRequestsPage.tsx:190
+#: src/components/layout/FriendsSidebar.tsx:208
+#: src/components/messages/MessagesPage.tsx:641
+msgid "Zavrni"
+msgstr "Zavrni"
+
+#: src/components/admin/AdminDealershipsPage.tsx:309
+msgid "Zavrni avtohišo"
+msgstr "Zavrni avtohišo"
+
+#: src/components/admin/AdminDealershipsPage.tsx:309
+#~ msgid "Zavrni prodajalnico"
+#~ msgstr "Zavrni prodajalnico"
+
 #: src/components/history/ViewHistoryPage.tsx:53
-#: src/components/layout/Navbar.tsx:264
+#: src/components/layout/Navbar.tsx:596
 msgid "Zgodovina ogledov"
 msgstr "Zgodovina ogledov"
+
+#: src/components/car/CarComparisonPage.tsx:675
+msgid "Znamka in model"
+msgstr "Znamka in model"

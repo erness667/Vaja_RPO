@@ -16,7 +16,6 @@ import { useCars, type UseCarsFilters } from "@/lib/hooks/useCars";
 import { CarCard } from "./CarCard";
 import { SortBar, SortOption } from "../layout/SortBar";
 import { Trans } from "@lingui/macro";
-import { CarPriceStats } from "./CarPriceStats";
 import type { Car } from "@/lib/types/car";
 
 export function CarList() {
@@ -58,7 +57,6 @@ export function CarList() {
 
   const { cars: allCars, isLoading, error, pagination, refetch } = useCars(filters);
   const [sort, setSort] = useState<SortOption>("newest");
-  const [showPriceStats, setShowPriceStats] = useState(false);
 
   // Reset to page 1 when filters change (but not when page changes)
   useEffect(() => {
@@ -229,22 +227,8 @@ export function CarList() {
             >
               {renderHeading()}
             </Heading>
-            <HStack gap={3}>
-              <Button
-                size="sm"
-                onClick={() => setShowPriceStats(!showPriceStats)}
-                colorScheme="blue"
-                variant={showPriceStats ? "solid" : "outline"}
-              >
-                {showPriceStats ? "Hide" : "Show"} Price Stats
-              </Button>
-              <SortBar value={sort} onChange={setSort} />
-            </HStack>
+            <SortBar value={sort} onChange={setSort} />
           </HStack>
-
-          {showPriceStats && !isLoading && !error && allCars.length > 0 && (
-            <CarPriceStats cars={allCars} />
-          )}
 
         {isLoading && (
           <Box display="flex" justifyContent="center" py={10}>

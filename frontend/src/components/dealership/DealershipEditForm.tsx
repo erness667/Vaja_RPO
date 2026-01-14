@@ -200,11 +200,11 @@ export function DealershipEditForm() {
           <VStack gap={4} align="center">
             <Icon as={LuBuilding2} boxSize={16} color={{ base: "gray.400", _dark: "gray.500" }} />
             <Heading size="lg" color={{ base: "gray.700", _dark: "gray.300" }}>
-              <Trans>Ni prodajalnice</Trans>
+              <Trans>Ni avtohiše</Trans>
             </Heading>
             <Text color={{ base: "gray.600", _dark: "gray.400" }} textAlign="center">
               <Trans>
-                Nimate odobrene prodajalnice. Prosimo, zahtevajte prodajalnico in počakajte na odobritev.
+                Nimate odobrene avtohiše. Prosimo, zahtevajte avtohišo in počakajte na odobritev.
               </Trans>
             </Text>
             <Button
@@ -244,7 +244,7 @@ export function DealershipEditForm() {
             <HStack gap={3}>
               <Icon as={LuBuilding2} boxSize={8} color="blue.500" />
               <Heading size="xl" color={{ base: "gray.900", _dark: "gray.100" }}>
-                <Trans>Uredi prodajalnico</Trans>
+                <Trans>Uredi avtohišo</Trans>
               </Heading>
             </HStack>
             <Button
@@ -283,7 +283,7 @@ export function DealershipEditForm() {
                 >
                   <HStack gap={2}>
                     <Icon as={LuBuilding2} boxSize={4} />
-                    <Trans>Ime prodajalnice</Trans>
+                    <Trans>Ime avtohiše</Trans>
                   </HStack>
                 </Field.Label>
                 <Input
@@ -292,7 +292,7 @@ export function DealershipEditForm() {
                   type="text"
                   value={formData.name ?? ""}
                   onChange={handleChange}
-                  placeholder={t`Vnesite ime prodajalnice`}
+                  placeholder={t`Vnesite ime avtohiše`}
                   disabled={isLoading}
                 />
               </Field.Root>
@@ -316,7 +316,7 @@ export function DealershipEditForm() {
                   name="description"
                   value={formData.description ?? ""}
                   onChange={handleChange}
-                  placeholder={t`Dodajte opis prodajalnice...`}
+                  placeholder={t`Dodajte opis avtohiše...`}
                   rows={4}
                   disabled={isLoading}
                 />
@@ -349,7 +349,7 @@ export function DealershipEditForm() {
                     onBlur={() => {
                       setTimeout(() => setShowAddressSuggestions(false), 200);
                     }}
-                    placeholder={t`Vnesite naslov prodajalnice`}
+                    placeholder={t`Vnesite naslov avtohiše`}
                     disabled={isLoading}
                     width="100%"
                   />

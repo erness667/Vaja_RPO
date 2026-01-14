@@ -348,7 +348,7 @@ export function ProfilePage() {
                     <HStack gap={2}>
                       <Icon as={isDark ? HiMoon : HiSun} boxSize={4} />
                       <Text>
-                        {isDark ? <Trans>Temen način</Trans> : <Trans>Svetel način</Trans>}
+                        {isDark ? <Trans>Temni način</Trans> : <Trans>Svetli način</Trans>}
                       </Text>
                     </HStack>
                   </Button>
@@ -359,7 +359,7 @@ export function ProfilePage() {
                       <HStack gap={2}>
                         <Icon as={HiSun} boxSize={4} />
                         <Text fontWeight={!isDark ? "semibold" : "normal"}>
-                          <Trans>Svetel način</Trans>
+                          <Trans>Svetli način</Trans>
                         </Text>
                       </HStack>
                     </MenuItem>
@@ -367,7 +367,7 @@ export function ProfilePage() {
                       <HStack gap={2}>
                         <Icon as={HiMoon} boxSize={4} />
                         <Text fontWeight={isDark ? "semibold" : "normal"}>
-                          <Trans>Temen način</Trans>
+                          <Trans>Temni način</Trans>
                         </Text>
                       </HStack>
                     </MenuItem>

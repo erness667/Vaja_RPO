@@ -430,18 +430,18 @@ export function DealershipManagementPage() {
           <VStack gap={4} align="center">
             <Icon as={LuBuilding2} boxSize={16} color={{ base: "gray.400", _dark: "gray.500" }} />
             <Heading size="lg" color={{ base: "gray.700", _dark: "gray.300" }}>
-              <Trans>Ni prodajalnice</Trans>
+              <Trans>Ni avtohiše</Trans>
             </Heading>
             <Text color={{ base: "gray.600", _dark: "gray.400" }} textAlign="center">
               <Trans>
-                Nimate odobrene prodajalnice. Prosimo, zahtevajte prodajalnico in počakajte na odobritev.
+                Nimate odobrene avtohiše. Prosimo, zahtevajte avtohišo in počakajte na odobritev.
               </Trans>
             </Text>
             <Button
               colorPalette="blue"
               onClick={() => router.push("/dealerships/create")}
             >
-              <Trans>Zahtevaj prodajalnico</Trans>
+              <Trans>Zahtevaj avtohišo</Trans>
             </Button>
           </VStack>
         </Box>
@@ -495,7 +495,7 @@ export function DealershipManagementPage() {
                   >
                     <HStack gap={2}>
                       <Icon as={LuPencil} />
-                      <Trans>Uredi prodajalnico</Trans>
+                      <Trans>Uredi avtohišo</Trans>
                     </HStack>
                   </Button>
                 )}
@@ -508,7 +508,7 @@ export function DealershipManagementPage() {
                   >
                     <HStack gap={2}>
                       <Icon as={LuTrash2} />
-                      <Trans>Izbriši prodajalnico</Trans>
+                      <Trans>Izbriši avtohišo</Trans>
                     </HStack>
                   </Button>
                 )}
@@ -523,7 +523,7 @@ export function DealershipManagementPage() {
                     >
                       <HStack gap={2}>
                         <Icon as={LuLogOut} />
-                        <Trans>Zapusti prodajalnico</Trans>
+                        <Trans>Zapusti avtohišo</Trans>
                       </HStack>
                     </Button>
                   ) : null;
@@ -960,7 +960,7 @@ export function DealershipManagementPage() {
                       {workerToRemove.status === "Pending" 
                         ? <Trans>Prekliči povabilo</Trans>
                         : workerToRemove.userId === currentUser?.id
-                        ? <Trans>Zapusti prodajalnico</Trans>
+                        ? <Trans>Zapusti avtohišo</Trans>
                         : <Trans>Odstrani delavca</Trans>}
                     </Heading>
                     <IconButton
@@ -976,7 +976,7 @@ export function DealershipManagementPage() {
                     {workerToRemove.status === "Pending" ? (
                       <Trans>Ali ste prepričani, da želite preklicati povabilo za {workerToRemove.userName} {workerToRemove.userSurname}?</Trans>
                     ) : workerToRemove.userId === currentUser?.id ? (
-                      <Trans>Ali ste prepričani, da želite zapustiti to prodajalnico?</Trans>
+                      <Trans>Ali ste prepričani, da želite zapustiti to avtohišo?</Trans>
                     ) : (
                       <Trans>Ali ste prepričani, da želite odstraniti tega delavca?</Trans>
                     )}
@@ -1044,7 +1044,7 @@ export function DealershipManagementPage() {
                     </IconButton>
                   </HStack>
                   <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-                    <Trans>Ali ste prepričani, da želite prenesti lastništvo prodajalnice na {workerToTransferTo.userName} {workerToTransferTo.userSurname}? Po prenosu ne boste več lastnik in boste lahko zapustili prodajalnico.</Trans>
+                    <Trans>Ali ste prepričani, da želite prenesti lastništvo avtohiše na {workerToTransferTo.userName} {workerToTransferTo.userSurname}? Po prenosu ne boste več lastnik in boste lahko zapustili avtohišo.</Trans>
                   </Text>
                   <HStack gap={3} justify="flex-end">
                     <Button
@@ -1093,7 +1093,7 @@ export function DealershipManagementPage() {
                 <VStack align="stretch" gap={4}>
                   <HStack justify="space-between" align="center">
                     <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
-                      <Trans>Izbriši prodajalnico</Trans>
+                      <Trans>Izbriši avtohišo</Trans>
                     </Heading>
                     <IconButton
                       variant="ghost"
@@ -1106,7 +1106,7 @@ export function DealershipManagementPage() {
                   </HStack>
                   <Text color={{ base: "gray.600", _dark: "gray.400" }}>
                     <Trans>
-                      Ali ste prepričani, da želite izbrisati to prodajalnico? Ta akcija bo izbrisala vse objavljene avtomobile prodajalnice in ne more biti razveljavljena.
+                      Ali ste prepričani, da želite izbrisati to avtohišo? Ta akcija bo izbrisala vse objavljene avtomobile avtohiše in ne more biti razveljavljena.
                     </Trans>
                   </Text>
                   <HStack gap={3} justify="flex-end">

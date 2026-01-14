@@ -244,7 +244,7 @@ function DealershipCard({
                 <VStack align="stretch" gap={4}>
                   <HStack justify="space-between" align="center">
                     <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
-                      <Trans>Odobri prodajalnico</Trans>
+                      <Trans>Odobri avtohišo</Trans>
                     </Heading>
                     <IconButton
                       variant="ghost"
@@ -255,7 +255,7 @@ function DealershipCard({
                     </IconButton>
                   </HStack>
                   <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-                    <Trans>Ali ste prepričani, da želite odobriti to prodajalnico?</Trans>
+                    <Trans>Ali ste prepričani, da želite odobriti to avtohišo?</Trans>
                   </Text>
                   <Box>
                     <Text mb={2} fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
@@ -306,7 +306,7 @@ function DealershipCard({
                 <VStack align="stretch" gap={4}>
                   <HStack justify="space-between" align="center">
                     <Heading size="md" color={{ base: "gray.800", _dark: "gray.100" }}>
-                      <Trans>Zavrni prodajalnico</Trans>
+                      <Trans>Zavrni avtohišo</Trans>
                     </Heading>
                     <IconButton
                       variant="ghost"
@@ -317,7 +317,7 @@ function DealershipCard({
                     </IconButton>
                   </HStack>
                   <Text color={{ base: "gray.600", _dark: "gray.400" }}>
-                    <Trans>Ali ste prepričani, da želite zavrniti to prodajalnico?</Trans>
+                    <Trans>Ali ste prepričani, da želite zavrniti to avtohišo?</Trans>
                   </Text>
                   <Box>
                     <Text mb={2} fontWeight="medium" color={{ base: "gray.700", _dark: "gray.300" }}>
@@ -465,7 +465,7 @@ export function AdminDealershipsPage() {
             {/* Header */}
             <VStack align="stretch" gap={3}>
               <Heading size="xl" color={{ base: "gray.900", _dark: "gray.100" }}>
-                <Trans>Upravljanje zahtev za prodajalnice</Trans>
+                <Trans>Upravljanje zahtev za avtohiše</Trans>
               </Heading>
               <Text color={{ base: "gray.600", _dark: "gray.400" }}>
                 <Trans>Preglejte in odobrite ali zavrnite zahteve za registracijo prodajalnic.</Trans>

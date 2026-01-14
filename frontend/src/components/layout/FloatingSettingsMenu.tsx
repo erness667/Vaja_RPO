@@ -79,7 +79,7 @@ export function FloatingSettingsMenu() {
     {
       icon: LuBuilding2,
       onClick: handleAdminDealerships,
-      label: t`Upravljanje prodajalnic`,
+      label: t`Upravljanje avtohiš`,
       colorPalette: "blue",
     },
   ];

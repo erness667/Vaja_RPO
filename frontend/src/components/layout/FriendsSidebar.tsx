@@ -632,7 +632,7 @@ export function FriendsSidebar() {
                   >
                     <HStack gap={2} justify="center">
                       <Icon as={isDark ? HiSun : HiMoon} />
-                      <Text>{isDark ? <Trans>Svetel način</Trans> : <Trans>Temen način</Trans>}</Text>
+                      <Text>{isDark ? <Trans>Svetli način</Trans> : <Trans>Temni način</Trans>}</Text>
                     </HStack>
                   </Button>
                   <MenuRoot>
@@ -691,7 +691,7 @@ export function FriendsSidebar() {
                     >
                       <HStack gap={2} justify="center">
                         <Icon as={LuBuilding2} />
-                        <Text><Trans>Moja prodajalnica</Trans></Text>
+                        <Text><Trans>Moja avtohiša</Trans></Text>
                       </HStack>
                     </Button>
                   )}
@@ -798,8 +798,8 @@ export function FriendsSidebar() {
               <IconButton
                 variant="ghost"
                 colorPalette="purple"
-                aria-label={isDark ? t`Svetel način` : t`Temen način`}
-                title={isDark ? t`Svetel način` : t`Temen način`}
+                aria-label={isDark ? t`Svetli način` : t`Temni način`}
+                title={isDark ? t`Svetli način` : t`Temni način`}
                 onClick={toggleColorMode}
               >
                 <Icon as={isDark ? HiSun : HiMoon} />
@@ -856,7 +856,7 @@ export function FriendsSidebar() {
                     variant="ghost"
                     colorPalette="blue"
                     aria-label="My Dealership"
-                    title={t`Moja prodajalnica`}
+                    title={t`Moja avtohiša`}
                   >
                     <Icon as={LuBuilding2} />
                   </IconButton>

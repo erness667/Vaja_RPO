@@ -32,6 +32,36 @@ namespace Backend.Controllers
                 return NotFound(new { message = "Vozilo ni bilo najdeno." });
             }
 
+            // Get current user ID if authenticated
+            Guid? currentUserId = null;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var parsedUserId))
+            {
+                currentUserId = parsedUserId;
+            }
+
+            var commentIds = await _dbContext.Comments
+                .Where(c => c.CarId == carId)
+                .Select(c => c.Id)
+                .ToListAsync();
+
+            // Get ratings for all comments
+            var ratings = await _dbContext.CommentRatings
+                .Where(cr => commentIds.Contains(cr.CommentId))
+                .GroupBy(cr => cr.CommentId)
+                .Select(g => new
+                {
+                    CommentId = g.Key,
+                    AverageRating = g.Average(r => (double)r.Rating),
+                    RatingCount = g.Count(),
+                    UserRating = currentUserId.HasValue
+                        ? g.Where(r => r.UserId == currentUserId.Value).Select(r => (int?)r.Rating).FirstOrDefault()
+                        : null
+                })
+                .ToListAsync();
+
+            var ratingsDict = ratings.ToDictionary(r => r.CommentId);
+
             var comments = await _dbContext.Comments
                 .Where(c => c.CarId == carId)
                 .Include(c => c.User)
@@ -49,7 +79,10 @@ namespace Backend.Controllers
                         Name = c.User.Name,
                         Surname = c.User.Surname,
                         AvatarImageUrl = c.User.AvatarImageUrl
-                    }
+                    },
+                    AverageRating = ratingsDict.ContainsKey(c.Id) ? ratingsDict[c.Id].AverageRating : null,
+                    RatingCount = ratingsDict.ContainsKey(c.Id) ? ratingsDict[c.Id].RatingCount : 0,
+                    UserRating = ratingsDict.ContainsKey(c.Id) ? ratingsDict[c.Id].UserRating : null
                 })
                 .ToListAsync();
 
@@ -113,7 +146,10 @@ namespace Backend.Controllers
                     Name = user.Name,
                     Surname = user.Surname,
                     AvatarImageUrl = user.AvatarImageUrl
-                }
+                },
+                AverageRating = null,
+                RatingCount = 0,
+                UserRating = null
             };
 
             return CreatedAtAction(nameof(GetCommentsByCar), new { carId }, commentDto);
@@ -158,6 +194,18 @@ namespace Backend.Controllers
 
             await _dbContext.SaveChangesAsync();
 
+            // Get rating info for the updated comment
+            var ratingInfo = await _dbContext.CommentRatings
+                .Where(cr => cr.CommentId == comment.Id)
+                .GroupBy(cr => cr.CommentId)
+                .Select(g => new
+                {
+                    AverageRating = g.Average(r => (double)r.Rating),
+                    RatingCount = g.Count(),
+                    UserRating = g.Where(r => r.UserId == userId).Select(r => (int?)r.Rating).FirstOrDefault()
+                })
+                .FirstOrDefaultAsync();
+
             var commentDto = new CommentDto
             {
                 Id = comment.Id,
@@ -171,7 +219,104 @@ namespace Backend.Controllers
                     Name = comment.User.Name,
                     Surname = comment.User.Surname,
                     AvatarImageUrl = comment.User.AvatarImageUrl
-                }
+                },
+                AverageRating = ratingInfo?.AverageRating,
+                RatingCount = ratingInfo?.RatingCount ?? 0,
+                UserRating = ratingInfo?.UserRating
+            };
+
+            return Ok(commentDto);
+        }
+
+        /// <summary>
+        /// Rate a comment (requires authentication)
+        /// </summary>
+        [HttpPost("comments/{id}/rate")]
+        [Authorize]
+        public async Task<IActionResult> RateComment(int id, [FromBody] RateCommentRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Get the current user ID from JWT claims
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized(new { message = "Neveljavna seja." });
+            }
+
+            // Verify comment exists
+            var comment = await _dbContext.Comments
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (comment == null)
+            {
+                return NotFound(new { message = "Komentar ni bil najden." });
+            }
+
+            // Prevent users from rating their own comments
+            if (comment.UserId == userId)
+            {
+                return BadRequest(new { message = "Ne morete oceniti svojega komentarja." });
+            }
+
+            // Check if user already rated this comment
+            var existingRating = await _dbContext.CommentRatings
+                .FirstOrDefaultAsync(cr => cr.CommentId == id && cr.UserId == userId);
+
+            if (existingRating != null)
+            {
+                // Update existing rating
+                existingRating.Rating = request.Rating;
+                existingRating.UpdatedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                // Create new rating
+                var rating = new CommentRating
+                {
+                    CommentId = id,
+                    UserId = userId,
+                    Rating = request.Rating,
+                    CreatedAt = DateTime.UtcNow
+                };
+                _dbContext.CommentRatings.Add(rating);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            // Get updated rating info
+            var ratingInfo = await _dbContext.CommentRatings
+                .Where(cr => cr.CommentId == id)
+                .GroupBy(cr => cr.CommentId)
+                .Select(g => new
+                {
+                    AverageRating = g.Average(r => (double)r.Rating),
+                    RatingCount = g.Count(),
+                    UserRating = g.Where(r => r.UserId == userId).Select(r => (int?)r.Rating).FirstOrDefault()
+                })
+                .FirstOrDefaultAsync();
+
+            var commentDto = new CommentDto
+            {
+                Id = comment.Id,
+                CarId = comment.CarId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                CreatedAt = comment.CreatedAt,
+                UpdatedAt = comment.UpdatedAt,
+                Author = new CommentAuthor
+                {
+                    Name = comment.User.Name,
+                    Surname = comment.User.Surname,
+                    AvatarImageUrl = comment.User.AvatarImageUrl
+                },
+                AverageRating = ratingInfo?.AverageRating,
+                RatingCount = ratingInfo?.RatingCount ?? 0,
+                UserRating = ratingInfo?.UserRating
             };
 
             return Ok(commentDto);

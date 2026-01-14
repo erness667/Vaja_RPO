@@ -18,6 +18,7 @@ import {
   CardBody,
   Textarea,
   Portal,
+  RatingGroup,
 } from "@chakra-ui/react";
 import { Trans, t } from "@lingui/macro";
 import {
@@ -66,6 +67,7 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
     createComment,
     updateComment,
     deleteComment,
+    rateComment,
   } = useComments(carId);
 
   const {
@@ -127,14 +129,14 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
   }, [currentUser, isLoggedIn, car?.dealershipId, dealershipWorkers]);
 
   // Helper to check if user can edit/delete a comment
-  // Admins can edit/delete any comment, or if user is comment author or car seller
+  // Admins can edit/delete any comment, or if user is the comment author
   const canModifyComment = useCallback((commentUserId: string) => {
     if (!currentUser || !isLoggedIn) return false;
     if (isAdmin) return true; // Admins can modify any comment
     const userId = currentUser.id?.toLowerCase();
-    // User can modify if they are the comment author or the car seller
-    return userId === commentUserId?.toLowerCase() || userId === car?.sellerId?.toLowerCase();
-  }, [currentUser, isLoggedIn, isAdmin, car?.sellerId]);
+    // User can modify only if they are the comment author
+    return userId === commentUserId?.toLowerCase();
+  }, [currentUser, isLoggedIn, isAdmin]);
 
   // Helper to check if user can edit/delete a car
   // Admins can edit/delete any car, or if user is the car owner, or if user is dealership admin for dealership cars
@@ -966,9 +968,44 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
                               </Box>
                             )}
                             <VStack align="start" gap={0}>
-                              <Text fontWeight="semibold" fontSize="sm" color={{ base: "gray.800", _dark: "gray.100" }}>
-                                {comment.author?.name} {comment.author?.surname}
-                              </Text>
+                              <HStack gap={2} align="center">
+                                <Text fontWeight="semibold" fontSize="sm" color={{ base: "gray.800", _dark: "gray.100" }}>
+                                  {comment.author?.name} {comment.author?.surname}
+                                </Text>
+                                {/* Star Rating Section - show if comment has ratings OR if user can rate it */}
+                                {editingCommentId !== comment.id && 
+                                 ((comment.ratingCount ?? 0) > 0 || 
+                                  (isLoggedIn && currentUser?.id?.toLowerCase() !== comment.userId?.toLowerCase())) && (
+                                  <HStack gap={2} align="center">
+                                    <RatingGroup.Root
+                                      value={comment.userRating ?? comment.averageRating ?? 0}
+                                      onValueChange={(details) => {
+                                        if (isLoggedIn && currentUser?.id?.toLowerCase() !== comment.userId?.toLowerCase() && !isSubmitting) {
+                                          rateComment(comment.id, { rating: Math.round(details.value) });
+                                        }
+                                      }}
+                                      readOnly={!isLoggedIn || currentUser?.id?.toLowerCase() === comment.userId?.toLowerCase() || isSubmitting}
+                                      size="sm"
+                                      colorPalette="yellow"
+                                      count={5}
+                                      allowHalf={true}
+                                    >
+                                      <RatingGroup.Control>
+                                        {Array.from({ length: 5 }).map((_, index) => (
+                                          <RatingGroup.Item key={index} index={index + 1}>
+                                            <RatingGroup.ItemIndicator />
+                                          </RatingGroup.Item>
+                                        ))}
+                                      </RatingGroup.Control>
+                                    </RatingGroup.Root>
+                                    {(comment.ratingCount ?? 0) > 0 && comment.averageRating !== null && comment.averageRating !== undefined && (
+                                      <Text fontSize="xs" color={{ base: "gray.600", _dark: "gray.400" }}>
+                                        ({comment.averageRating.toFixed(1)}) ({comment.ratingCount})
+                                      </Text>
+                                    )}
+                                  </HStack>
+                                )}
+                              </HStack>
                               <Text fontSize="xs" color={{ base: "gray.500", _dark: "gray.400" }}>
                                 {formatDate(comment.createdAt)}
                                 {comment.updatedAt && (

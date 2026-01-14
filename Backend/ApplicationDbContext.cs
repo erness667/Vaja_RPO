@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<CommentRating> CommentRatings { get; set; }
     public DbSet<CarImage> CarImages { get; set; }
     public DbSet<Favourite> Favourites { get; set; }
     public DbSet<ViewHistory> ViewHistories { get; set; }
@@ -80,6 +81,22 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of user if they have comments
+        });
+
+        modelBuilder.Entity<CommentRating>(entity =>
+        {
+            // Unique constraint: a user can only rate a comment once
+            entity.HasIndex(cr => new { cr.CommentId, cr.UserId }).IsUnique();
+
+            entity.HasOne(cr => cr.Comment)
+                .WithMany()
+                .HasForeignKey(cr => cr.CommentId)
+                .OnDelete(DeleteBehavior.Cascade); // Delete ratings when comment is deleted
+
+            entity.HasOne(cr => cr.User)
+                .WithMany()
+                .HasForeignKey(cr => cr.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of user if they have ratings
         });
 
         modelBuilder.Entity<Favourite>(entity =>

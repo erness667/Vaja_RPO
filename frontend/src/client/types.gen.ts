@@ -65,6 +65,10 @@ export type MarkMessagesReadRequest = {
     senderId: string;
 };
 
+export type RateCommentRequest = {
+    rating: number;
+};
+
 export type RefreshRequest = {
     refreshToken: string;
 };
@@ -581,6 +585,22 @@ export type PutApiCommentsByIdData = {
 };
 
 export type PutApiCommentsByIdResponses = {
+    /**
+     * Success
+     */
+    200: unknown;
+};
+
+export type PostApiCommentsByIdRateData = {
+    body?: RateCommentRequest;
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/api/comments/{id}/rate';
+};
+
+export type PostApiCommentsByIdRateResponses = {
     /**
      * Success
      */

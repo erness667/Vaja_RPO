@@ -60,6 +60,9 @@ export interface Comment {
   createdAt: string;
   updatedAt?: string | null;
   author?: CommentAuthor | null;
+  averageRating?: number | null;
+  ratingCount?: number;
+  userRating?: number | null;
 }
 
 export interface FavouriteItem {

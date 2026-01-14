@@ -6,6 +6,7 @@ import {
   postApiCarsByCarIdComments,
   putApiCommentsById,
   deleteApiCommentsById,
+  postApiCommentsByIdRate,
 } from "@/client";
 import "@/lib/api-client";
 import type { Comment } from "@/lib/types/car";
@@ -16,6 +17,10 @@ interface CreateCommentData {
 
 interface UpdateCommentData {
   content: string;
+}
+
+interface RateCommentData {
+  rating: number;
 }
 
 export function useComments(carId: number | null) {
@@ -141,6 +146,35 @@ export function useComments(carId: number | null) {
     }
   }, []);
 
+  const rateComment = useCallback(async (commentId: number, data: RateCommentData): Promise<Comment | null> => {
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const response = await postApiCommentsByIdRate({
+        path: { id: commentId },
+        body: data,
+      });
+
+      if (response.error || (response.response && !response.response.ok)) {
+        const errorData = response.error as { message?: string } | undefined;
+        setError(errorData?.message || "Napaka pri ocenjevanju komentarja.");
+        setIsSubmitting(false);
+        return null;
+      }
+
+      const updatedComment = response.data as Comment;
+      setComments(prev => prev.map(c => c.id === commentId ? updatedComment : c));
+      setIsSubmitting(false);
+      return updatedComment;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Prišlo je do nepričakovane napake.";
+      setError(errorMessage);
+      setIsSubmitting(false);
+      return null;
+    }
+  }, []);
+
   useEffect(() => {
     fetchComments();
   }, [fetchComments]);
@@ -153,6 +187,7 @@ export function useComments(carId: number | null) {
     createComment,
     updateComment,
     deleteComment,
+    rateComment,
     refetch: fetchComments,
     setError,
   };

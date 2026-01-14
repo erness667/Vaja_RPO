@@ -13,6 +13,21 @@ namespace Backend.DTOs.Comment
         /// Author information for the comment.
         /// </summary>
         public CommentAuthor? Author { get; set; }
+
+        /// <summary>
+        /// Average rating of the comment (1-5 stars).
+        /// </summary>
+        public double? AverageRating { get; set; }
+
+        /// <summary>
+        /// Total number of ratings.
+        /// </summary>
+        public int RatingCount { get; set; }
+
+        /// <summary>
+        /// Current user's rating for this comment (1-5 stars), null if not rated.
+        /// </summary>
+        public int? UserRating { get; set; }
     }
 
     public class CommentAuthor

@@ -18,6 +18,7 @@ import { useResetPassword } from "@/lib/hooks/useResetPassword";
 import "@/lib/api-client";
 import { Trans, t } from "@lingui/macro";
 import NextLink from "next/link";
+import { PasswordStrengthIndicator } from "./PasswordStrengthIndicator";
 
 export function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -142,6 +143,7 @@ export function ResetPasswordForm() {
                   onChange={handleChange}
                   disabled={isLoading || success}
                 />
+                <PasswordStrengthIndicator password={formData.newPassword} />
                 <Field.HelperText>
                   <Trans>Must be at least 6 characters long</Trans>
                 </Field.HelperText>

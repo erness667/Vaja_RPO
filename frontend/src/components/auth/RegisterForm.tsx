@@ -16,6 +16,7 @@ import { useRegister } from "@/lib/hooks/useRegister";
 import type { RegisterFormData } from "@/lib/types/auth";
 import "@/lib/api-client";
 import { Trans, t } from "@lingui/macro";
+import { PasswordStrengthIndicator } from "./PasswordStrengthIndicator";
 
 export function RegisterForm() {
   const { register, isLoading, error, setError } = useRegister();
@@ -197,6 +198,7 @@ export function RegisterForm() {
               placeholder={t`Create a password`}
                 disabled={isLoading}
               />
+              <PasswordStrengthIndicator password={formData.password} />
             </Field.Root>
 
             <Button

@@ -34,6 +34,7 @@ import { useAppLocale } from "@/components/i18n/LinguiProvider";
 import { useColorMode } from "@/components/ui/color-mode";
 import "@/lib/api-client";
 import { Trans, t } from "@lingui/macro";
+import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
 
 const LanguageFlag = ({ variant }: { variant: "sl" | "en" }) => {
   const countryCode = variant === "sl" ? "SI" : "GB";
@@ -882,6 +883,7 @@ export function ProfilePage() {
                       bg={!isEditingPassword ? { base: "gray.50", _dark: "gray.700" } : undefined}
                       color={!isEditingPassword ? { base: "gray.500", _dark: "gray.400" } : undefined}
                     />
+                    <PasswordStrengthIndicator password={passwordData.newPassword} />
                   </Field.Root>
 
                   <Field.Root required>

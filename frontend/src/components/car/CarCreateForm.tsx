@@ -794,8 +794,8 @@ export function CarCreateForm() {
           </Field.Root>
         </Box>
 
-        {/* Dealership Selection Section */}
-        {!dealershipsLoading && (
+        {/* Dealership Selection Section - Only show if user is in a dealership */}
+        {!dealershipsLoading && dealerships.length > 0 && (
           <Box
             pt={6}
             borderTopWidth="1px"
@@ -811,73 +811,61 @@ export function CarCreateForm() {
             >
               Objava kot trgovec
             </Heading>
-            {dealerships.length > 0 ? (
-              <>
-                <Text
-                  fontSize="sm"
-                  color={{ base: "gray.600", _dark: "gray.400" }}
-                  mb={4}
-                >
-                  Izberite, ali želite oglas objaviti kot zasebna oseba ali kot trgovec. Če izberete trgovec, bo oglas objavljen pod vašo trgovsko dejavnostjo.
-                </Text>
-                <Field.Root>
-                  <Field.Label
-                    fontSize="sm"
-                    fontWeight="medium"
-                    color={{ base: "gray.700", _dark: "gray.300" }}
-                  >
-                    Objava kot
-                  </Field.Label>
-                  <Select.Root
-                    collection={dealershipList.collection}
-                    value={formData.dealershipId ? [String(formData.dealershipId)] : [""]}
-                    onValueChange={(details) => {
-                      const selectedValue = details.value[0] || "";
-                      const selectedDealershipId = selectedValue === "" 
-                        ? null 
-                        : parseInt(selectedValue);
-                      handleChange("dealershipId", selectedDealershipId);
-                    }}
-                  >
-                    <Select.Control>
-                      <Select.Trigger>
-                        <Select.ValueText placeholder="Zasebna oseba" />
-                      </Select.Trigger>
-                      <Select.IndicatorGroup>
-                        <Select.Indicator />
-                        <Select.ClearTrigger onClick={() => handleChange("dealershipId", null)} />
-                      </Select.IndicatorGroup>
-                    </Select.Control>
-                    <Select.Positioner>
-                      <Select.Content>
-                        {dealershipList.collection.items.map((item) => (
-                          <Select.Item key={item.value} item={item}>
-                            <Select.ItemText>{item.label}</Select.ItemText>
-                          </Select.Item>
-                        ))}
-                      </Select.Content>
-                    </Select.Positioner>
-                  </Select.Root>
-                  {formData.dealershipId && (
-                    <Field.HelperText
-                      fontSize="xs"
-                      color={{ base: "blue.600", _dark: "blue.400" }}
-                      mt={1}
-                    >
-                      Oglas bo objavljen pod izbranim trgovskim dejavnostjo
-                    </Field.HelperText>
-                  )}
-                </Field.Root>
-              </>
-            ) : (
-              <Text
+            <Text
+              fontSize="sm"
+              color={{ base: "gray.600", _dark: "gray.400" }}
+              mb={4}
+            >
+              Izberite, ali želite oglas objaviti kot zasebna oseba ali kot trgovec. Če izberete trgovec, bo oglas objavljen pod vašo trgovsko dejavnostjo.
+            </Text>
+            <Field.Root>
+              <Field.Label
                 fontSize="sm"
-                color={{ base: "gray.600", _dark: "gray.400" }}
-                mb={4}
+                fontWeight="medium"
+                color={{ base: "gray.700", _dark: "gray.300" }}
               >
-                Oglas bo objavljen kot zasebna oseba. Če ste lastnik ali administrator odobrene trgovske dejavnosti, boste lahko izbrali, da oglas objavite kot trgovec.
-              </Text>
-            )}
+                Objava kot
+              </Field.Label>
+              <Select.Root
+                collection={dealershipList.collection}
+                value={formData.dealershipId ? [String(formData.dealershipId)] : [""]}
+                onValueChange={(details) => {
+                  const selectedValue = details.value[0] || "";
+                  const selectedDealershipId = selectedValue === "" 
+                    ? null 
+                    : parseInt(selectedValue);
+                  handleChange("dealershipId", selectedDealershipId);
+                }}
+              >
+                <Select.Control>
+                  <Select.Trigger>
+                    <Select.ValueText placeholder="Zasebna oseba" />
+                  </Select.Trigger>
+                  <Select.IndicatorGroup>
+                    <Select.Indicator />
+                    <Select.ClearTrigger onClick={() => handleChange("dealershipId", null)} />
+                  </Select.IndicatorGroup>
+                </Select.Control>
+                <Select.Positioner>
+                  <Select.Content>
+                    {dealershipList.collection.items.map((item) => (
+                      <Select.Item key={item.value} item={item}>
+                        <Select.ItemText>{item.label}</Select.ItemText>
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select.Positioner>
+              </Select.Root>
+              {formData.dealershipId && (
+                <Field.HelperText
+                  fontSize="xs"
+                  color={{ base: "blue.600", _dark: "blue.400" }}
+                  mt={1}
+                >
+                  Oglas bo objavljen pod izbranim trgovskim dejavnostjo
+                </Field.HelperText>
+              )}
+            </Field.Root>
           </Box>
         )}
 

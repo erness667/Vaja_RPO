@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { getApiCars, type GetApiCarsData } from "@/client";
 import "@/lib/api-client";
 import type { Car } from "@/lib/types/car";
@@ -16,6 +16,8 @@ export interface UseCarsFilters {
   fuelType?: string | null;
   sellerId?: string | null;
   dealershipId?: number | null;
+  page?: number;
+  pageSize?: number;
 }
 
 export function useCars(filters?: UseCarsFilters) {
@@ -28,9 +30,11 @@ export function useCars(filters?: UseCarsFilters) {
     setError(null);
 
     try {
+      // For client-side pagination, load a large batch of cars at once
+      // Use a large pageSize to get as many cars as possible in one request
       const query: NonNullable<GetApiCarsData["query"]> = {
         page: 1,
-        pageSize: 12,
+        pageSize: 1000, // Load up to 1000 cars for client-side pagination
       };
 
       if (filters?.makeId) {
@@ -101,10 +105,19 @@ export function useCars(filters?: UseCarsFilters) {
       }
 
       if (response.data) {
-        // API wraps cars in an object: { cars, totalCount, ... }
-        const raw = response.data as { cars?: Car[] } | undefined;
+        // API wraps cars in an object: { cars, totalCount, page, pageSize, totalPages }
+        const raw = response.data as { 
+          cars?: Car[];
+          totalCount?: number;
+          page?: number;
+          pageSize?: number;
+          totalPages?: number;
+        } | undefined;
         const data = raw?.cars ?? [];
         setCars(data);
+        
+        // For client-side pagination, we'll calculate pagination in the component
+        // based on the total number of cars loaded
         setIsLoading(false);
         return data;
       }
@@ -123,10 +136,26 @@ export function useCars(filters?: UseCarsFilters) {
     }
   }, [filters]);
 
+  // Calculate pagination info for client-side pagination
+  const clientPagination = useMemo(() => {
+    const pageSize = filters?.pageSize ?? 6;
+    const totalCount = cars.length;
+    const totalPages = Math.ceil(totalCount / pageSize);
+    const currentPage = filters?.page ?? 1;
+    
+    return totalCount > 0 ? {
+      totalCount,
+      page: currentPage,
+      pageSize,
+      totalPages,
+    } : null;
+  }, [cars.length, filters?.page, filters?.pageSize]);
+
   return {
     cars,
     isLoading,
     error,
+    pagination: clientPagination,
     refetch: fetchCars,
   };
 }

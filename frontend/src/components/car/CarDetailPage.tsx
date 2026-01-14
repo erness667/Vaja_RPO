@@ -47,6 +47,7 @@ import { useCar } from "@/lib/hooks/useCar";
 import { useComments } from "@/lib/hooks/useComments";
 import { useFavourite } from "@/lib/hooks/useFavourite";
 import { useDeleteCar } from "@/lib/hooks/useDeleteCar";
+import { useDealershipWorkers } from "@/lib/hooks/useDealershipWorkers";
 import { getStoredUser, isAuthenticated } from "@/lib/utils/auth-storage";
 import type { Comment } from "@/lib/types/car";
 
@@ -79,6 +80,16 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
     error: deleteCarError,
   } = useDeleteCar();
 
+  // Fetch dealership workers if car belongs to a dealership
+  const { workers: dealershipWorkers, fetchWorkers: fetchDealershipWorkers } = useDealershipWorkers(car?.dealershipId ?? null);
+
+  // Fetch workers when car or dealershipId changes
+  useEffect(() => {
+    if (car?.dealershipId) {
+      fetchDealershipWorkers();
+    }
+  }, [car?.dealershipId, fetchDealershipWorkers]);
+
   const [newComment, setNewComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -105,6 +116,16 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
     return userId === car.sellerId?.toLowerCase();
   }, [currentUser, isLoggedIn, car]);
 
+  // Helper to check if user is dealership admin for the car's dealership
+  const isDealershipAdmin = useMemo(() => {
+    if (!currentUser || !isLoggedIn || !car?.dealershipId) return false;
+    const currentUserId = currentUser.id?.toLowerCase();
+    const currentUserWorker = dealershipWorkers.find(
+      w => w.userId?.toLowerCase() === currentUserId && w.status === "Active" && w.role === "Admin"
+    );
+    return !!currentUserWorker;
+  }, [currentUser, isLoggedIn, car?.dealershipId, dealershipWorkers]);
+
   // Helper to check if user can edit/delete a comment
   // Admins can edit/delete any comment, or if user is comment author or car seller
   const canModifyComment = useCallback((commentUserId: string) => {
@@ -116,12 +137,14 @@ export function CarDetailPage({ carId }: CarDetailPageProps) {
   }, [currentUser, isLoggedIn, isAdmin, car?.sellerId]);
 
   // Helper to check if user can edit/delete a car
-  // Admins can edit/delete any car, or if user is the car owner
+  // Admins can edit/delete any car, or if user is the car owner, or if user is dealership admin for dealership cars
   const canModifyCar = useMemo(() => {
     if (!currentUser || !isLoggedIn || !car) return false;
-    if (isAdmin) return true; // Admins can modify any car
-    return isCarOwner; // Otherwise, only car owner can modify
-  }, [currentUser, isLoggedIn, isAdmin, isCarOwner, car]);
+    if (isAdmin) return true; // System admins can modify any car
+    if (isCarOwner) return true; // Car owner can modify
+    if (isDealershipAdmin) return true; // Dealership admin can modify dealership cars
+    return false;
+  }, [currentUser, isLoggedIn, isAdmin, isCarOwner, isDealershipAdmin, car]);
 
   const handleSubmitComment = useCallback(async () => {
     if (!newComment.trim()) return;

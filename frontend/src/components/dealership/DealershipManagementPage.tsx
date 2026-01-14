@@ -545,7 +545,7 @@ export function DealershipManagementPage() {
                     </Button>
                   ) : null;
                 })()}
-                {isOwner && (
+                {canEdit && (
                   <Button
                     colorPalette="blue"
                     onClick={() => setShowInviteModal(true)}
